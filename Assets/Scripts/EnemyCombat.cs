@@ -2,14 +2,49 @@ using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour
 {
-    public int damageAmount = -10;
+    public int damageAmount = -1;
+    public Transform AttackPoint;
+    public float attackRange = 0.5f;
+    public LayerMask playerLayer;
 
-    void OnCollisionEnter2D(Collision2D collision)
+    // Call this from the attack animation event at the exact hit frame.
+    public void DealDamageAtAttackFrame()
     {
-        var playerHealth = collision.gameObject.GetComponentInParent<PlayerHealth>();
-        if (playerHealth != null)
+        if (AttackPoint == null)
         {
-            playerHealth.ChangeHealth(damageAmount);
+            Debug.LogError("EnemyCombat: AttackPoint is not assigned.", this);
+            return;
         }
+
+        Debug.Log("EnemyCombat: Attack frame event fired.", this);
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(AttackPoint.position, attackRange, playerLayer);
+
+        if (hits.Length == 0)
+        {
+            Debug.Log("EnemyCombat: Attack frame hit nothing.", this);
+            return;
+        }
+
+        foreach (var hit in hits)
+        {
+            var playerHealth = hit.GetComponentInParent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                Debug.Log("EnemyCombat: Damaged player on attack frame.", this);
+                playerHealth.ChangeHealth(damageAmount);
+            }
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (AttackPoint == null)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(AttackPoint.position, attackRange);
     }
 }
