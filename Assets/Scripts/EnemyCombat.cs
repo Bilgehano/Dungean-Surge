@@ -6,6 +6,8 @@ public class EnemyCombat : MonoBehaviour
     public Transform AttackPoint;
     public float attackRange = 0.5f;
     public LayerMask playerLayer;
+    public float knockbackForce = 8f;
+    public float stunTime = 0.35f;
 
     // Call this from the attack animation event at the exact hit frame.
     public void DealDamageAtAttackFrame()
@@ -29,6 +31,18 @@ public class EnemyCombat : MonoBehaviour
         foreach (var hit in hits)
         {
             var playerHealth = hit.GetComponentInParent<PlayerHealth>();
+            var playerMovement = hit.GetComponentInParent<PlayerMovement>();
+
+            if (playerMovement != null && playerMovement.IsHitImmune)
+            {
+                continue;
+            }
+
+            if (playerMovement != null)
+            {
+                playerMovement.ApplyKnockback(transform.position, stunTime, knockbackForce);
+            }
+
             if (playerHealth != null)
             {
                 Debug.Log("EnemyCombat: Damaged player on attack frame.", this);
