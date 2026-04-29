@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using UnityEngine;
 
 public class EnemyCombat : MonoBehaviour
@@ -7,6 +6,10 @@ public class EnemyCombat : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        collision.gameObject.GetComponent<PlayerHealth>().ChangeHealth(damageAmount);
+        var playerHealth = collision.gameObject.GetComponentInParent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.ChangeHealth(damageAmount);
+        }
     }
 }
