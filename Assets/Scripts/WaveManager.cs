@@ -67,7 +67,6 @@ public class WaveManager : MonoBehaviour
     public void OnEnemyDied()
     {
         enemiesAlive--;
-        int x = 3; // breakpoint test
 
         if (enemiesAlive <= 0 && waveActive)
         {
