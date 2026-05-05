@@ -1,0 +1,15 @@
+{
+    "asset": "2933b2de11a6ecb4dbeafd9915e252a6",
+    "fileName": "019df8e8-35f3-72d5-ba2e-709fe33c1ede.wav",
+    "prompt": "One extremely short and sharp metal sword slash of flesh  sound as it cut a flesh dont make it to bloody and only 1 cling sound it is important , duration 0.2 seconds. No secondary clings. Just one 'Ting'. No background noise.",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 5.199999809265137,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": "Adam"
+}

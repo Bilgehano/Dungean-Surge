@@ -1,0 +1,15 @@
+{
+    "asset": "3ee56adcee4c8294a9308dbbf014c430",
+    "fileName": "019df8f5-fa51-7fe5-b7ba-8b8605371753.wav",
+    "prompt": "Short masculine grunt 'uuggh' pain sound. 0.2 seconds. No background noise.",
+    "negativePrompt": "",
+    "model": "elevenlabs-multilingual-v2",
+    "modelName": "ElevenLabs Multilingual V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 1.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

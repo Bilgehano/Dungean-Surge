@@ -1,0 +1,15 @@
+{
+    "asset": "2933b2de11a6ecb4dbeafd9915e252a6",
+    "fileName": "019df8eb-4ae9-70c0-940c-e25a54f22f5e.wav",
+    "prompt": "One extremely short and sharp metal \nslash of flesh sound only 1 slash sound no multiple slashes, duration 0.2 seconds. No secondary clings or slashes . Just one 'Ting' or slash . No background noise aswell no blood or afterwards sound effects",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 5.199999809265137,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": "Adam"
+}

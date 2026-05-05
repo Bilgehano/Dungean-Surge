@@ -9,9 +9,16 @@ public class PlayerHealth : MonoBehaviour
 
     public TMP_Text healthText;
     public Animator HealthBarAnimator;
+    public AudioClip hurtSound;
+    private AudioSource audioSource;
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
         currentHealth = maxHealth;
         healthText.text = "HP: " + currentHealth + "/" + maxHealth;
     }
@@ -21,6 +28,12 @@ public class PlayerHealth : MonoBehaviour
         HealthBarAnimator.Play("Type");
         currentHealth += amount;
         healthText.text = "HP: " + currentHealth + "/" + maxHealth;
+
+        if (amount < 0 && hurtSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hurtSound);
+        }
+
         if (currentHealth <= 0)
         {
             Die();

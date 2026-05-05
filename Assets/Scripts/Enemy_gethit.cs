@@ -1,16 +1,88 @@
 using UnityEngine;
+using System.Collections;
 
 public class Enemy_gethit : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private Color hitColor = Color.red;
+    [SerializeField] private float flashDuration = 0.15f;
+    [SerializeField] private float stunDuration = 0.5f;
+    public AudioClip hurtSound;
+
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor = Color.white;
+    private bool hasOriginalColor = false;
+    private Enemy_Movement enemyMovement;
+    private AudioSource audioSource;
+
     void Start()
     {
-        
+        Initialize();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Initialize()
     {
-        
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            if (spriteRenderer != null && !hasOriginalColor)
+            {
+                originalColor = spriteRenderer.color;
+                // If original color is too red (maybe captured during a flash), default to white
+                if (originalColor.r > 0.8f && originalColor.g < 0.2f && originalColor.b < 0.2f)
+                {
+                    originalColor = Color.white;
+                }
+                hasOriginalColor = true;
+            }
+        }
+        if (enemyMovement == null)
+        {
+            enemyMovement = GetComponent<Enemy_Movement>();
+        }
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
+    }
+
+    public void TriggerHit()
+    {
+        Initialize();
+
+        if (spriteRenderer != null)
+        {
+            StopAllCoroutines();
+            StartCoroutine(FlashRed());
+        }
+
+        if (hurtSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hurtSound);
+        }
+
+        if (enemyMovement != null)
+        {
+            enemyMovement.Stun(stunDuration);
+        }
+    }
+
+    private IEnumerator FlashRed()
+    {
+        spriteRenderer.color = hitColor;
+        yield return new WaitForSeconds(flashDuration);
+        spriteRenderer.color = originalColor;
+    }
+
+    void OnDisable()
+    {
+        // Ensure color is restored if disabled during flash
+        if (spriteRenderer != null && hasOriginalColor)
+        {
+            spriteRenderer.color = originalColor;
+        }
     }
 }

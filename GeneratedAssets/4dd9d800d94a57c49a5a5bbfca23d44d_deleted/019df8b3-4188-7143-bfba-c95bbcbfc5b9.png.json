@@ -1,0 +1,28 @@
+{
+    "asset": "4dd9d800d94a57c49a5a5bbfca23d44d",
+    "fileName": "019df8b3-4188-7143-bfba-c95bbcbfc5b9.png",
+    "prompt": "a white and yellow slash hit effect, 2D pixel art, white background, stylized action game effect, sharp edges, no shadow",
+    "negativePrompt": "",
+    "model": "flux-2-dev",
+    "modelName": "Flux 2 (Dev)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

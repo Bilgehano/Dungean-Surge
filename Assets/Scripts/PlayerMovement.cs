@@ -56,12 +56,12 @@ public class PlayerMovement : MonoBehaviour
         if (horizontalInput > 0)
         {
             facingDirection = 1;
-            transform.localScale = new Vector3(1, 1, 1);
+            transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
         }
         else if (horizontalInput < 0)
         {
             facingDirection = -1;
-            transform.localScale = new Vector3(-1, 1, 1);
+            transform.localScale = new Vector3(-1.3f, 1.3f, 1.3f);
         }
 
 

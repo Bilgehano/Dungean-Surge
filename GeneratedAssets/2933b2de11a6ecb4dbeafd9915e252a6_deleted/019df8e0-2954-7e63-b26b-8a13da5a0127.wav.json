@@ -1,0 +1,15 @@
+{
+    "asset": "2933b2de11a6ecb4dbeafd9915e252a6",
+    "fileName": "019df8e0-2954-7e63-b26b-8a13da5a0127.wav",
+    "prompt": "One extremely short and sharp metal sword hit sound, duration 0.2 seconds. No secondary clings. Just one 'Ting'. No background noise.",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

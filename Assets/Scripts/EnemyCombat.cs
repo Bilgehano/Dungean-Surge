@@ -8,6 +8,17 @@ public class EnemyCombat : MonoBehaviour
     public LayerMask playerLayer;
     public float knockbackForce = 8f;
     public float stunTime = 0.35f;
+    public AudioClip attackSound;
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+    }
 
     // Call this from the attack animation event at the exact hit frame.
     public void DealDamageAtAttackFrame()
@@ -16,6 +27,11 @@ public class EnemyCombat : MonoBehaviour
         {
             Debug.LogError("EnemyCombat: AttackPoint is not assigned.", this);
             return;
+        }
+
+        if (attackSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(attackSound);
         }
 
         Debug.Log("EnemyCombat: Attack frame event fired.", this);

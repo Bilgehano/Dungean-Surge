@@ -1,0 +1,28 @@
+{
+    "asset": "a54b4d45c840ff247966d230adf8f4dc",
+    "fileName": "019df8d9-4afb-70d5-93e7-42d976c13a73.png",
+    "prompt": "a large stylized white slash hit effect, 2D pixel art, white background, centered, sharp edges, no shadow",
+    "negativePrompt": "",
+    "model": "flux-2-dev",
+    "modelName": "Flux 2 (Dev)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

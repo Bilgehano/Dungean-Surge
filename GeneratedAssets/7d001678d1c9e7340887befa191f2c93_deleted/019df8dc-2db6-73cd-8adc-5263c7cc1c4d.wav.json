@@ -1,0 +1,15 @@
+{
+    "asset": "7d001678d1c9e7340887befa191f2c93",
+    "fileName": "019df8dc-2db6-73cd-8adc-5263c7cc1c4d.wav",
+    "prompt": "Exactly one single sharp sword impact cling sound. Duration 0.5 seconds. No echoes, no repetitions, no background noise. Just one 'clink'.",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

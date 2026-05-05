@@ -1,0 +1,15 @@
+{
+    "asset": "81c68468455636f45b418d3d05ec867d",
+    "fileName": "019df909-245e-7335-8fda-a28f6195a70a.wav",
+    "prompt": "Short sharp monster pain grunt sound, 0.2 seconds. No background noise. Aggressive.",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 1.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

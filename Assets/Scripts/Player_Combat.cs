@@ -22,6 +22,20 @@ public class Player_Combat : MonoBehaviour
         anim.SetBool("isAttacking", true);
     }
 
+    public GameObject hitEffectPrefab;
+    public AudioClip hitSound;
+    public AudioClip missSound;
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+    }
+
     // Call this from the attack animation event on the hit frame.
     public void DealDamageAtAttackFrame()
     {
@@ -31,7 +45,26 @@ public class Player_Combat : MonoBehaviour
             return;
         }
 
+        // Play swing/miss sound every time at 30% volume
+        if (missSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(missSound, 0.3f);
+        }
+
         Collider2D[] enemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
+
+        if (enemies.Length > 0)
+        {
+            if (hitSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(hitSound, 0.5f);
+            }
+
+            if (hitEffectPrefab != null)
+            {
+                Instantiate(hitEffectPrefab, attackPoint.position, Quaternion.Euler(0, 0, Random.Range(0f, 360f)));
+            }
+        }
 
         for (int i = 0; i < enemies.Length; i++)
         {

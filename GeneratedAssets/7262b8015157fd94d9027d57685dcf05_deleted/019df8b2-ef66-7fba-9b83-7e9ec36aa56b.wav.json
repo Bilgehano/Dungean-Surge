@@ -1,0 +1,15 @@
+{
+    "asset": "7262b8015157fd94d9027d57685dcf05",
+    "fileName": "019df8b2-ef66-7fba-9b83-7e9ec36aa56b.wav",
+    "prompt": "punchy sword hit impact sound, short, aggressive, sharp metal hit",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

@@ -1,0 +1,15 @@
+{
+    "asset": "ec0248165669baa42bf884cd69782c81",
+    "fileName": "019df8d9-3fc7-7424-929c-3fc3421dea8c.wav",
+    "prompt": "one single sharp sword impact hit sound, no echo, no repetition, clean impact",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

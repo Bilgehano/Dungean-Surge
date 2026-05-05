@@ -1,0 +1,15 @@
+{
+    "asset": "0ee4e680b520db24d855466a67640e2d",
+    "fileName": "019df8f5-e149-7527-be20-d8a1b6e48958.wav",
+    "prompt": "Fast fire torch swinging whoosh sound with a subtle crackle. Short 0.3 seconds. Single slash.",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 1.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}

@@ -1,0 +1,15 @@
+{
+    "asset": "93842396e5a8ab04ca5f8ce82102aa27",
+    "fileName": "019df8f5-f9ea-7c7c-bce6-6bd6a6d174aa.wav",
+    "prompt": "Short sharp sword swing whoosh sound, 0.2 seconds. No metal hit. Just air.",
+    "negativePrompt": "",
+    "model": "elevenlabs-sound-effects-v2",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "duration": 1.0,
+    "autoTrim": false,
+    "hasReference": false,
+    "voice": ""
+}
