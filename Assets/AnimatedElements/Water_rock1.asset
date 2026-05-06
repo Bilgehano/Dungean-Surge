@@ -12,9 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
   m_Name: Water_rock1
   m_EditorClassIdentifier: Unity.2D.Tilemap.Extras::UnityEngine.Tilemaps.AnimatedTile
-  m_AnimatedSprites: []
-  m_MinSpeed: 1
-  m_MaxSpeed: 1
+  m_AnimatedSprites:
+  - {fileID: -5483390788980850787, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -2027483244042122269, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -1143114981373034982, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: 2528951655009623702, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: 6050748038819346411, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -2710669667468552177, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -2710669667468552177, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -3680463350662454228, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -4344135329745671640, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -691024590840829886, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: -7658276157882494199, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  - {fileID: 5390449017634418697, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
+  m_MinSpeed: 5
+  m_MaxSpeed: 5
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
   m_TileColliderType: 0

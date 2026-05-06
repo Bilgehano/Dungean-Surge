@@ -1,17 +1,45 @@
 using System.Collections;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+[System.Serializable]
+public class EnemyWaveEntry
+{
+    [Tooltip("Drag from the PROJECT window (Assets/Prefabs), NOT from the Hierarchy.")]
+    public GameObject prefab;
+    public int count = 4;
+    public float timeBetweenSpawns = 0.4f;
+}
 
 public class WaveManager : MonoBehaviour
 {
-    [Header("Wave Settings")]
-    public GameObject enemyPrefab;
+    [Header("Spawn Points (shared)")]
     public Transform[] spawnPoints;
-    public int waveEnemyCount = 8;
-    public float timeBetweenSpawns = 0.4f;
 
-    [Header("State (Read Only)")] 
+    [Header("Enemy Types")]
+    public EnemyWaveEntry[] enemyEntries;
+
+    [Header("State (Read Only)")]
     [SerializeField] private int enemiesAlive;
     [SerializeField] private bool waveActive;
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (enemyEntries == null) return;
+        for (int i = 0; i < enemyEntries.Length; i++)
+        {
+            GameObject p = enemyEntries[i].prefab;
+            if (p != null && !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(p))
+            {
+                Debug.LogWarning($"WaveManager: Enemy Entries[{i}] '{p.name}' is a scene object, not a prefab asset. " +
+                    "Drag it from the Project window (Assets/Prefabs) instead.", this);
+            }
+        }
+    }
+#endif
 
     void Start()
     {
@@ -20,9 +48,9 @@ public class WaveManager : MonoBehaviour
 
     public void StartWave()
     {
-        if (enemyPrefab == null)
+        if (enemyEntries == null || enemyEntries.Length == 0)
         {
-            Debug.LogError("WaveManager: enemyPrefab is not assigned.", this);
+            Debug.LogError("WaveManager: no enemy entries assigned.", this);
             return;
         }
 
@@ -34,26 +62,35 @@ public class WaveManager : MonoBehaviour
 
         enemiesAlive = 0;
         waveActive = true;
-        StartCoroutine(SpawnWave());
-    }
 
-    private IEnumerator SpawnWave()
-    {
-        for (int i = 0; i < waveEnemyCount; i++)
+        for (int i = 0; i < enemyEntries.Length; i++)
         {
-            SpawnEnemy();
-            yield return new WaitForSeconds(timeBetweenSpawns);
+            if (enemyEntries[i].prefab != null)
+            {
+                StartCoroutine(SpawnEnemyType(enemyEntries[i]));
+            }
         }
     }
 
-    private void SpawnEnemy()
+    private IEnumerator SpawnEnemyType(EnemyWaveEntry entry)
     {
-        // Pick a random spawn point.
+        for (int i = 0; i < entry.count; i++)
+        {
+            if (entry.prefab == null)
+            {
+                Debug.LogError("WaveManager: prefab is null or was destroyed. Assign a Project asset prefab, not a scene object.", this);
+                yield break;
+            }
+            SpawnEnemy(entry.prefab);
+            yield return new WaitForSeconds(entry.timeBetweenSpawns);
+        }
+    }
+
+    private void SpawnEnemy(GameObject prefab)
+    {
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        GameObject enemy = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
-        GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
-
-        // Register this manager on the enemy so it can call OnEnemyDied.
         Enemy_Health health = enemy.GetComponent<Enemy_Health>();
         if (health != null)
         {
@@ -77,7 +114,7 @@ public class WaveManager : MonoBehaviour
 
     private void OnWaveComplete()
     {
-        Debug.Log("WaveManager: Wave complete!");
+        Debug.LogWarning("WaveManager: Wave complete! All enemies defeated.");
         // TODO: trigger next wave, show UI, unlock door, load next scene, etc.
     }
 }

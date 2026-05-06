@@ -6,9 +6,6 @@ public class Elevation_Exit : MonoBehaviour
     public Collider2D[] mountainCollider;
     public Collider2D[] boundaryCollider;
 
-    [Header("Who Can Trigger")]
-    [SerializeField] private LayerMask actorLayers;
-
     [Header("Rendering")]
     [SerializeField] private int sortingOrderOnExit = 10;
 
@@ -25,7 +22,7 @@ public class Elevation_Exit : MonoBehaviour
     private void ApplyExit(Collider2D collision)
     {
         GameObject actorObject = collision.attachedRigidbody != null ? collision.attachedRigidbody.gameObject : collision.gameObject;
-        if (!IsInLayerMask(actorObject.layer, actorLayers))
+        if (!actorObject.CompareTag("Player"))
         {
             return;
         }
@@ -64,10 +61,11 @@ public class Elevation_Exit : MonoBehaviour
         {
             renderers[i].sortingOrder = sortingOrderOnExit;
         }
+
+        for (int i = 0; i < Enemy_Movement.All.Count; i++)
+        {
+            Enemy_Movement.All[i].Unfreeze();
+        }
     }
 
-    private bool IsInLayerMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
-    }
 }

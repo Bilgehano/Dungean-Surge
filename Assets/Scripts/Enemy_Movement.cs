@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class Enemy_Movement : MonoBehaviour
 {
+    public static readonly List<Enemy_Movement> All = new List<Enemy_Movement>();
+    public static bool GlobalFreeze;
+
     [Header("Combat")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float attackCooldown = 0.25f;
@@ -22,10 +25,15 @@ public class Enemy_Movement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector3 baseScale;
     public Transform player;
-    private EnemyState enemyState;
+    public EnemyState enemyState;
     public float attackRange = 2f;
     private Animator anim;
     private bool isAttackInProgress;
+    private bool isFrozen;
+    private bool isWandering;
+    private float wanderPhaseEndTime;
+    private bool wanderIsMovingPhase;
+    private Vector2 wanderDirection;
     private float idleUntilTime;
     private float nextRepathTime;
     private float nextDirectPathCheckTime;
@@ -74,12 +82,34 @@ public class Enemy_Movement : MonoBehaviour
         nextRepathTime = Time.time + jitter;
         nextDirectPathCheckTime = Time.time + Random.Range(0f, directPathCheckInterval);
         lastRepathTargetPosition = player != null ? (Vector2)player.position : rb.position;
+        All.Add(this);
+        if (GlobalFreeze)
+        {
+            Freeze();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        All.Remove(this);
     }
 
     void FixedUpdate()
     {
         if (rb == null)
         {
+            return;
+        }
+
+        if (isFrozen)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (isWandering)
+        {
+            HandleWander();
             return;
         }
 
@@ -102,6 +132,72 @@ public class Enemy_Movement : MonoBehaviour
                 currentPath.Clear();
                 rb.linearVelocity = Vector2.zero;
                 break;
+        }
+    }
+
+    public void Freeze()
+    {
+        GlobalFreeze = true;
+        isFrozen = false;
+        isWandering = true;
+        currentPath.Clear();
+        rb.linearVelocity = Vector2.zero;
+        wanderIsMovingPhase = false;
+        wanderPhaseEndTime = Time.time + 1f;
+        if (anim != null)
+        {
+            anim.SetBool("isMoving", false);
+            anim.SetBool("isIdle", true);
+            anim.SetBool("isAttacking", false);
+        }
+    }
+
+    public void Unfreeze()
+    {
+        GlobalFreeze = false;
+        isFrozen = false;
+        isWandering = false;
+        ChangeState(EnemyState.Chasing);
+    }
+
+    private void HandleWander()
+    {
+        if (Time.time >= wanderPhaseEndTime)
+        {
+            wanderIsMovingPhase = !wanderIsMovingPhase;
+            if (wanderIsMovingPhase)
+            {
+                wanderDirection = Random.insideUnitCircle.normalized;
+                wanderPhaseEndTime = Time.time + 2f;
+                if (anim != null)
+                {
+                    anim.SetBool("isIdle", false);
+                    anim.SetBool("isMoving", true);
+                    anim.SetBool("isAttacking", false);
+                }
+            }
+            else
+            {
+                wanderPhaseEndTime = Time.time + 1f;
+                rb.linearVelocity = Vector2.zero;
+                if (anim != null)
+                {
+                    anim.SetBool("isMoving", false);
+                    anim.SetBool("isIdle", true);
+                    anim.SetBool("isAttacking", false);
+                }
+            }
+        }
+
+        if (wanderIsMovingPhase)
+        {
+            rb.linearVelocity = wanderDirection * moveSpeed;
+            float facingX = wanderDirection.x >= 0 ? Mathf.Abs(baseScale.x) : -Mathf.Abs(baseScale.x);
+            transform.localScale = new Vector3(facingX, baseScale.y, baseScale.z);
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
