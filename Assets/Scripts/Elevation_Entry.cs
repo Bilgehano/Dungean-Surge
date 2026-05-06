@@ -54,7 +54,7 @@ public class Elevation_Entry : MonoBehaviour
                 Collider2D boundary = boundaryCollider[j];
                 if (boundary != null)
                 {
-                    Physics2D.IgnoreCollision(actorCollider, boundary, false);
+                    boundary.enabled = true;
                 }
             }
         }
