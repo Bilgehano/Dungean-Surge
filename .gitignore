@@ -99,6 +99,7 @@ $RECYCLE.BIN/
 /[Aa]ssets/TextMesh Pro/
 
 # Plastic SCM (Unity Version Control)
+.plastic/
 ignore.conf
 *.private.0
 *.private
