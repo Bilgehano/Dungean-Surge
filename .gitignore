@@ -102,6 +102,11 @@ $RECYCLE.BIN/
 .plastic/
 ignore.conf
 *.private.0
+*.private.0.meta
+*.private.[0-9]*
+*.private.[0-9]*.meta
+*.meta.private.[0-9]*
+*.meta.private.[0-9]*.meta
 *.private
 
 # Crashlytics
