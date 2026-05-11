@@ -1,0 +1,38 @@
+{
+    "asset": "043135a4ff77452479ac46b695c24332",
+    "fileName": "019e16de-5d7b-725a-9c91-3d8fd4e6801d.png",
+    "prompt": "A pixel art UI progress bar frame, long horizontal shape, 16-bit style, blue and silver colors, ornate but simple, game asset, transparent background. matching the pixel art style of the reference image.",
+    "negativePrompt": "",
+    "model": "flux-2-dev",
+    "modelName": "Flux 2 (Dev)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "b27ab48adf7a462459fe8160057fbbe9",
+                "unlabeledIndex": -1
+            }
+        ]
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

@@ -1,0 +1,28 @@
+{
+    "asset": "8e1f0f0922484d4488f9e8e30d343371",
+    "fileName": "019e16f2-8fd2-7bce-ab05-338e0846fa7e.png",
+    "prompt": "A single, very thin and long horizontal 16-bit pixel art progress bar fill centered in the image. Glowing blue gradient. 16:1 aspect ratio shape within the 1024x1024 canvas. Clean pixel edges, transparent background.",
+    "negativePrompt": "",
+    "model": "flux-2-dev",
+    "modelName": "Flux 2 (Dev)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

@@ -1,0 +1,28 @@
+{
+    "asset": "4b07ffbba0836ee4792318ac22a2b1c0",
+    "fileName": "019e16f2-63db-7d2b-b323-550d06002100.png",
+    "prompt": "A single, very thin and long horizontal 16-bit pixel art UI progress bar frame centered in the image. Ornate silver metal with glowing blue gems, completely hollow center. 16:1 aspect ratio shape within the 1024x1024 canvas. Clean pixel edges, transparent background.",
+    "negativePrompt": "",
+    "model": "flux-2-dev",
+    "modelName": "Flux 2 (Dev)",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0
+}

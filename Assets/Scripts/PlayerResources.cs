@@ -12,6 +12,8 @@ public class PlayerResources : MonoBehaviour
         RefreshGoldText();
     }
 
+    public event System.Action<int> OnGoldAdded;
+
     public void AddGold(int amount)
     {
         if (amount <= 0)
@@ -20,6 +22,7 @@ public class PlayerResources : MonoBehaviour
         }
 
         gold += amount;
+        OnGoldAdded?.Invoke(amount);
         RefreshGoldText();
     }
 
