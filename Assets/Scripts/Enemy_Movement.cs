@@ -9,10 +9,10 @@ public class Enemy_Movement : MonoBehaviour
     [Header("Combat")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float attackCooldown = 0.25f;
-    [SerializeField] private string idleStateName = "Idle";
+    [SerializeField] private string idleStateName = "TorchGoblinIdle";
 
     [Header("Pathfinding")]
-    [SerializeField] private LayerMask obstacleMask;
+[SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float nodeSize = 0.5f;
     [SerializeField] private int gridHalfExtent = 12;
     [SerializeField] private float repathInterval = 0.4f;
@@ -119,9 +119,15 @@ public class Enemy_Movement : MonoBehaviour
             return;
         }
 
+        // Ensure squared values are up to date if variables were modified in inspector
+        attackRangeSqr = attackRange * attackRange;
+        waypointReachDistanceSqr = waypointReachDistance * waypointReachDistance;
+        playerMoveRepathThresholdSqr = playerMoveRepathThreshold * playerMoveRepathThreshold;
+        stuckVelocityThresholdSqr = stuckVelocityThreshold * stuckVelocityThreshold;
+
         switch (enemyState)
         {
-            case EnemyState.Idle:
+case EnemyState.Idle:
                 HandleIdle();
                 break;
             case EnemyState.Chasing:
@@ -138,12 +144,10 @@ public class Enemy_Movement : MonoBehaviour
     public void Freeze()
     {
         GlobalFreeze = true;
-        isFrozen = false;
-        isWandering = true;
+        isFrozen = true;
+        isWandering = false;
         currentPath.Clear();
         rb.linearVelocity = Vector2.zero;
-        wanderIsMovingPhase = false;
-        wanderPhaseEndTime = Time.time + 1f;
         if (anim != null)
         {
             anim.SetBool("isMoving", false);
@@ -208,6 +212,7 @@ public class Enemy_Movement : MonoBehaviour
             CancelInvoke(nameof(EndStun));
         }
 
+        isAttackInProgress = false;
         currentPath.Clear();
         ChangeState(EnemyState.Stunned);
         Invoke(nameof(EndStun), duration);
