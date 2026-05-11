@@ -124,7 +124,7 @@ public class Enemy_Movement : MonoBehaviour
         waypointReachDistanceSqr = waypointReachDistance * waypointReachDistance;
         playerMoveRepathThresholdSqr = playerMoveRepathThreshold * playerMoveRepathThreshold;
         stuckVelocityThresholdSqr = stuckVelocityThreshold * stuckVelocityThreshold;
-
+    
         switch (enemyState)
         {
 case EnemyState.Idle:
