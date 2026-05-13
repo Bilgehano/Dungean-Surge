@@ -1,25 +1,29 @@
 using UnityEngine;
 
-public class Boss_Health : MonoBehaviour
+public class BossHealth : MonoBehaviour
 {
-    public int maxHealth = 50;
-    public int currentHealth;
-    private bool isDead;
+    [Header("Health")]
+    public int maxHealth = 500;
 
-    void Awake()
+    [Header("State (Read Only)")]
+    [SerializeField] private int currentHealth;
+    [SerializeField] private bool isDead;
+
+    [HideInInspector] public BossManager bossManager;
+
+    private void Awake()
     {
         currentHealth = maxHealth;
-        isDead = false;
     }
 
-    public void ChangeHealth(int amount)
+    public void TakeDamage(int damage)
     {
         if (isDead)
         {
             return;
         }
 
-        currentHealth += amount;
+        currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         Debug.Log("Boss HP: " + currentHealth + "/" + maxHealth);
@@ -32,8 +36,19 @@ public class Boss_Health : MonoBehaviour
 
     private void Die()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         isDead = true;
-        Debug.Log("Boss died");
+
+        Debug.Log("Boss died.");
+
+        if (bossManager != null)
+        {
+            bossManager.OnBossDied();
+        }
 
         Destroy(gameObject);
     }

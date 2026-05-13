@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Boss_Controller : MonoBehaviour
+public class BossController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform player;
@@ -89,7 +89,7 @@ public class Boss_Controller : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Boss_Controller: PlayerHealth script not found on player.");
+            Debug.LogWarning("BossController: PlayerHealth script not found on player.");
         }
     }
 
