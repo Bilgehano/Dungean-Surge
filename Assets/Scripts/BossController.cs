@@ -5,6 +5,7 @@ public class BossController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform player;
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Animator animator;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
@@ -13,6 +14,7 @@ public class BossController : MonoBehaviour
     [Header("Attack")]
     [SerializeField] private float attackCooldown = 2f;
     [SerializeField] private int damageAmount = -20;
+    
 
     private float attackTimer;
     private bool isActive = true;
@@ -22,6 +24,11 @@ public class BossController : MonoBehaviour
         if (rb == null)
         {
             rb = GetComponent<Rigidbody2D>();
+        }
+
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
         }
     }
 
@@ -70,11 +77,21 @@ public class BossController : MonoBehaviour
     {
         Vector2 direction = (player.position - transform.position).normalized;
         rb.linearVelocity = direction * moveSpeed;
+
+        if (animator != null)
+        {
+        animator.SetBool("IsMoving", true);
+        }
     }
 
     private void StopMoving()
     {
         rb.linearVelocity = Vector2.zero;
+
+        if (animator != null)
+        {
+            animator.SetBool("IsMoving", false);
+        }
     }
 
     private void AttackPlayer()
