@@ -1,3 +1,4 @@
+using Unity.AppUI.UI;
 using UnityEngine;
 
 public class BossController : MonoBehaviour
@@ -6,18 +7,24 @@ public class BossController : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
-    [SerializeField] private float attackRange = 1.5f;
+    
+    [Header("Attack Range")]
+    [SerializeField] private float attackRange = 1f;
+    [SerializeField] private float attackRadius = 1.5f;
 
     [Header("Attack")]
+    [SerializeField] private Transform attackCenter;
     [SerializeField] private float attackCooldown = 2f;
-    [SerializeField] private int damageAmount = -20;
+    [SerializeField] private int damageAmount = -3;
     
 
-    private float attackTimer;
+    private float attackTimer = 0f;
     private bool isActive = true;
+    private Vector2 movementDirection;
 
     private void Awake()
     {
@@ -30,6 +37,11 @@ public class BossController : MonoBehaviour
         {
             animator = GetComponent<Animator>();
         }
+
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
     }
 
     private void Start()
@@ -39,6 +51,7 @@ public class BossController : MonoBehaviour
         if (playerObject != null)
         {
             player = playerObject.transform;
+            Debug.Log("BossController: Player found: " + player.name);
         }
         else
         {
@@ -50,12 +63,14 @@ public class BossController : MonoBehaviour
     {
         if (!isActive || player == null)
         {
+            StopMoving();
             return;
         }
 
         attackTimer -= Time.deltaTime;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        Vector2 attackOrigin = attackCenter != null ? attackCenter.position : transform.position;
+        float distanceToPlayer = Vector2.Distance(attackOrigin, player.position);
 
         if (distanceToPlayer > attackRange)
         {
@@ -68,35 +83,72 @@ public class BossController : MonoBehaviour
             if (attackTimer <= 0f)
             {
                 AttackPlayer();
+            
                 attackTimer = attackCooldown;
             }
         }
     }
 
+    private void FixedUpdate()
+    {
+        if(rb == null)
+        {
+            return;
+        }
+
+        Vector2 newPosition = rb.position + movementDirection * Time.fixedDeltaTime;
+        rb.MovePosition(newPosition);
+    }
+
     private void MoveTowardsPlayer()
     {
         Vector2 direction = (player.position - transform.position).normalized;
-        rb.linearVelocity = direction * moveSpeed;
+
+        movementDirection = direction;
+
+        UpdateFacingDirection(direction);
 
         if (animator != null)
         {
-        animator.SetBool("IsMoving", true);
+            animator.SetBool("IsMoving", true);
         }
     }
 
+    private void UpdateFacingDirection(Vector2 direction)
+    {
+        if (spriteRenderer == null)
+        {
+            return;
+        }
+
+        if(direction.x < -0.05f)
+        {
+            spriteRenderer.flipX = false;
+        }
+        else if (direction.x > 0.05f)
+        {
+            spriteRenderer.flipX = true;
+        }
+    }    
+
     private void StopMoving()
     {
-        rb.linearVelocity = Vector2.zero;
+        movementDirection = Vector2.zero;
 
         if (animator != null)
         {
-            animator.SetBool("IsMoving", false);
+        animator.SetBool("IsMoving", false);
         }
     }
 
     private void AttackPlayer()
     {
         Debug.Log("Boss attacks player");
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
 
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
 
@@ -108,6 +160,14 @@ public class BossController : MonoBehaviour
         {
             Debug.LogWarning("BossController: PlayerHealth script not found on player.");
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = attackCenter != null ? attackCenter.position : transform.position;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(origin, attackRange);
     }
 
     public void ActivateBoss()
