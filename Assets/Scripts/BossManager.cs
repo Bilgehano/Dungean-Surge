@@ -16,6 +16,9 @@ public class BossManager : MonoBehaviour
     [SerializeField] private bool bossFightActive;
     [SerializeField] private bool bossDefeated;
 
+    [Header("Boss UI")]
+    [SerializeField] private BossHealthBar bossHealthBar;
+
     public bool BossFightActive => bossFightActive;
     public bool BossDefeated => bossDefeated;
 
@@ -43,7 +46,8 @@ public class BossManager : MonoBehaviour
         BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
         if (bossHealth != null)
         {
-            bossHealth.bossManager = this;
+            bossHealth.SetBossManager(this);
+            bossHealth.SetBossHealthBar(bossHealthBar);
         }
         else
         {

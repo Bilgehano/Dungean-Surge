@@ -73,6 +73,12 @@ public class Player_Combat : MonoBehaviour
             {
                 enemyHealth.ChangeHealth(damageAmount);
             }
+
+            BossHealth bossHealth = enemies[i].GetComponentInParent<BossHealth>();
+            if (bossHealth != null)
+            {
+                bossHealth.ChangeHealth(damageAmount);
+            }
         }
     }
 

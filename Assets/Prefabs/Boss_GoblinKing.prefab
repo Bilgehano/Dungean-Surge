@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2258557027041497001}
   - component: {fileID: 9093170327061700792}
   - component: {fileID: 5856042372612952245}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Boss_GoblinKing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,9 +132,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss_Health
   maxHealth: 50
+  hurtStep: 25
+  deathAnimationDuration: 1.2
   currentHealth: 0
   isDead: 0
-  bossManager: {fileID: 0}
+  nextHurtThreshold: 0
 --- !u!61 &2258557027041497001
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -239,7 +241,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8991458504845995166}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BossAttackCenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
