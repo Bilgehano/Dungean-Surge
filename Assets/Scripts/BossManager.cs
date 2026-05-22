@@ -7,6 +7,8 @@ public class BossManager : MonoBehaviour
     public GameObject bossPrefab;
     public Transform bossSpawnPoint;
 
+
+
     [Header("Events")]
     public UnityEvent onBossFightStarted;
     public UnityEvent onBossDefeated;
@@ -55,6 +57,7 @@ public class BossManager : MonoBehaviour
         }
 
         BossController bossController = currentBoss.GetComponent<BossController>();
+
         if (bossController != null)
         {
             bossController.ActivateBoss();

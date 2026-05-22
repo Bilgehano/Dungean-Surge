@@ -113,12 +113,26 @@ MonoBehaviour:
   rb: {fileID: 0}
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
-  moveSpeed: 4
-  attackRange: 1.8
-  attackRadius: 1.8
+  bossHealth: {fileID: 0}
   attackCenter: {fileID: 8991458504845995166}
-  attackCooldown: 3
-  damageAmount: -3
+  moveSpeed: 2
+  normalAttackRange: 1.5
+  throwMinRange: 2
+  throwMaxRange: 7
+  heavyAttackRange: 2
+  stompAttackRange: 2.5
+  normalAttackCooldown: 2
+  throwAttackCooldown: 4
+  heavyAttackCooldown: 7
+  stompAttackCooldown: 7
+  normalAttackLockTime: 0.6
+  throwAttackLockTime: 0.8
+  heavyAttackLockTime: 1
+  stompAttackLockTime: 1.8
+  normalDamage: -3
+  throwDamage: -2
+  heavyDamage: -10
+  stompDamage: -5
 --- !u!114 &5097437447453705956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,12 +145,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ca1328bd1511984cafb6d921f83aa57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss_Health
-  maxHealth: 50
-  hurtStep: 25
-  deathAnimationDuration: 1.2
+  maxHealth: 100
+  healthSegments: 4
+  deathAnimationDuration: 1.5
   currentHealth: 0
   isDead: 0
   nextHurtThreshold: 0
+  currentPhase: 1
 --- !u!61 &2258557027041497001
 BoxCollider2D:
   m_ObjectHideFlags: 0

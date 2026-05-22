@@ -5,23 +5,35 @@ public class BossHealth : MonoBehaviour
 {
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
-    [SerializeField] private int hurtStep = 25;
+    [SerializeField] private int healthSegments = 4;
     [SerializeField] private float deathAnimationDuration = 1.2f;
 
     [Header("State (Read Only)")]
     [SerializeField] private int currentHealth;
     [SerializeField] private bool isDead;
     [SerializeField] private int nextHurtThreshold;
+    [SerializeField] private int currentPhase = 1;
 
     private BossManager bossManager;
     private BossHealthBar bossHealthBar;
     private Animator animator;
     private BossController bossController;
 
+    public int CurrentPhase => currentPhase;
+
+    private int HurtStep
+    {
+        get
+        {
+            return Mathf.Max(1, maxHealth / healthSegments);
+        }
+    }
+
     private void Awake()
     {
         currentHealth = maxHealth;
-        nextHurtThreshold = maxHealth - hurtStep;
+        nextHurtThreshold = maxHealth - HurtStep;
+        currentPhase = 1;
 
         animator = GetComponent<Animator>();
         bossController = GetComponent<BossController>();
@@ -42,6 +54,10 @@ public class BossHealth : MonoBehaviour
             bossHealthBar.SetHealth(currentHealth);
             bossHealthBar.Show();
         }
+        else
+        {
+            Debug.LogWarning("BossHealth: BossHealthBar is missing.");
+        }
     }
 
     public void ChangeHealth(int amount)
@@ -54,12 +70,14 @@ public class BossHealth : MonoBehaviour
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
+        UpdatePhase();
+
         if (bossHealthBar != null)
         {
             bossHealthBar.SetHealth(currentHealth);
         }
 
-        Debug.Log("Boss HP: " + currentHealth + "/" + maxHealth);
+        Debug.Log("Boss HP: " + currentHealth + "/" + maxHealth + " | Phase: " + currentPhase);
 
         if (currentHealth <= 0)
         {
@@ -73,8 +91,35 @@ public class BossHealth : MonoBehaviour
 
             while (currentHealth <= nextHurtThreshold && nextHurtThreshold > 0)
             {
-                nextHurtThreshold -= hurtStep;
+                nextHurtThreshold -= HurtStep;
             }
+        }
+    }
+
+    private void UpdatePhase()
+    {
+        int oldPhase = currentPhase;
+
+        if (currentHealth <= maxHealth * 0.25f)
+        {
+            currentPhase = 4;
+        }
+        else if (currentHealth <= maxHealth * 0.5f)
+        {
+            currentPhase = 3;
+        }
+        else if (currentHealth <= maxHealth * 0.75f)
+        {
+            currentPhase = 2;
+        }
+        else
+        {
+            currentPhase = 1;
+        }
+
+        if (oldPhase != currentPhase)
+        {
+            Debug.Log("Boss changed to phase " + currentPhase);
         }
     }
 
