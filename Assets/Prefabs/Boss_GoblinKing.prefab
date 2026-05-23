@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2258557027041497001}
   - component: {fileID: 9093170327061700792}
   - component: {fileID: 5856042372612952245}
+  - component: {fileID: -5293274656563247009}
   m_Layer: 7
   m_Name: Boss_GoblinKing
   m_TagString: Untagged
@@ -36,6 +37,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8991458504845995166}
+  - {fileID: 8690881554406998458}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2364037977920636888
@@ -113,26 +115,8 @@ MonoBehaviour:
   rb: {fileID: 0}
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
-  bossHealth: {fileID: 0}
   attackCenter: {fileID: 8991458504845995166}
   moveSpeed: 2
-  normalAttackRange: 1.5
-  throwMinRange: 2
-  throwMaxRange: 7
-  heavyAttackRange: 2
-  stompAttackRange: 2.5
-  normalAttackCooldown: 2
-  throwAttackCooldown: 4
-  heavyAttackCooldown: 7
-  stompAttackCooldown: 7
-  normalAttackLockTime: 0.6
-  throwAttackLockTime: 0.8
-  heavyAttackLockTime: 1
-  stompAttackLockTime: 1.8
-  normalDamage: -3
-  throwDamage: -2
-  heavyDamage: -10
-  stompDamage: -5
 --- !u!114 &5097437447453705956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +231,79 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-5293274656563247009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73681717534247103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7377435dbde4ac41bfcea5c20508872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossAttackController_GoblinKing
+  bossController: {fileID: 0}
+  bossHealth: {fileID: 0}
+  animator: {fileID: 0}
+  projectileSpawnPoint: {fileID: 8690881554406998458}
+  throwProjectilePrefab: {fileID: 434365836799160231, guid: 4718b11ca17f3094585a53a47b1ee02f, type: 3}
+  normalAttackRange: 1.5
+  throwMinRange: 2
+  throwMaxRange: 7
+  heavyAttackRange: 2
+  chargeStartMaxRange: 8
+  chargeDamageRadius: 1.4
+  chargeSpeed: 9
+  chargeStopDistance: 0.15
+  chargeWindupTime: 0.8
+  chargeMaxDuration: 1.5
+  chargeEndLag: 0.4
+  chargeCooldown: 8
+  normalAttackCooldown: 1.5
+  throwAttackCooldown: 4
+  heavyAttackCooldown: 7
+  normalAttackLockTime: 0.6
+  throwAttackLockTime: 0.8
+  heavyAttackLockTime: 1
+  throwTravelTime: 0.8
+  throwArcHeight: 1.2
+  throwImpactRadius: 0.8
+  normalDamage: -3
+  throwDamage: -2
+  heavyDamage: -10
+  chargeDamage: -8
+--- !u!1 &1832777123312940945
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8690881554406998458}
+  m_Layer: 7
+  m_Name: ProjectileSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8690881554406998458
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1832777123312940945}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1413149734218856543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6855545637085729549
 GameObject:
   m_ObjectHideFlags: 0

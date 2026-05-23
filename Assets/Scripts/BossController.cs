@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class BossController : MonoBehaviour
@@ -8,55 +7,33 @@ public class BossController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private BossHealth bossHealth;
     [SerializeField] private Transform attackCenter;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
 
-    [Header("Attack Ranges")]
-    [SerializeField] private float normalAttackRange = 1.5f;
-    [SerializeField] private float throwMinRange = 2f;
-    [SerializeField] private float throwMaxRange = 7f;
-    [SerializeField] private float heavyAttackRange = 2f;
-
-    [Header("Charge Attack")]
-    [SerializeField] private float chargeStartMaxRange = 8f;
-    [SerializeField] private float chargeDamageRadius = 1.4f;
-    [SerializeField] private float chargeSpeed = 9f;
-    [SerializeField] private float chargeStopDistance = 0.15f;
-    [SerializeField] private float chargeWindupTime = 0.8f;
-    [SerializeField] private float chargeMaxDuration = 1.5f;
-    [SerializeField] private float chargeEndLag = 0.4f;
-    [SerializeField] private float chargeCooldown = 8f;
-
-    [Header("Attack Cooldowns")]
-    [SerializeField] private float normalAttackCooldown = 1.5f;
-    [SerializeField] private float throwAttackCooldown = 4f;
-    [SerializeField] private float heavyAttackCooldown = 7f;
-
-    [Header("Attack Lock Times")]
-    [SerializeField] private float normalAttackLockTime = 0.6f;
-    [SerializeField] private float throwAttackLockTime = 0.8f;
-    [SerializeField] private float heavyAttackLockTime = 1.0f;
-
-    [Header("Damage")]
-    [SerializeField] private int normalDamage = -3;
-    [SerializeField] private int throwDamage = -2;
-    [SerializeField] private int heavyDamage = -10;
-    [SerializeField] private int chargeDamage = -8;
-
     private bool isActive = true;
-    private bool isAttacking;
-    private bool isCharging;
-
+    private bool movementEnabled = true;
     private Vector2 movementDirection;
-    private Vector2 chargeTargetPosition;
+    private float currentMoveSpeed;
 
-    private float nextNormalAttackTime;
-    private float nextThrowAttackTime;
-    private float nextHeavyAttackTime;
-    private float nextChargeAttackTime;
+    public Transform Player => player;
+    public Animator Animator => animator;
+    public bool HasPlayer => player != null;
+    public bool IsActive => isActive;
+
+    public Vector2 AttackOrigin
+    {
+        get
+        {
+            if (attackCenter != null)
+            {
+                return attackCenter.position;
+            }
+
+            return transform.position;
+        }
+    }
 
     private void Awake()
     {
@@ -75,10 +52,7 @@ public class BossController : MonoBehaviour
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        if (bossHealth == null)
-        {
-            bossHealth = GetComponent<BossHealth>();
-        }
+        currentMoveSpeed = moveSpeed;
     }
 
     private void Start()
@@ -104,19 +78,7 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        if (isAttacking)
-        {
-            if (!isCharging)
-            {
-                StopMoving();
-            }
-
-            return;
-        }
-
-        float distanceToPlayer = GetDistanceToPlayer();
-
-        if (TryStartAttack(distanceToPlayer))
+        if (!movementEnabled)
         {
             return;
         }
@@ -131,154 +93,56 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        float currentSpeed = isCharging ? chargeSpeed : moveSpeed;
-
-        Vector2 newPosition = rb.position + movementDirection * currentSpeed * Time.fixedDeltaTime;
+        Vector2 newPosition = rb.position + movementDirection * currentMoveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(newPosition);
     }
 
-    private float GetDistanceToPlayer()
+    public float GetDistanceToPlayer()
     {
-        Vector2 origin = attackCenter != null ? attackCenter.position : transform.position;
-        return Vector2.Distance(origin, player.position);
+        if (player == null)
+        {
+            return float.MaxValue;
+        }
+
+        return Vector2.Distance(AttackOrigin, player.position);
     }
 
-    private bool TryStartAttack(float distanceToPlayer)
+    public void SetMovementEnabled(bool enabled)
     {
-        int phase = bossHealth != null ? bossHealth.CurrentPhase : 1;
+        movementEnabled = enabled;
 
-        // Phase 4:
-        // If the charge is ready, the boss uses Sneer and charges to the player's last position.
-        if (phase >= 4 &&
-            Time.time >= nextChargeAttackTime &&
-            distanceToPlayer <= chargeStartMaxRange)
+        if (!movementEnabled)
         {
-            StartCoroutine(ChargeAttackRoutine());
-            nextChargeAttackTime = Time.time + chargeCooldown;
-            return true;
+            StopMoving();
         }
-
-        // Phase 2+:
-        // Throw attack is preferred when the player is further away.
-        if (phase >= 2 &&
-            Time.time >= nextThrowAttackTime &&
-            distanceToPlayer >= throwMinRange &&
-            distanceToPlayer <= throwMaxRange)
-        {
-            StartBossAttack("ThrowAttack", throwAttackLockTime);
-            nextThrowAttackTime = Time.time + throwAttackCooldown;
-            return true;
-        }
-
-        // Phase 3+:
-        // Heavy attack is used in close range with its own cooldown.
-        if (phase >= 3 &&
-            Time.time >= nextHeavyAttackTime &&
-            distanceToPlayer <= heavyAttackRange)
-        {
-            StartBossAttack("HeavyAttack", heavyAttackLockTime);
-            nextHeavyAttackTime = Time.time + heavyAttackCooldown;
-            return true;
-        }
-
-        // Phase 1+:
-        // Normal close-range attack.
-        if (Time.time >= nextNormalAttackTime &&
-            distanceToPlayer <= normalAttackRange)
-        {
-            StartBossAttack("NormalAttack", normalAttackLockTime);
-            nextNormalAttackTime = Time.time + normalAttackCooldown;
-            return true;
-        }
-
-        return false;
     }
 
-    private void StartBossAttack(string triggerName, float lockTime)
+    public void MoveTowardsPlayer()
     {
-        StopMoving();
-        isAttacking = true;
-
-        if (animator != null)
+        if (player == null)
         {
-            animator.SetTrigger(triggerName);
+            StopMoving();
+            return;
         }
 
-        StartCoroutine(AttackLockRoutine(lockTime));
-    }
-
-    private IEnumerator AttackLockRoutine(float lockTime)
-    {
-        yield return new WaitForSeconds(lockTime);
-        isAttacking = false;
-    }
-
-    private IEnumerator ChargeAttackRoutine()
-    {
-        StopMoving();
-        isAttacking = true;
-
-        // Save the player's current position.
-        // The boss will charge to this position, even if the player moves away.
-        chargeTargetPosition = player.position;
-
-        Vector2 directionToTarget = (chargeTargetPosition - (Vector2)transform.position).normalized;
-        UpdateFacingDirection(directionToTarget);
-
-        if (animator != null)
-        {
-            animator.SetTrigger("Sneer");
-        }
-
-        // Sneer / warning time before the charge starts.
-        yield return new WaitForSeconds(chargeWindupTime);
-
-        isCharging = true;
-
-        float chargeTimer = 0f;
-
-        while (chargeTimer < chargeMaxDuration)
-        {
-            Vector2 chargeOrigin = attackCenter != null ? attackCenter.position : transform.position;
-            Vector2 direction = chargeTargetPosition - chargeOrigin;
-
-            if (direction.magnitude <= chargeStopDistance)
-            {
-                break;
-            }
-
-            movementDirection = direction.normalized;
-            UpdateFacingDirection(movementDirection);
-
-            chargeTimer += Time.deltaTime;
-            yield return null;
-        }
-
-        isCharging = false;
-        StopMoving();
-
-        TryDamagePlayer(chargeDamageRadius, chargeDamage);
-
-        yield return new WaitForSeconds(chargeEndLag);
-
-        isAttacking = false;
-    }
-
-    private void MoveTowardsPlayer()
-    {
         Vector2 direction = (player.position - transform.position).normalized;
+        SetMovement(direction, moveSpeed, true);
+    }
 
-        movementDirection = direction;
+    public void SetMovement(Vector2 direction, float speed, bool useWalkAnimation)
+    {
+        movementDirection = direction.normalized;
+        currentMoveSpeed = speed;
 
-        UpdateFacingDirection(direction);
+        UpdateFacingDirection(movementDirection);
 
         if (animator != null)
         {
-            animator.SetBool("IsMoving", true);
+            animator.SetBool("IsMoving", useWalkAnimation && movementDirection != Vector2.zero);
         }
     }
 
-    private void StopMoving()
+    public void StopMoving()
     {
         movementDirection = Vector2.zero;
 
@@ -288,6 +152,12 @@ public class BossController : MonoBehaviour
         }
     }
 
+    public void FacePosition(Vector2 targetPosition)
+    {
+        Vector2 direction = targetPosition - (Vector2)transform.position;
+        UpdateFacingDirection(direction);
+    }
+
     private void UpdateFacingDirection(Vector2 direction)
     {
         if (spriteRenderer == null)
@@ -295,7 +165,6 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        // If the boss faces the wrong direction, swap true and false here.
         if (direction.x < -0.05f)
         {
             spriteRenderer.flipX = false;
@@ -306,39 +175,18 @@ public class BossController : MonoBehaviour
         }
     }
 
-    // Animation Event for normal attack hit frame
-    public void DealNormalDamage()
-    {
-        TryDamagePlayer(normalAttackRange, normalDamage);
-    }
-
-    // Animation Event for throw attack hit frame
-    // For now this is direct range damage.
-    // Later we can replace this with a projectile using Ball_attack4.
-    public void DealThrowDamage()
-    {
-        TryDamagePlayer(throwMaxRange, throwDamage);
-    }
-
-    // Animation Event for heavy attack hit frame
-    public void DealHeavyDamage()
-    {
-        TryDamagePlayer(heavyAttackRange, heavyDamage);
-    }
-
-    private void TryDamagePlayer(float range, int damage)
+    public bool TryDamagePlayer(float range, int damage)
     {
         if (player == null)
         {
-            return;
+            return false;
         }
 
-        Vector2 origin = attackCenter != null ? attackCenter.position : transform.position;
-        float distanceToPlayer = Vector2.Distance(origin, player.position);
+        float distanceToPlayer = Vector2.Distance(AttackOrigin, player.position);
 
         if (distanceToPlayer > range)
         {
-            return;
+            return false;
         }
 
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
@@ -346,42 +194,23 @@ public class BossController : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.ChangeHealth(damage);
+            return true;
         }
-        else
-        {
-            Debug.LogWarning("BossController: PlayerHealth script not found on player.");
-        }
+
+        Debug.LogWarning("BossController: PlayerHealth script not found on player.");
+        return false;
     }
 
     public void ActivateBoss()
     {
         isActive = true;
-        isAttacking = false;
-        isCharging = false;
+        movementEnabled = true;
     }
 
     public void DeactivateBoss()
     {
         isActive = false;
-        isAttacking = false;
-        isCharging = false;
+        movementEnabled = false;
         StopMoving();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Vector3 origin = attackCenter != null ? attackCenter.position : transform.position;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(origin, normalAttackRange);
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(origin, heavyAttackRange);
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(origin, throwMaxRange);
-
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(origin, chargeDamageRadius);
     }
 }
