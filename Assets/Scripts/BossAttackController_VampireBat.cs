@@ -86,8 +86,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
     {
         int phase = bossHealth != null ? bossHealth.CurrentPhase : 1;
 
-        // Phase 4: Future ranged/cast attack.
-        // This is disabled by default because we build the real ranged attack later.
         if (enableCastAttack &&
             phase >= 4 &&
             Time.time >= nextCastAttackTime &&
@@ -98,7 +96,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
             return true;
         }
 
-        // Phase 3+: Stomp attack.
         if (phase >= 3 &&
             Time.time >= nextStompAttackTime &&
             distanceToPlayer <= stompAttackRange)
@@ -108,7 +105,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
             return true;
         }
 
-        // Phase 2+: Heavy attack.
         if (phase >= 2 &&
             Time.time >= nextHeavyAttackTime &&
             distanceToPlayer <= heavyAttackRange)
@@ -118,7 +114,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
             return true;
         }
 
-        // Phase 1+: Normal attack.
         if (Time.time >= nextNormalAttackTime &&
             distanceToPlayer <= normalAttackRange)
         {
@@ -157,7 +152,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
         }
     }
 
-    // Animation Event: Normal attack hit frame
     public void DealNormalDamage()
     {
         if (bossController != null)
@@ -166,7 +160,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
         }
     }
 
-    // Animation Event: Heavy attack hit frame
     public void DealHeavyDamage()
     {
         if (bossController != null)
@@ -175,7 +168,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
         }
     }
 
-    // Animation Event: Stomp attack impact frame
     public void DealStompDamage()
     {
         if (bossController != null)
@@ -184,8 +176,6 @@ public class BossAttackController_VampireBat : MonoBehaviour
         }
     }
 
-    // Animation Event placeholder for the later ranged/cast attack.
-    // For now it only does simple range damage if enableCastAttack is active.
     public void DealCastDamage()
     {
         if (!enableCastAttack)

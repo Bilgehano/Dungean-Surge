@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
 
     public TMP_Text healthText;
     public Animator HealthBarAnimator;
+    [SerializeField] private PlayerStats playerStats;
     public AudioClip hurtSound;
     private AudioSource audioSource;
 
@@ -19,26 +20,72 @@ public class PlayerHealth : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        if (playerStats == null)
+        {
+            playerStats = GetComponent<PlayerStats>();
+        }
+
         currentHealth = maxHealth;
-        healthText.text = "HP: " + currentHealth + "/" + maxHealth;
+        RefreshHealthText();
     }
 
     public void ChangeHealth(int amount)
     {
-        HealthBarAnimator.Play("Type");
+        if (amount < 0 && playerStats != null)
+        {
+            int incomingDamage = Mathf.Abs(amount);
+
+            float reductionMultiplier = 1f - (playerStats.DefensePercent / 100f);
+            int reducedDamage = Mathf.CeilToInt(incomingDamage * reductionMultiplier);
+
+            // Every hit should still deal at least 1 damage.
+            reducedDamage = Mathf.Max(1, reducedDamage);
+
+            amount = -reducedDamage;
+        }
+
+        if (HealthBarAnimator != null)
+        {
+            HealthBarAnimator.Play("Type");
+        }
+    
+
         currentHealth += amount;
-        healthText.text = "HP: " + currentHealth + "/" + maxHealth;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        RefreshHealthText();
 
         if (amount < 0 && hurtSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(hurtSound);
         }
+    
 
         if (currentHealth <= 0)
         {
             Die();
         }
     }
+
+    public void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        RefreshHealthText();
+
+        Debug.Log("Max health upgraded to " + maxHealth);
+    }
+
+    private void RefreshHealthText()
+    {
+        if (healthText != null)
+        {
+            healthText.text = "HP: " + currentHealth + "/" + maxHealth;
+        }
+    }  
 
     public void Die()
     {

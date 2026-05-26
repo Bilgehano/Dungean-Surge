@@ -101,9 +101,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     {
         int phase = bossHealth != null ? bossHealth.CurrentPhase : 1;
 
-        // Phase 4:
-        // Charge has highest priority when it is ready.
-        // Boss sneers, saves the player's current position, then charges there.
         if (phase >= 4 &&
             Time.time >= nextChargeAttackTime &&
             distanceToPlayer <= chargeStartMaxRange)
@@ -113,8 +110,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             return true;
         }
 
-        // Phase 2+:
-        // Throw attack is preferred when the player is further away.
         if (phase >= 2 &&
             Time.time >= nextThrowAttackTime &&
             distanceToPlayer >= throwMinRange &&
@@ -125,8 +120,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             return true;
         }
 
-        // Phase 3+:
-        // Heavy attack in close range.
         if (phase >= 3 &&
             Time.time >= nextHeavyAttackTime &&
             distanceToPlayer <= heavyAttackRange)
@@ -136,8 +129,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             return true;
         }
 
-        // Phase 1+:
-        // Normal close-range attack.
         if (Time.time >= nextNormalAttackTime &&
             distanceToPlayer <= normalAttackRange)
         {
@@ -183,8 +174,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         bossController.SetMovementEnabled(false);
         bossController.StopMoving();
 
-        // Save the player's current position.
-        // The boss will charge to this position, even if the player moves away.
         chargeTargetPosition = bossController.Player.position;
 
         bossController.FacePosition(chargeTargetPosition);
@@ -194,7 +183,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             animator.SetTrigger("Sneer");
         }
 
-        // Sneer / warning time before the charge starts.
         yield return new WaitForSeconds(chargeWindupTime);
 
         isCharging = true;
@@ -213,7 +201,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
             bossController.SetMovement(direction.normalized, chargeSpeed, true);
 
-            // During the charge, damage the player once if he is inside the charge radius.
             if (!chargeAlreadyHitPlayer)
             {
                 bool didHit = bossController.TryDamagePlayer(chargeDamageRadius, chargeDamage);
@@ -242,7 +229,6 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         }
     }
 
-    // Animation Event: normal attack hit frame
     public void DealNormalDamage()
     {
         if (bossController != null)
@@ -251,13 +237,11 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         }
     }
 
-    // Animation Event: throw frame
     public void DealThrowDamage()
     {
         ThrowProjectile();
     }
 
-    // Animation Event: heavy attack hit frame
     public void DealHeavyDamage()
     {
         if (bossController != null)
@@ -278,9 +262,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             ? projectileSpawnPoint.position
             : transform.position;
 
-        // Important:
-        // This saves the player's current position only once.
-        // The projectile will fly to this old position and will not follow the player.
+
         Vector2 targetPosition = bossController.Player.position;
 
         bossController.FacePosition(targetPosition);
