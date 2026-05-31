@@ -928,7 +928,7 @@ GameObject:
   - component: {fileID: 185713908}
   - component: {fileID: 185713907}
   m_Layer: 5
-  m_Name: Icon
+  m_Name: IconImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2723,6 +2723,7 @@ RectTransform:
   - {fileID: 363677555}
   - {fileID: 165602649}
   - {fileID: 1800471491}
+  - {fileID: 1416875802}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5200,7 +5201,7 @@ GameObject:
   - component: {fileID: 795089066}
   - component: {fileID: 795089065}
   m_Layer: 5
-  m_Name: Icon
+  m_Name: IconImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34190,7 +34191,7 @@ GameObject:
   - component: {fileID: 991101180}
   - component: {fileID: 991101179}
   m_Layer: 5
-  m_Name: Icon
+  m_Name: IconImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38042,8 +38043,9 @@ GameObject:
   - component: {fileID: 1100697402}
   - component: {fileID: 1100697401}
   - component: {fileID: 1100697400}
+  - component: {fileID: 1100697404}
   m_Layer: 5
-  m_Name: UpgradeCard_Defense
+  m_Name: UpgradeCard_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38066,9 +38068,9 @@ RectTransform:
   - {fileID: 981055573}
   m_Father: {fileID: 1010692271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 600, y: -230}
   m_SizeDelta: {x: 300, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1100697400
@@ -38173,6 +38175,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1100697398}
   m_CullTransparentMesh: 1
+--- !u!114 &1100697404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100697398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd758b5aafd57448a826d12b094221a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeCardUI
+  iconImage: {fileID: 185713907}
+  titleText: {fileID: 1545542039}
+  descriptionText: {fileID: 981055574}
+  button: {fileID: 1100697400}
 --- !u!1 &1100725493
 GameObject:
   m_ObjectHideFlags: 0
@@ -38883,8 +38901,9 @@ GameObject:
   - component: {fileID: 1284244062}
   - component: {fileID: 1284244061}
   - component: {fileID: 1284244060}
+  - component: {fileID: 1284244064}
   m_Layer: 5
-  m_Name: UpgradeCard_Health
+  m_Name: UpgradeCard_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38907,9 +38926,9 @@ RectTransform:
   - {fileID: 904326854}
   m_Father: {fileID: 1010692271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 980, y: -230}
   m_SizeDelta: {x: 300, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1284244060
@@ -39014,6 +39033,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1284244058}
   m_CullTransparentMesh: 1
+--- !u!114 &1284244064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284244058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd758b5aafd57448a826d12b094221a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeCardUI
+  iconImage: {fileID: 795089065}
+  titleText: {fileID: 2069234991}
+  descriptionText: {fileID: 904326855}
+  button: {fileID: 1284244060}
 --- !u!1 &1293546503
 GameObject:
   m_ObjectHideFlags: 0
@@ -40835,6 +40870,89 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1025481825}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1416875801
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1416875802}
+  - component: {fileID: 1416875803}
+  m_Layer: 5
+  m_Name: UpgradeSystemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1416875802
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416875801}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 468093047}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1416875803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416875801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74288f51eaf954448ae1c2f69e5934ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeSelectionManager
+  levelManager: {fileID: 1538255402}
+  playerStats: {fileID: 1538255403}
+  upgradePanel: {fileID: 1800471490}
+  cardSlots:
+  - {fileID: 2080667373}
+  - {fileID: 1100697404}
+  - {fileID: 1284244064}
+  availableUpgrades:
+  - title: Attack Damage
+    description: Increases attack damage by +1
+    icon: {fileID: 8522996909961177882, guid: b869c60058d78d048932867f5d25a572, type: 3}
+    upgradeType: 0
+    value: 1
+  - title: Defense
+    description: Reduces incoming damage by 5%
+    icon: {fileID: -3421215016393661816, guid: f96a2a321c2265641af80aaf5b96f289, type: 3}
+    upgradeType: 1
+    value: 5
+  - title: Health
+    description: Increases max health by +5
+    icon: {fileID: -9169198992710935240, guid: ba8fa7962492f294bb877e6fa2e22d6e, type: 3}
+    upgradeType: 2
+    value: 5
+  - title: Speed
+    description: 'Increases movment speed by '
+    icon: {fileID: -6165712867082978324, guid: e6e2952a6bdb55446824eb513112d4b1, type: 3}
+    upgradeType: 3
+    value: 0
+  - title: Health Regeneration
+    description: Regenerates health over time
+    icon: {fileID: 1245465440762049945, guid: 559683fef2da0da4a82da865b9a2143f, type: 3}
+    upgradeType: 4
+    value: 0
+  cardsToShow: 3
+  pauseGameDuringSelection: 1
 --- !u!1 &1438128258
 GameObject:
   m_ObjectHideFlags: 0
@@ -54957,7 +55075,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1800471491
 RectTransform:
   m_ObjectHideFlags: 0
@@ -60427,7 +60545,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 15, y: -30, z: 0}
@@ -60977,7 +61095,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 6, y: -24, z: 0}
@@ -61065,7 +61183,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -9, y: -23, z: 0}
@@ -62121,7 +62239,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 27, y: -13, z: 0}
@@ -62165,7 +62283,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 29, y: -13, z: 0}
@@ -62407,7 +62525,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -27, y: -9, z: 0}
@@ -62495,7 +62613,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -23, y: -9, z: 0}
@@ -62737,7 +62855,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 18, y: -9, z: 0}
@@ -63665,7 +63783,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -12, y: -5, z: 0}
@@ -64629,7 +64747,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 21, y: -2, z: 0}
@@ -65374,7 +65492,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 19, y: 1, z: 0}
@@ -65506,7 +65624,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 27, y: 1, z: 0}
@@ -66056,7 +66174,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 38, y: 4, z: 0}
@@ -66210,7 +66328,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -25, y: 8, z: 0}
@@ -66980,7 +67098,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -26, y: 15, z: 0}
@@ -67420,7 +67538,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 17, y: 17, z: 0}
@@ -68286,7 +68404,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -29, y: 22, z: 0}
@@ -68513,7 +68631,7 @@ Tilemap:
       - {fileID: -691024590840829886, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
       - {fileID: -7658276157882494199, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
       - {fileID: 5390449017634418697, guid: d81d69f7d7a41cc45be210ab13101a22, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -24, y: 23, z: 0}
@@ -68535,7 +68653,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 15, y: 23, z: 0}
@@ -68884,7 +69002,7 @@ Tilemap:
       - {fileID: -8034513510692042630, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: 1024707267088520393, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
       - {fileID: -5952541215844301678, guid: 95c78ff9e1d211d4599a402187325eee, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 23, y: 25, z: 0}
@@ -69537,8 +69655,9 @@ GameObject:
   - component: {fileID: 2080667370}
   - component: {fileID: 2080667369}
   - component: {fileID: 2080667372}
+  - component: {fileID: 2080667373}
   m_Layer: 5
-  m_Name: UpgradeCard_Attack
+  m_Name: UpgradeCard_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69556,14 +69675,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 991101178}
   - {fileID: 694673772}
   - {fileID: 87599146}
+  - {fileID: 991101178}
   m_Father: {fileID: 1010692271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 220, y: -230}
   m_SizeDelta: {x: 300, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2080667369
@@ -69668,6 +69787,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2080667373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080667367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd758b5aafd57448a826d12b094221a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeCardUI
+  iconImage: {fileID: 991101179}
+  titleText: {fileID: 694673773}
+  descriptionText: {fileID: 87599147}
+  button: {fileID: 2080667372}
 --- !u!1 &2142236404
 GameObject:
   m_ObjectHideFlags: 0

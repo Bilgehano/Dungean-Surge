@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class UpgradeCardUI : MonoBehaviour
 {
     [Header("UI")]
+    [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private Button button;
@@ -16,6 +17,12 @@ public class UpgradeCardUI : MonoBehaviour
     {
         cardData = data;
         selectionManager = manager;
+
+        if (iconImage != null)
+        {
+            iconImage.sprite = data.icon;
+            iconImage.gameObject.SetActive(data.icon != null);
+        }
 
         if (titleText != null)
         {
