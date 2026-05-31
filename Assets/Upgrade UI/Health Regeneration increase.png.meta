@@ -112,12 +112,12 @@ TextureImporter:
       name: Health Regeneration increase_0
       rect:
         serializedVersion: 2
-        x: 741
-        y: 819
-        width: 146
-        height: 149
+        x: 0
+        y: 0
+        width: 1254
+        height: 1254
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -130,77 +130,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Health Regeneration increase_1
-      rect:
-        serializedVersion: 2
-        x: 906
-        y: 909
-        width: 106
-        height: 106
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 188f41ced72a871b0800000000000000
-      internalID: -5658594270075619199
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Health Regeneration increase_2
-      rect:
-        serializedVersion: 2
-        x: 313
-        y: 282
-        width: 699
-        height: 555
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c95c036e7d705fbe0800000000000000
-      internalID: -1444239481641056868
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Health Regeneration increase_3
-      rect:
-        serializedVersion: 2
-        x: 1247
-        y: 141
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3674d38b8f8486460800000000000000
-      internalID: 7235113034450814819
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: fafec65e09868d444bb17a3d23f1c089
     internalID: 0
     vertices: []
     indices: 
@@ -208,12 +142,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1254.0,"y":1254.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Health Regeneration increase_0: 1245465440762049945
-      Health Regeneration increase_1: -5658594270075619199
-      Health Regeneration increase_2: -1444239481641056868
-      Health Regeneration increase_3: 7235113034450814819
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
