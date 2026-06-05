@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 9093170327061700792}
   - component: {fileID: 5856042372612952245}
   - component: {fileID: -5293274656563247009}
-  m_Layer: 7
+  - component: {fileID: 5411810159495536869}
+  m_Layer: 11
   m_Name: Boss_GoblinKing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +171,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.08, y: -0.2}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -180,7 +181,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.64, y: 0.58}
+  m_Size: {x: 0.7, y: 0.5}
   m_EdgeRadius: 0
 --- !u!50 &9093170327061700792
 Rigidbody2D:
@@ -190,11 +191,11 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 73681717534247103}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 500
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
@@ -207,7 +208,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!95 &5856042372612952245
 Animator:
@@ -273,6 +274,25 @@ MonoBehaviour:
   throwDamage: -2
   heavyDamage: -10
   chargeDamage: -8
+--- !u!114 &5411810159495536869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73681717534247103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76f77eb2f082f7c4d8cbd3f72f3f19b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
+  contactDamage: -1
+  damageCooldown: 0.8
+  contactRadius: 1.5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  damageCenter: {fileID: 8991458504845995166}
 --- !u!1 &1832777123312940945
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +302,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8690881554406998458}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: ProjectileSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +333,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8991458504845995166}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: BossAttackCenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}

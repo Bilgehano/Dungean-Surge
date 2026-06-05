@@ -6,6 +6,7 @@ public class Player_Combat : MonoBehaviour
     public Transform attackPoint;
     public float attackRange = 0.5f;
     public LayerMask enemyLayer;
+    public LayerMask bossLayer;
     public int damageAmount = -1;
     public float timeBetweenAttacks = 1f;
 
@@ -51,7 +52,8 @@ public class Player_Combat : MonoBehaviour
             audioSource.PlayOneShot(missSound, 0.3f);
         }
 
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
+        int attackHitLayers = enemyLayer.value | bossLayer.value;
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, attackHitLayers);
 
         if (enemies.Length > 0)
         {
