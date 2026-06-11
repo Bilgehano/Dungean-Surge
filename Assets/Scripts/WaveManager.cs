@@ -43,22 +43,44 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int enemiesToSpawn;
 
     public int CurrentWaveNumber => currentWaveIndex + 1;
-public int TotalWaves => waves.Count;
+    public int TotalWaves => waves.Count;
     public int EnemiesAlive => enemiesAlive;
     public bool WaveActive => waveActive;
     public bool IsWaiting => isWaitingForNextWave;
     public float Countdown => currentCountdown;
 
+    private void Awake()
+    {
+    ResetWaveState();
+    }
+
+    private void ResetWaveState()
+    {  
+        currentWaveIndex = 0;
+        enemiesAlive = 0;
+        waveActive = false;
+        isWaitingForNextWave = false;
+        currentCountdown = 0f;
+        enemiesToSpawn = 0;
+    }
+
     void Start()
     {
-        if (waves.Count > 0)
+        ResetWaveState();
+
+        if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            StartCoroutine(WaveRoutine());
+        Debug.LogError("WaveManager: No spawn points assigned!", this);
+        return;
         }
-        else
+
+        if (waves == null || waves.Count == 0)
         {
-            Debug.LogError("WaveManager: No waves defined!", this);
+        Debug.LogError("WaveManager: No waves defined!", this);
+        return;
         }
+
+        StartCoroutine(WaveRoutine());
     }
 
     private IEnumerator WaveRoutine()
@@ -138,16 +160,32 @@ public int TotalWaves => waves.Count;
 
         for (int i = 0; i < entry.count; i++)
         {
-            SpawnEnemy(entry.prefab);
-            enemiesToSpawn--;
-            yield return new WaitForSeconds(entry.timeBetweenSpawns);
+            bool spawned = SpawnEnemy(entry.prefab);
+
+            if (!spawned)
+            {
+                Debug.LogWarning("WaveManager: Enemy could not be spawned.", this);
+            }
+
+        enemiesToSpawn--;
+        yield return new WaitForSeconds(entry.timeBetweenSpawns);
         }
     }
 
-    private void SpawnEnemy(GameObject prefab)
+    private bool SpawnEnemy(GameObject prefab)
     {
-        if (spawnPoints == null || spawnPoints.Length == 0) return;
-        
+        if (prefab == null)
+        {
+            Debug.LogWarning("WaveManager: Tried to spawn a missing prefab.", this);
+            return false;
+        }
+
+        if (spawnPoints == null || spawnPoints.Length == 0)
+        {
+            Debug.LogError("WaveManager: Cannot spawn enemy because no spawn points are assigned.", this);
+            return false;
+        }
+
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         GameObject enemy = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
@@ -156,13 +194,18 @@ public int TotalWaves => waves.Count;
         {
             health.waveManager = this;
         }
+        else
+        {
+            Debug.LogWarning("WaveManager: Spawned enemy has no Enemy_Health script.", enemy);
+        }
 
         enemiesAlive++;
+        return true;
     }
 
     public void OnEnemyDied()
     {
-        enemiesAlive--;
+        enemiesAlive = Mathf.Max(0, enemiesAlive - 1);
     }
 
     private void OnAllWavesComplete()
