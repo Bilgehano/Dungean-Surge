@@ -91,6 +91,8 @@ public class LevelEndManager : MonoBehaviour
             return;
         }
 
+        PlayerSessionData.Save();
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(nextSceneName);
     }

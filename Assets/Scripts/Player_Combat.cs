@@ -35,6 +35,11 @@ public class Player_Combat : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        if (PlayerSessionData.HasData)
+        {
+            damageAmount = PlayerSessionData.AttackDamage;
+        }
     }
 
     // Call this from the attack animation event on the hit frame.

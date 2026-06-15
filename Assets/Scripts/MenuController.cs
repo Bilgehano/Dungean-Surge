@@ -43,6 +43,7 @@ public class MenuController : MonoBehaviour
 
     public void NewGameDialogYes()
     {
+        PlayerSessionData.Reset();
         SceneManager.LoadScene(_newgameLevel);
     }
 

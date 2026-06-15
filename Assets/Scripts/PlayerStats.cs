@@ -19,6 +19,7 @@ public class PlayerStats : MonoBehaviour
     private Coroutine regenRoutine;
 
     public float DefensePercent => defensePercent;
+    public float HealthRegenAmount => healthRegenAmount;
 
     private void Awake()
     {
@@ -35,6 +36,20 @@ public class PlayerStats : MonoBehaviour
         if (playerCombat == null)
         {
             playerCombat = GetComponent<Player_Combat>();
+        }
+
+        if (PlayerSessionData.HasData)
+        {
+            defensePercent = Mathf.Clamp(
+                PlayerSessionData.DefensePercent,
+                0f,
+                maxDefensePercent
+            );
+
+            healthRegenAmount = Mathf.Max(
+                0f,
+            PlayerSessionData.HealthRegenAmount
+            );
         }
     }
 

@@ -18,6 +18,24 @@ public class LevelManager : MonoBehaviour
 
     private PlayerResources playerResources;
 
+    private void Awake()
+    {
+        if (PlayerSessionData.HasData)
+        {
+            currentLevel = Mathf.Max(
+                1,
+                PlayerSessionData.CurrentLevel
+            );
+
+            currentXP = Mathf.Max(
+                0,
+                PlayerSessionData.CurrentXP
+            );
+        }
+
+        UpdateLevelThreshold();
+    }
+
     private void Start()
     {
         playerResources = GetComponent<PlayerResources>();
@@ -34,7 +52,6 @@ public class LevelManager : MonoBehaviour
                 playerResources.OnGoldAdded += HandleGoldAdded;
             }
         }
-        UpdateLevelThreshold();
         // Initial progress
         onXPChanged?.Invoke((float)currentXP / xpToNextLevel);
     }

@@ -27,7 +27,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
-        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        spriteRenderers =
+            GetComponentsInChildren<SpriteRenderer>(true);
+
+        if (PlayerSessionData.HasData)
+        {
+            moveSpeed = PlayerSessionData.MoveSpeed;
+        }
     }
 
     void Start()

@@ -13,6 +13,28 @@ public class PlayerHealth : MonoBehaviour
     public AudioClip hurtSound;
     private AudioSource audioSource;
 
+
+    private void Awake()
+    {
+        if (PlayerSessionData.HasData)
+        {
+            maxHealth = Mathf.Max(
+                1,
+                PlayerSessionData.MaxHealth
+            );
+
+            currentHealth = Mathf.Clamp(
+                PlayerSessionData.CurrentHealth,
+                0,
+                maxHealth
+            );
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+    }
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -26,7 +48,6 @@ public class PlayerHealth : MonoBehaviour
             playerStats = GetComponent<PlayerStats>();
         }
 
-        currentHealth = maxHealth;
         RefreshHealthText();
     }
 
