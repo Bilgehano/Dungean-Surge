@@ -89,7 +89,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4067862218763591295, guid: 98b00497717f4074abb37be7e9274df0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -172,7 +172,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02, y: -0.3}
+  m_Offset: {x: 0.02, y: -0.25}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -182,7 +182,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.8, y: 0.3}
+  m_Size: {x: 0.8, y: 0.4}
   m_EdgeRadius: 0
 --- !u!50 &9093170327061700792
 Rigidbody2D:
@@ -309,9 +309,10 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
-  nodeSize: 0.5
+  nodeSize: 0.25
   gridHalfExtent: 16
-  obstacleCheckRadius: 0.9
+  bossCollider: {fileID: 2258557027041497001}
+  collisionPadding: 0.4
   repathInterval: 0.4
   playerMoveRepathThreshold: 0.75
   directPathCheckInterval: 0.15

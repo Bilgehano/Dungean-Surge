@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 673578877557752580}
   - component: {fileID: 5235032732678010256}
   - component: {fileID: 2261189723554363274}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Boss_VampireBat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -252,7 +252,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 65b00298344385346a56eed6cc891452, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -298,10 +298,10 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
-  nodeSize: 0.5
+  nodeSize: 0.1
   gridHalfExtent: 16
   bossCollider: {fileID: 1331316571379896187}
-  collisionPadding: 0.05
+  collisionPadding: 0.4
   repathInterval: 0.4
   playerMoveRepathThreshold: 0.75
   directPathCheckInterval: 0.15
@@ -318,7 +318,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7521503679892611056}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: BossAttackCenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
