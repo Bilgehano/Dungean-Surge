@@ -12,6 +12,8 @@ public class BossController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
 
+    private BossNavigation navigation;
+
     private bool isActive = true;
     private bool movementEnabled = true;
     private Vector2 movementDirection;
@@ -52,6 +54,8 @@ public class BossController : MonoBehaviour
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
+        navigation = GetComponent<BossNavigation>();
+
         currentMoveSpeed = moveSpeed;
     }
 
@@ -68,6 +72,11 @@ public class BossController : MonoBehaviour
         {
             Debug.LogWarning("BossController: No object with tag 'Player' found.");
         }
+
+        if (navigation != null)
+        {
+            navigation.ResetNavigation();
+        }
     }
 
     private void Update()
@@ -78,6 +87,7 @@ public class BossController : MonoBehaviour
             return;
         }
 
+        // Bei Angriffen und Charges steuert der Attack-Controller die Bewegung.
         if (!movementEnabled)
         {
             return;
@@ -88,12 +98,17 @@ public class BossController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rb == null)
+        if (rb == null || movementDirection.sqrMagnitude < 0.0001f)
         {
             return;
         }
 
-        Vector2 newPosition = rb.position + movementDirection * currentMoveSpeed * Time.fixedDeltaTime;
+        Vector2 newPosition =
+            rb.position +
+            movementDirection *
+            currentMoveSpeed *
+            Time.fixedDeltaTime;
+
         rb.MovePosition(newPosition);
     }
 
@@ -109,7 +124,17 @@ public class BossController : MonoBehaviour
 
     public void SetMovementEnabled(bool enabled)
     {
+        if (movementEnabled == enabled)
+        {
+            return;
+        }
+
         movementEnabled = enabled;
+
+        if (navigation != null)
+        {
+            navigation.ResetNavigation();
+        }
 
         if (!movementEnabled)
         {
@@ -125,20 +150,56 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        Vector2 direction = (player.position - transform.position).normalized;
-        SetMovement(direction, moveSpeed, true);
+        if (navigation != null)
+        {
+            bool foundDirection = navigation.TryGetMoveDirection(
+                player.position,
+                out Vector2 navigationDirection
+            );
+
+            if (foundDirection)
+            {
+                SetMovement(navigationDirection, moveSpeed, true);
+            }
+            else
+            {
+                StopMoving();
+            }
+
+            return;
+        }
+
+        // Falls BossNavigation fehlt:
+        // altes direktes Laufverhalten verwenden.
+        Vector2 directDirection =
+            (player.position - transform.position).normalized;
+
+        SetMovement(directDirection, moveSpeed, true);
     }
 
-    public void SetMovement(Vector2 direction, float speed, bool useWalkAnimation)
+    // Wird z. B. vom Charge-Angriff verwendet.
+    // Diese Bewegung nutzt absichtlich kein Pathfinding.
+    public void SetMovement(
+        Vector2 direction,
+        float speed,
+        bool useWalkAnimation)
     {
-        movementDirection = direction.normalized;
+        movementDirection =
+            direction.sqrMagnitude > 0.0001f
+                ? direction.normalized
+                : Vector2.zero;
+
         currentMoveSpeed = speed;
 
         UpdateFacingDirection(movementDirection);
 
         if (animator != null)
         {
-            animator.SetBool("IsMoving", useWalkAnimation && movementDirection != Vector2.zero);
+            animator.SetBool(
+                "IsMoving",
+                useWalkAnimation &&
+                movementDirection != Vector2.zero
+            );
         }
     }
 
@@ -154,7 +215,9 @@ public class BossController : MonoBehaviour
 
     public void FacePosition(Vector2 targetPosition)
     {
-        Vector2 direction = targetPosition - (Vector2)transform.position;
+        Vector2 direction =
+            targetPosition - (Vector2)transform.position;
+
         UpdateFacingDirection(direction);
     }
 
@@ -182,14 +245,18 @@ public class BossController : MonoBehaviour
             return false;
         }
 
-        float distanceToPlayer = Vector2.Distance(AttackOrigin, player.position);
+        float distance = Vector2.Distance(
+            AttackOrigin,
+            player.position
+        );
 
-        if (distanceToPlayer > range)
+        if (distance > range)
         {
             return false;
         }
 
-        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        PlayerHealth playerHealth =
+            player.GetComponent<PlayerHealth>();
 
         if (playerHealth != null)
         {
@@ -197,7 +264,10 @@ public class BossController : MonoBehaviour
             return true;
         }
 
-        Debug.LogWarning("BossController: PlayerHealth script not found on player.");
+        Debug.LogWarning(
+            "BossController: PlayerHealth script not found on player."
+        );
+
         return false;
     }
 
@@ -205,12 +275,23 @@ public class BossController : MonoBehaviour
     {
         isActive = true;
         movementEnabled = true;
+
+        if (navigation != null)
+        {
+            navigation.ResetNavigation();
+        }
     }
 
     public void DeactivateBoss()
     {
         isActive = false;
         movementEnabled = false;
+
+        if (navigation != null)
+        {
+            navigation.ResetNavigation();
+        }
+
         StopMoving();
     }
 }

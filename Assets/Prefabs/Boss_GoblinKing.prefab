@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 5856042372612952245}
   - component: {fileID: -5293274656563247009}
   - component: {fileID: 5411810159495536869}
+  - component: {fileID: 1270270850127387470}
   m_Layer: 11
   m_Name: Boss_GoblinKing
   m_TagString: Untagged
@@ -293,6 +294,31 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   damageCenter: {fileID: 8991458504845995166}
+--- !u!114 &1270270850127387470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73681717534247103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70b859564e350947ac60efce94ae087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossNavigation
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 8
+  nodeSize: 0.5
+  gridHalfExtent: 16
+  obstacleCheckRadius: 0.55
+  repathInterval: 0.4
+  playerMoveRepathThreshold: 0.75
+  directPathCheckInterval: 0.15
+  waypointReachDistance: 0.2
+  stuckVelocityThreshold: 0.05
+  stuckRepathDelay: 0.35
+  drawPathGizmos: 0
 --- !u!1 &1832777123312940945
 GameObject:
   m_ObjectHideFlags: 0
