@@ -5,11 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BossNavigation : MonoBehaviour
 {
+
     [Header("Pathfinding")]
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float nodeSize = 0.5f;
     [SerializeField] private int gridHalfExtent = 16;
-    [SerializeField] private float obstacleCheckRadius = 0.55f;
+
+    [Header("Boss Collision")]
+    [SerializeField] private BoxCollider2D bossCollider;
+    [SerializeField] private float collisionPadding = 0.05f;
 
     [Header("Repathing")]
     [SerializeField] private float repathInterval = 0.4f;
@@ -42,6 +46,22 @@ public class BossNavigation : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
 
+        if (bossCollider == null)
+        {
+            bossCollider = GetComponent<BoxCollider2D>();
+        }
+
+        if (bossCollider == null)
+        {
+            Debug.LogError(
+                "BossNavigation requires a BoxCollider2D component.",
+                this
+            );
+
+            enabled = false;
+            return;
+        }
+
         ValidateSettings();
         RefreshCachedValues();
         ResetNavigation();
@@ -49,6 +69,11 @@ public class BossNavigation : MonoBehaviour
 
     private void OnValidate()
     {
+        if (bossCollider == null)
+        {
+            bossCollider = GetComponent<BoxCollider2D>();
+        }
+
         ValidateSettings();
         RefreshCachedValues();
     }
@@ -206,15 +231,53 @@ public class BossNavigation : MonoBehaviour
             return true;
         }
 
-        RaycastHit2D hit = Physics2D.CircleCast(
-            from,
-            obstacleCheckRadius,
+        Vector2 colliderCenter =
+            from + GetColliderCenterOffset();
+
+        RaycastHit2D hit = Physics2D.BoxCast(
+            colliderCenter,
+            GetNavigationBoxSize(),
+            0f,
             direction / distance,
             distance,
             obstacleMask
         );
 
         return hit.collider == null;
+    }
+
+    private bool IsWalkable(Vector2 bodyPosition)
+    {
+        Collider2D hit = Physics2D.OverlapBox(
+            bodyPosition + GetColliderCenterOffset(),
+            GetNavigationBoxSize(),
+            0f,
+            obstacleMask
+        );
+
+        return hit == null;
+    }
+
+    private Vector2 GetColliderCenterOffset()
+    {
+        if (bossCollider == null || rb == null)
+        {
+            return Vector2.zero;
+        }
+
+        return (Vector2)bossCollider.bounds.center - rb.position;
+    }
+
+    private Vector2 GetNavigationBoxSize()
+    {
+        if (bossCollider == null)
+        {
+            return Vector2.one;
+        }
+
+        Vector2 colliderSize = bossCollider.bounds.size;
+
+        return colliderSize + Vector2.one * collisionPadding * 2f;
     }
 
     private List<Vector2> FindPathAStar(
@@ -236,11 +299,7 @@ public class BossNavigation : MonoBehaviour
                 Vector2 worldPosition =
                     GridToWorld(x, y, gridCenter);
 
-                bool walkable = !Physics2D.OverlapCircle(
-                    worldPosition,
-                    obstacleCheckRadius,
-                    obstacleMask
-                );
+                bool walkable = IsWalkable(worldPosition);
 
                 grid[x, y] = new PathNode(
                     x,
@@ -478,8 +537,7 @@ public class BossNavigation : MonoBehaviour
         nodeSize = Mathf.Max(0.1f, nodeSize);
         gridHalfExtent = Mathf.Max(2, gridHalfExtent);
 
-        obstacleCheckRadius =
-            Mathf.Max(0.05f, obstacleCheckRadius);
+        collisionPadding = Mathf.Max(0f, collisionPadding);
 
         repathInterval = Mathf.Max(0.05f, repathInterval);
 

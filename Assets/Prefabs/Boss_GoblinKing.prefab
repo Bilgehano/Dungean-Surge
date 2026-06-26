@@ -172,7 +172,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02, y: -0.15}
+  m_Offset: {x: 0.02, y: -0.3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -182,7 +182,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.6, y: 0.5}
+  m_Size: {x: 0.8, y: 0.3}
   m_EdgeRadius: 0
 --- !u!50 &9093170327061700792
 Rigidbody2D:
@@ -250,12 +250,12 @@ MonoBehaviour:
   animator: {fileID: 0}
   projectileSpawnPoint: {fileID: 8690881554406998458}
   throwProjectilePrefab: {fileID: 434365836799160231, guid: 4718b11ca17f3094585a53a47b1ee02f, type: 3}
-  normalAttackRange: 1.5
+  normalAttackRange: 1.8
   throwMinRange: 2
   throwMaxRange: 7
   heavyAttackRange: 2
   chargeStartMaxRange: 8
-  chargeDamageRadius: 1.4
+  chargeDamageRadius: 1.75
   chargeSpeed: 9
   chargeStopDistance: 0.15
   chargeWindupTime: 0.8
@@ -289,7 +289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
   contactDamage: -1
   damageCooldown: 0.8
-  contactRadius: 1.5
+  contactRadius: 1.7
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -311,7 +311,7 @@ MonoBehaviour:
     m_Bits: 8
   nodeSize: 0.5
   gridHalfExtent: 16
-  obstacleCheckRadius: 0.55
+  obstacleCheckRadius: 0.9
   repathInterval: 0.4
   playerMoveRepathThreshold: 0.75
   directPathCheckInterval: 0.15

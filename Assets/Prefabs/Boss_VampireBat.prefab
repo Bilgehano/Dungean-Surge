@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 730382684615429511}
   - component: {fileID: 673578877557752580}
   - component: {fileID: 5235032732678010256}
+  - component: {fileID: 2261189723554363274}
   m_Layer: 7
   m_Name: Boss_VampireBat
   m_TagString: Untagged
@@ -74,7 +75,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.14285713, y: -0.1428572}
+  m_Offset: {x: 0.14285713, y: -0.37}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -84,7 +85,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.7, y: 0.9}
+  m_Size: {x: 0.5, y: 0.4}
   m_EdgeRadius: 0
 --- !u!50 &-8081581806685275376
 Rigidbody2D:
@@ -282,6 +283,32 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   damageCenter: {fileID: 7521503679892611056}
+--- !u!114 &2261189723554363274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6361848014763510369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a70b859564e350947ac60efce94ae087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossNavigation
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 8
+  nodeSize: 0.5
+  gridHalfExtent: 16
+  bossCollider: {fileID: 1331316571379896187}
+  collisionPadding: 0.05
+  repathInterval: 0.4
+  playerMoveRepathThreshold: 0.75
+  directPathCheckInterval: 0.15
+  waypointReachDistance: 0.2
+  stuckVelocityThreshold: 0.05
+  stuckRepathDelay: 0.35
+  drawPathGizmos: 0
 --- !u!1 &9210805701737245114
 GameObject:
   m_ObjectHideFlags: 0
