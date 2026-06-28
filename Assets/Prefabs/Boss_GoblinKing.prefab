@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ca1328bd1511984cafb6d921f83aa57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss_Health
-  maxHealth: 100
+  maxHealth: 400
   healthSegments: 4
   deathAnimationDuration: 1.5
   currentHealth: 0
@@ -271,10 +271,10 @@ MonoBehaviour:
   throwTravelTime: 0.8
   throwArcHeight: 1.2
   throwImpactRadius: 0.8
-  normalDamage: -3
-  throwDamage: -2
-  heavyDamage: -10
-  chargeDamage: -8
+  normalDamage: -12
+  throwDamage: -10
+  heavyDamage: -25
+  chargeDamage: -20
 --- !u!114 &5411810159495536869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76f77eb2f082f7c4d8cbd3f72f3f19b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
-  contactDamage: -1
+  contactDamage: -5
   damageCooldown: 0.8
   contactRadius: 1.7
   playerLayer:
@@ -311,7 +311,8 @@ MonoBehaviour:
     m_Bits: 8
   nodeSize: 0.5
   gridHalfExtent: 16
-  obstacleCheckRadius: 0.9
+  bossCollider: {fileID: 2258557027041497001}
+  collisionPadding: 0.05
   repathInterval: 0.4
   playerMoveRepathThreshold: 0.75
   directPathCheckInterval: 0.15

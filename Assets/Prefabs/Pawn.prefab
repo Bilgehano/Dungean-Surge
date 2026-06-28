@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 735bbbd97cfbc2b46a58080854a8c1bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damageAmount: -1
+  damageAmount: -6
   AttackPoint: {fileID: 4303987124924493759}
   attackRange: 0.7
   playerLayer:
@@ -266,9 +266,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyResources
   drops:
   - prefab: {fileID: 6615473871641258494, guid: 88deaf036fa7653418d66afbb9b4d954, type: 3}
-    minCount: 1
-    maxCount: 1
-    dropChance: 0.49
+    minCount: 5
+    maxCount: 5
+    dropChance: 1
   dropScatterRadius: 0.25
   logDrops: 1
 --- !u!114 &944144545804485808
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bd3e09b3b0e9184f953c95559068d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Health
-  maxHealth: 1
+  maxHealth: 20
   currentHealth: 1
   enemyResources: {fileID: 5975450022008173569}
   waveManager: {fileID: 0}

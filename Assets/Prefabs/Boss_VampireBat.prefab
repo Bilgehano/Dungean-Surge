@@ -142,10 +142,10 @@ MonoBehaviour:
   heavyAttackLockTime: 0.9
   stompAttackLockTime: 1.2
   castAttackLockTime: 1.4
-  normalDamage: -2
-  heavyDamage: -5
-  stompDamage: -6
-  castDamage: -4
+  normalDamage: -15
+  heavyDamage: -30
+  stompDamage: -35
+  castDamage: -20
 --- !u!114 &-8276215433920364697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ca1328bd1511984cafb6d921f83aa57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
-  maxHealth: 100
+  maxHealth: 800
   healthSegments: 4
   deathAnimationDuration: 1.2
   currentHealth: 0
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76f77eb2f082f7c4d8cbd3f72f3f19b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
-  contactDamage: -1
+  contactDamage: -10
   damageCooldown: 0.8
   contactRadius: 1.8
   playerLayer:

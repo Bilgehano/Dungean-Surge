@@ -26,6 +26,9 @@ public class BossNavigation : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool drawPathGizmos;
 
+    [Header("Path Quality")]
+    [SerializeField] private bool smoothCalculatedPath = true;
+
     private Rigidbody2D rb;
 
     private List<Vector2> currentPath = new List<Vector2>();
@@ -171,12 +174,22 @@ public class BossNavigation : MonoBehaviour
             hasNoPath ||
             shouldForceStuckRepath)
         {
-            currentPath = FindPathAStar(
+            List<Vector2> newlyCalculatedPath = FindPathAStar(
                 currentPosition,
                 targetPosition
             );
 
-            currentWaypointIndex = 0;
+            if (newlyCalculatedPath.Count > 0)
+            {
+                currentPath = newlyCalculatedPath;
+                currentWaypointIndex = 0;
+            }
+            else if (hasNoPath)
+            {
+                currentPath.Clear();
+                currentWaypointIndex = 0;
+            }
+
             nextRepathTime = Time.time + repathInterval;
             lastRepathTargetPosition = targetPosition;
             stuckStartTime = -1f;
@@ -234,7 +247,7 @@ public class BossNavigation : MonoBehaviour
         Vector2 colliderCenter =
             from + GetColliderCenterOffset();
 
-        RaycastHit2D hit = Physics2D.BoxCast(
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(
             colliderCenter,
             GetNavigationBoxSize(),
             0f,
@@ -243,19 +256,57 @@ public class BossNavigation : MonoBehaviour
             obstacleMask
         );
 
-        return hit.collider == null;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hitCollider = hits[i].collider;
+
+            if (hitCollider == null)
+            {
+                continue;
+            }
+
+            if (bossCollider != null && hitCollider == bossCollider)
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     private bool IsWalkable(Vector2 bodyPosition)
     {
-        Collider2D hit = Physics2D.OverlapBox(
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
             bodyPosition + GetColliderCenterOffset(),
             GetNavigationBoxSize(),
-            0f,
-            obstacleMask
+            0f
         );
 
-        return hit == null;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hit = hits[i];
+
+            if (hit == null)
+            {
+                continue;
+            }
+
+            if (bossCollider != null && hit == bossCollider)
+            {
+                continue;
+            }
+
+            if (((1 << hit.gameObject.layer) & obstacleMask.value) == 0)
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     private Vector2 GetColliderCenterOffset()
@@ -359,10 +410,17 @@ public class BossNavigation : MonoBehaviour
 
             if (current == targetNode)
             {
-                return ReconstructPath(
+                List<Vector2> path = ReconstructPath(
                     startNode,
                     targetNode
                 );
+
+                if (smoothCalculatedPath && path.Count > 1)
+                {
+                    path = SmoothPath(path, startPosition);
+                }
+
+                return path;
             }
 
             openSet.Remove(current);
@@ -458,6 +516,40 @@ public class BossNavigation : MonoBehaviour
         return path;
     }
 
+    private List<Vector2> SmoothPath(
+        List<Vector2> rawPath,
+        Vector2 startPosition)
+    {
+        if (rawPath == null || rawPath.Count <= 1)
+        {
+            return rawPath;
+        }
+
+        List<Vector2> smoothedPath = new List<Vector2>();
+        Vector2 anchor = startPosition;
+        int index = 0;
+
+        while (index < rawPath.Count)
+        {
+            int furthestVisible = index;
+
+            for (int candidate = rawPath.Count - 1; candidate >= index; candidate--)
+            {
+                if (HasDirectPath(anchor, rawPath[candidate]))
+                {
+                    furthestVisible = candidate;
+                    break;
+                }
+            }
+
+            smoothedPath.Add(rawPath[furthestVisible]);
+            anchor = rawPath[furthestVisible];
+            index = furthestVisible + 1;
+        }
+
+        return smoothedPath;
+    }
+
     private Vector2 GridToWorld(
         int x,
         int y,
@@ -546,6 +638,9 @@ public class BossNavigation : MonoBehaviour
 
         waypointReachDistance =
             Mathf.Max(0.05f, waypointReachDistance);
+
+        playerMoveRepathThreshold =
+            Mathf.Max(0.05f, playerMoveRepathThreshold);
 
         stuckVelocityThreshold =
             Mathf.Max(0.01f, stuckVelocityThreshold);

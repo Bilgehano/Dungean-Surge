@@ -208,9 +208,42 @@ public class WaveManager : MonoBehaviour
         enemiesAlive = Mathf.Max(0, enemiesAlive - 1);
     }
 
+    public void StopWaveSpawning(bool removeAliveWaveEnemies = true)
+    {
+        StopAllCoroutines();
+
+        waveActive = false;
+        isWaitingForNextWave = false;
+        currentCountdown = 0f;
+        enemiesToSpawn = 0;
+
+        if (!removeAliveWaveEnemies)
+        {
+            return;
+        }
+
+        Enemy_Health[] enemies = Object.FindObjectsByType<Enemy_Health>(FindObjectsSortMode.None);
+        foreach (Enemy_Health enemy in enemies)
+        {
+            if (enemy == null || !enemy.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            if (enemy.waveManager != this)
+            {
+                continue;
+            }
+
+            enemy.ChangeHealth(-99999);
+        }
+
+        enemiesAlive = 0;
+    }
+
     private void OnAllWavesComplete()
     {
         Debug.Log("WaveManager: All waves completed! Triggering end function.");
         onAllWavesComplete?.Invoke();
     }
-    }
+}

@@ -88,7 +88,7 @@ public class LevelManager : MonoBehaviour
 
     private void UpdateLevelThreshold()
     {
-        // 10, 20, 30... 
-        xpToNextLevel = currentLevel * 10;
+        // 25, 50, 75... 
+        xpToNextLevel = currentLevel * 25;
     }
 }
