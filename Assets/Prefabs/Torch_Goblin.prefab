@@ -206,7 +206,7 @@ MonoBehaviour:
     m_Bits: 64
   knockbackForce: 8
   stunTime: 0.35
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: f79ce22694b4d477f8afbd48e2076561, type: 3}
 --- !u!114 &1921101213405698221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,7 +286,7 @@ MonoBehaviour:
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.15
   stunDuration: 0.5
-  hurtSound: {fileID: 0}
+  hurtSound: {fileID: 8300000, guid: ab25ce5192f3142b8b9e7e3623e13c2d, type: 3}
 --- !u!1 &9150474302615911997
 GameObject:
   m_ObjectHideFlags: 0

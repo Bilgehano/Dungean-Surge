@@ -81,7 +81,6 @@ public class BossManager : MonoBehaviour
     {
         bossFightActive = true;
 
-        // 1. Disable Player
         if (playerMovement != null) playerMovement.enabled = false;
         if (playerCombat != null) playerCombat.enabled = false;
         if (player != null)
@@ -90,7 +89,6 @@ public class BossManager : MonoBehaviour
             if (rb != null) rb.linearVelocity = Vector2.zero;
         }
 
-        // 2. Camera move to boss
         Transform originalTarget = null;
         if (cameraFollow != null)
         {
@@ -100,7 +98,6 @@ public class BossManager : MonoBehaviour
 
         yield return new WaitForSeconds(cameraTravelTime);
 
-        // 3. Start Blinking / Spawning
         if (cutsceneOverlay != null)
         {
             cutsceneOverlay.gameObject.SetActive(true);
@@ -109,7 +106,6 @@ public class BossManager : MonoBehaviour
             {
                 cutsceneOverlay.color = (Mathf.FloorToInt(Time.time * 10) % 2 == 0) ? blinkColor : Color.clear;
                 
-                // Spawn boss in the middle of blinking if not already there
                 if (currentBoss == null && blinkTimer > bossIntroTime * 0.3f)
                 {
                     SpawnBoss();
@@ -149,7 +145,6 @@ public class BossManager : MonoBehaviour
             yield break;
         }
 
-        // 4. Camera move back
         if (cameraFollow != null)
         {
             cameraFollow.target = originalTarget;
@@ -157,7 +152,6 @@ public class BossManager : MonoBehaviour
 
         yield return new WaitForSeconds(cameraTravelTime);
 
-        // 5. Enable Player
         if (playerMovement != null) playerMovement.enabled = true;
         if (playerCombat != null) playerCombat.enabled = true;
 
@@ -242,6 +236,12 @@ public class BossManager : MonoBehaviour
         bossFightActive = false;
         bossDefeated = true;
         currentBoss = null;
+
+        GameObject bgMusic = GameObject.Find("Background Music Ingame");
+        if (bgMusic != null)
+        {
+            Destroy(bgMusic);
+        }
 
         Debug.Log("BossManager: Boss defeated.");
 

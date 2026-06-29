@@ -16,7 +16,6 @@ public static class PlayerSessionData
     public static float DefensePercent { get; private set; }
     public static float HealthRegenAmount { get; private set; }
 
-    // Wird einmal beim Start eines neuen Play-Durchlaufs aufgerufen.
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetOnPlayStart()
     {
@@ -90,6 +89,11 @@ public static class PlayerSessionData
 
     public static void Reset()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.gameStartSound);
+        }
+
         HasData = false;
 
         CurrentLevel = 1;

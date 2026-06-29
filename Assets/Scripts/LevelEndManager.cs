@@ -10,7 +10,6 @@ public class LevelEndManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject levelCompletePanel;
 
-    [Tooltip("Level complete ekranı açılınca kapatılacak UI objeleri.")]
     [SerializeField] private GameObject[] uiObjectsToHide;
 
     [Header("Settings")]
@@ -45,6 +44,12 @@ public class LevelEndManager : MonoBehaviour
         {
             levelCompletePanel.SetActive(true);
             levelCompletePanel.transform.SetAsLastSibling();
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.victorySound);
         }
 
         if (pauseGameOnLevelComplete)

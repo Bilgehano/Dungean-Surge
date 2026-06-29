@@ -142,7 +142,7 @@ MonoBehaviour:
     m_Bits: 64
   knockbackForce: 4
   stunTime: 0.35
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: 6a1d8db6dd731449d8f0a8651f25969c, type: 3}
 --- !u!50 &1629176028605013387
 Rigidbody2D:
   serializedVersion: 5
@@ -251,7 +251,7 @@ MonoBehaviour:
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.15
   stunDuration: 0.5
-  hurtSound: {fileID: 0}
+  hurtSound: {fileID: 8300000, guid: 0615d7b922c0047a8a7732a2f91ec920, type: 3}
 --- !u!114 &5975450022008173569
 MonoBehaviour:
   m_ObjectHideFlags: 0
