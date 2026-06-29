@@ -89,7 +89,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4067862218763591295, guid: 98b00497717f4074abb37be7e9274df0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -118,7 +118,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   attackCenter: {fileID: 8991458504845995166}
-  moveSpeed: 2
+  moveSpeed: 3
 --- !u!114 &5097437447453705956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,6 +320,7 @@ MonoBehaviour:
   stuckVelocityThreshold: 0.05
   stuckRepathDelay: 0.35
   drawPathGizmos: 0
+  smoothCalculatedPath: 1
 --- !u!1 &1832777123312940945
 GameObject:
   m_ObjectHideFlags: 0

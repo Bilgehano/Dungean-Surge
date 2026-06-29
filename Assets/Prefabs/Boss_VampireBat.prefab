@@ -129,11 +129,11 @@ MonoBehaviour:
   bossController: {fileID: 0}
   bossHealth: {fileID: 0}
   animator: {fileID: 0}
-  normalAttackRange: 2.3
-  heavyAttackRange: 2.5
-  stompAttackRange: 5.5
+  normalAttackRange: 2.14
+  heavyAttackRange: 2.6
+  stompAttackRange: 5.57
   enableCastAttack: 0
-  castAttackRange: 7
+  castAttackRange: 6.92
   normalAttackCooldown: 1.5
   heavyAttackCooldown: 4
   stompAttackCooldown: 6
@@ -252,7 +252,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 65b00298344385346a56eed6cc891452, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -309,6 +309,7 @@ MonoBehaviour:
   stuckVelocityThreshold: 0.05
   stuckRepathDelay: 0.35
   drawPathGizmos: 0
+  smoothCalculatedPath: 1
 --- !u!1 &9210805701737245114
 GameObject:
   m_ObjectHideFlags: 0

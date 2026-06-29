@@ -40,6 +40,8 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [SerializeField] private float throwTravelTime = 0.8f;
     [SerializeField] private float throwArcHeight = 1.2f;
     [SerializeField] private float throwImpactRadius = 0.8f;
+    [SerializeField] private float throwAimLeadTime = 0.25f;
+    [SerializeField] private bool throwInStraightLine = true;
 
     [Header("Damage")]
     [SerializeField] private int normalDamage = -3;
@@ -265,6 +267,12 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         Vector2 targetPosition = bossController.Player.position;
 
+        Rigidbody2D playerRb = bossController.Player.GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            targetPosition += playerRb.linearVelocity * throwAimLeadTime;
+        }
+
         bossController.FacePosition(targetPosition);
 
         GameObject projectileObject = Instantiate(
@@ -277,11 +285,13 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         if (projectile != null)
         {
+            float arcHeight = throwInStraightLine ? 0f : throwArcHeight;
+
             projectile.Initialize(
                 spawnPosition,
                 targetPosition,
                 throwTravelTime,
-                throwArcHeight,
+                arcHeight,
                 throwImpactRadius,
                 throwDamage,
                 bossController.Player

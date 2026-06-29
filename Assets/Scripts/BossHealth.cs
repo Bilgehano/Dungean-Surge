@@ -14,10 +14,17 @@ public class BossHealth : MonoBehaviour
     [SerializeField] private int nextHurtThreshold;
     [SerializeField] private int currentPhase = 1;
 
+    [Header("Damage Feedback")]
+    [SerializeField] private Color damageFlashColor = new Color(1f, 0.25f, 0.25f, 1f);
+    [SerializeField] private float damageFlashDuration = 0.1f;
+
     private BossManager bossManager;
     private BossHealthBar bossHealthBar;
     private Animator animator;
     private BossController bossController;
+    private SpriteRenderer[] spriteRenderers;
+    private Color[] defaultColors;
+    private Coroutine damageFlashRoutine;
 
     public int CurrentPhase => currentPhase;
 
@@ -37,6 +44,13 @@ public class BossHealth : MonoBehaviour
 
         animator = GetComponent<Animator>();
         bossController = GetComponent<BossController>();
+
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        defaultColors = new Color[spriteRenderers.Length];
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            defaultColors[i] = spriteRenderers[i] != null ? spriteRenderers[i].color : Color.white;
+        }
     }
 
     public void SetBossManager(BossManager manager)
@@ -83,6 +97,11 @@ public class BossHealth : MonoBehaviour
         {
             StartCoroutine(DieRoutine());
             return;
+        }
+
+        if (amount < 0)
+        {
+            TriggerDamageFlash();
         }
 
         if (amount < 0 && currentHealth <= nextHurtThreshold)
@@ -165,5 +184,43 @@ public class BossHealth : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private void TriggerDamageFlash()
+    {
+        if (spriteRenderers == null || spriteRenderers.Length == 0)
+        {
+            return;
+        }
+
+        if (damageFlashRoutine != null)
+        {
+            StopCoroutine(damageFlashRoutine);
+        }
+
+        damageFlashRoutine = StartCoroutine(DamageFlashRoutine());
+    }
+
+    private IEnumerator DamageFlashRoutine()
+    {
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            if (spriteRenderers[i] != null)
+            {
+                spriteRenderers[i].color = damageFlashColor;
+            }
+        }
+
+        yield return new WaitForSeconds(Mathf.Max(0.02f, damageFlashDuration));
+
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            if (spriteRenderers[i] != null)
+            {
+                spriteRenderers[i].color = defaultColors[i];
+            }
+        }
+
+        damageFlashRoutine = null;
     }
 }
