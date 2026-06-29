@@ -26,16 +26,9 @@ public class Player_Combat : MonoBehaviour
     public GameObject hitEffectPrefab;
     public AudioClip hitSound;
     public AudioClip missSound;
-    private AudioSource audioSource;
 
     void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
         if (PlayerSessionData.HasData)
         {
             damageAmount = PlayerSessionData.AttackDamage;
@@ -52,9 +45,9 @@ public class Player_Combat : MonoBehaviour
         }
 
         // Play swing/miss sound every time at 30% volume
-        if (missSound != null && audioSource != null)
+        if (missSound != null && AudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(missSound, 0.3f);
+            AudioManager.Instance.PlaySFX(missSound, 0.3f);
         }
 
         int attackHitLayers = enemyLayer.value | bossLayer.value;
@@ -62,9 +55,9 @@ public class Player_Combat : MonoBehaviour
 
         if (enemies.Length > 0)
         {
-            if (hitSound != null && audioSource != null)
+            if (hitSound != null && AudioManager.Instance != null)
             {
-                audioSource.PlayOneShot(hitSound, 0.5f);
+                AudioManager.Instance.PlaySFX(hitSound, 0.5f);
             }
 
             if (hitEffectPrefab != null)

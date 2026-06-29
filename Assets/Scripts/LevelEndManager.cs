@@ -49,7 +49,7 @@ public class LevelEndManager : MonoBehaviour
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StopMusic();
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.victorySound);
+            AudioManager.Instance.PlayVictorySFX();
         }
 
         if (pauseGameOnLevelComplete)

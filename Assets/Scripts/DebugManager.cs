@@ -40,7 +40,7 @@ public class DebugManager : MonoBehaviour
     private void OnGUI()
     {
         int menuWidth = 500;
-        int menuHeight = 760;
+        int menuHeight = 940;
 
         int x = (Screen.width - menuWidth) / 2;
         int y = (Screen.height - menuHeight) / 2;
@@ -105,14 +105,24 @@ public class DebugManager : MonoBehaviour
             HealPlayer();
         }
 
+        if (GUI.Button(new Rect(x + 50, y + 630, 400, 70), "Kill Player", buttonStyle))
+        {
+            KillPlayer();
+        }
+
+        if (GUI.Button(new Rect(x + 50, y + 720, 400, 70), "Kill Boss", buttonStyle))
+        {
+            KillBoss();
+        }
+
         godMode = GUI.Toggle(
-            new Rect(x + 50, y + 630, 400, 50),
+            new Rect(x + 50, y + 810, 400, 50),
             godMode,
             " God Mode",
             toggleStyle
         );
 
-        if (GUI.Button(new Rect(x + 50, y + 690, 400, 50), "Close Menu", buttonStyle))
+        if (GUI.Button(new Rect(x + 50, y + 870, 400, 50), "Close Menu", buttonStyle))
         {
             showMenu = false;
         }
@@ -120,7 +130,7 @@ public class DebugManager : MonoBehaviour
     private void KillAllEnemies()
     {
         // Finds all active enemies and kills them to progress wave
-        Enemy_Health[] enemies = Object.FindObjectsByType<Enemy_Health>(FindObjectsSortMode.None);
+        Enemy_Health[] enemies = Object.FindObjectsByType<Enemy_Health>();
         foreach (var enemy in enemies)
         {
             enemy.ChangeHealth(-9999);
@@ -215,6 +225,32 @@ public class DebugManager : MonoBehaviour
         if (ph != null)
         {
             ph.ChangeHealth(999);
+        }
+    }
+
+    private void KillPlayer()
+    {
+        PlayerHealth ph = Object.FindAnyObjectByType<PlayerHealth>();
+        if (ph != null)
+        {
+            ph.Die();
+        }
+        else
+        {
+            Debug.LogWarning("DebugManager: PlayerHealth not found.");
+        }
+    }
+
+    private void KillBoss()
+    {
+        BossHealth bossHealth = Object.FindAnyObjectByType<BossHealth>();
+        if (bossHealth != null)
+        {
+            bossHealth.ChangeHealth(-999999);
+        }
+        else
+        {
+            Debug.LogWarning("DebugManager: BossHealth not found.");
         }
     }
 }

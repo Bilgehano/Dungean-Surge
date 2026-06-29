@@ -10,7 +10,6 @@ public class PlayerHealth : MonoBehaviour
     public Animator HealthBarAnimator;
     [SerializeField] private PlayerStats playerStats;
     public AudioClip hurtSound;
-    private AudioSource audioSource;
 
     [Header("Game Over Settings")]
     [SerializeField] private GameObject gameOverPanel;
@@ -30,12 +29,6 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
         if (playerStats == null)
         {
             playerStats = GetComponent<PlayerStats>();
@@ -65,9 +58,9 @@ public class PlayerHealth : MonoBehaviour
 
         RefreshHealthText();
 
-        if (amount < 0 && hurtSound != null && audioSource != null)
+        if (amount < 0 && hurtSound != null && AudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(hurtSound);
+            AudioManager.Instance.PlaySFX(hurtSound);
         }
 
         if (currentHealth <= 0)
@@ -96,7 +89,8 @@ public class PlayerHealth : MonoBehaviour
     {
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.endingSound);
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlayGameOverSFX();
         }
 
         if (gameOverPanel != null)

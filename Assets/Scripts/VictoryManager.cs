@@ -20,6 +20,12 @@ public class VictoryManager : MonoBehaviour
 
     private IEnumerator VictoryRoutine()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlayVictorySFX();
+        }
+
         if (healthBarUI != null)
         {
             healthBarUI.SetActive(false);
@@ -40,6 +46,8 @@ public class VictoryManager : MonoBehaviour
             victoryPanel.SetActive(true);
             victoryPanel.transform.SetAsLastSibling();
         }
+
+        Time.timeScale = 0f;
 
         yield return new WaitForSecondsRealtime(displayDuration);
 

@@ -91,7 +91,7 @@ public static class PlayerSessionData
     {
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.gameStartSound);
+            AudioManager.Instance.PlayGameStartSFX();
         }
 
         HasData = false;

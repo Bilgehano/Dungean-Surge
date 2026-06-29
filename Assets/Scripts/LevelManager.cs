@@ -90,7 +90,7 @@ public class LevelManager : MonoBehaviour
         
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.levelUpSound);
+            AudioManager.Instance.PlayLevelUpSFX();
         }
 
         Debug.Log("upgrade cart system");

@@ -12,7 +12,6 @@ public class Enemy_gethit : MonoBehaviour
     private Color originalColor = Color.white;
     private bool hasOriginalColor = false;
     private Enemy_Movement enemyMovement;
-    private AudioSource audioSource;
 
     void Start()
     {
@@ -39,14 +38,6 @@ public class Enemy_gethit : MonoBehaviour
         {
             enemyMovement = GetComponent<Enemy_Movement>();
         }
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-            if (audioSource == null)
-            {
-                audioSource = gameObject.AddComponent<AudioSource>();
-            }
-        }
     }
 
     public void TriggerHit()
@@ -59,9 +50,9 @@ public class Enemy_gethit : MonoBehaviour
             StartCoroutine(FlashRed());
         }
 
-        if (hurtSound != null && audioSource != null)
+        if (hurtSound != null && AudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(hurtSound);
+            AudioManager.Instance.PlaySFX(hurtSound);
         }
 
         if (enemyMovement != null)

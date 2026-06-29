@@ -16,7 +16,6 @@ public class BossManager : MonoBehaviour
     [SerializeField] private Color blinkColor = new Color(0, 0, 0, 0.8f);
 
     [Header("Boss Spawn Effects")]
-    [SerializeField] private AudioSource bossSpawnAudioSource;
     [SerializeField] private AudioClip bossSpawnSfx;
     [SerializeField] private float bossSpawnBlinkInterval = 0.08f;
     [SerializeField, Range(0f, 1f)] private float bossSpawnDelayRatio = 0.3f;
@@ -44,7 +43,6 @@ public class BossManager : MonoBehaviour
     private BossController spawnedBossController;
     private Coroutine bossSpawnBlinkRoutine;
     private bool bossIntroInProgress;
-    private AudioSource runtimeSpawnAudioSource;
 
     private void Awake()
     {
@@ -54,14 +52,21 @@ public class BossManager : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+
         if (player != null)
         {
             playerMovement = player.GetComponent<PlayerMovement>();
             playerCombat = player.GetComponent<Player_Combat>();
             playerRb = player.GetComponent<Rigidbody2D>();
+
+            Debug.Log("BossManager: Player found: " + player.name);
+        }
+        else
+        {
+            Debug.LogWarning("BossManager: Player was not found. Make sure your player has the tag 'Player'.");
         }
 
-        if (cameraFollow == null)
+        if (cameraFollow == null && Camera.main != null)
         {
             cameraFollow = Camera.main.GetComponent<CameraFollow>();
         }
@@ -78,12 +83,13 @@ public class BossManager : MonoBehaviour
 
         if (bossFightActive || bossDefeated)
         {
+            Debug.Log("BossManager: Boss fight already active or boss already defeated.");
             return;
         }
 
         if (bossPrefab == null || bossSpawnPoint == null)
         {
-            Debug.LogError("BossManager: Prefab or Spawn Point missing!");
+            Debug.LogError("BossManager: Boss Prefab or Boss Spawn Point is missing!");
             return;
         }
 
@@ -95,17 +101,40 @@ public class BossManager : MonoBehaviour
         bossFightActive = true;
         bossIntroInProgress = true;
 
-        // The boss encounter is considered started as soon as the cutscene begins.
+        Debug.Log("BossManager: Boss fight started. Trying to start boss music.");
+
+        // Boss music starts directly through AudioManager.
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBossMusic();
+            Debug.Log("BossManager: AudioManager.PlayBossMusic() was called.");
+        }
+        else
+        {
+            Debug.LogError("BossManager: AudioManager.Instance is NULL. Boss music cannot play.");
+        }
+
+        // Keep this event for other things if you need it.
+        // But boss music does not depend on this anymore.
         onBossFightStarted?.Invoke();
 
-        if (playerMovement != null) playerMovement.enabled = false;
-        if (playerCombat != null) playerCombat.enabled = false;
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = false;
+        }
+
+        if (playerCombat != null)
+        {
+            playerCombat.enabled = false;
+        }
+
         if (playerRb != null)
         {
             playerRb.linearVelocity = Vector2.zero;
         }
 
         Transform originalTarget = null;
+
         if (cameraFollow != null)
         {
             originalTarget = cameraFollow.target;
@@ -117,11 +146,14 @@ public class BossManager : MonoBehaviour
             cutsceneOverlay.gameObject.SetActive(true);
 
             float spawnDelayTime = bossIntroTime * Mathf.Clamp01(bossSpawnDelayRatio);
+            float blinkTimer = 0f;
 
-            float blinkTimer = 0;
             while (blinkTimer < bossIntroTime)
             {
-                cutsceneOverlay.color = (Mathf.FloorToInt(Time.time * 10) % 2 == 0) ? blinkColor : Color.clear;
+                cutsceneOverlay.color =
+                    Mathf.FloorToInt(Time.time * 10) % 2 == 0
+                        ? blinkColor
+                        : Color.clear;
 
                 if (currentBoss == null && blinkTimer >= spawnDelayTime)
                 {
@@ -143,6 +175,7 @@ public class BossManager : MonoBehaviour
         else
         {
             float spawnDelayTime = bossIntroTime * Mathf.Clamp01(bossSpawnDelayRatio);
+
             if (spawnDelayTime > 0f)
             {
                 yield return new WaitForSeconds(spawnDelayTime);
@@ -151,6 +184,7 @@ public class BossManager : MonoBehaviour
             SpawnBoss();
 
             float remainingIntroTime = Mathf.Max(0f, bossIntroTime - spawnDelayTime);
+
             if (remainingIntroTime > 0f)
             {
                 yield return new WaitForSeconds(remainingIntroTime);
@@ -166,11 +200,19 @@ public class BossManager : MonoBehaviour
                 cameraFollow.target = player != null ? player.transform : null;
             }
 
-            if (playerMovement != null) playerMovement.enabled = true;
-            if (playerCombat != null) playerCombat.enabled = true;
+            if (playerMovement != null)
+            {
+                playerMovement.enabled = true;
+            }
+
+            if (playerCombat != null)
+            {
+                playerCombat.enabled = true;
+            }
 
             bossIntroInProgress = false;
             bossFightActive = false;
+
             yield break;
         }
 
@@ -181,8 +223,15 @@ public class BossManager : MonoBehaviour
 
         yield return new WaitForSeconds(cameraTravelTime);
 
-        if (playerMovement != null) playerMovement.enabled = true;
-        if (playerCombat != null) playerCombat.enabled = true;
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = true;
+        }
+
+        if (playerCombat != null)
+        {
+            playerCombat.enabled = true;
+        }
 
         bossIntroInProgress = false;
 
@@ -223,18 +272,30 @@ public class BossManager : MonoBehaviour
         }
 
         BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
+
         if (bossHealth != null)
         {
             bossHealth.SetBossManager(this);
             bossHealth.SetBossHealthBar(bossHealthBar);
         }
+        else
+        {
+            Debug.LogWarning("BossManager: Spawned boss has no BossHealth component.");
+        }
 
         BossController bossController = currentBoss.GetComponent<BossController>();
+
         if (bossController != null)
         {
             spawnedBossController = bossController;
-            // Keep boss frozen during intro. It becomes active when cutscene ends.
+
+            // Boss stays frozen during intro.
+            // It becomes active after the cutscene.
             bossController.DeactivateBoss();
+        }
+        else
+        {
+            Debug.LogWarning("BossManager: Spawned boss has no BossController component.");
         }
 
         PlayBossSpawnSfx();
@@ -247,34 +308,19 @@ public class BossManager : MonoBehaviour
     {
         if (bossSpawnSfx == null)
         {
+            Debug.Log("BossManager: No boss spawn SFX assigned.");
             return;
         }
 
-        AudioSource source = GetSpawnAudioSource();
-        source.PlayOneShot(bossSpawnSfx);
-    }
-
-    private AudioSource GetSpawnAudioSource()
-    {
-        if (bossSpawnAudioSource != null)
+        if (AudioManager.Instance != null)
         {
-            return bossSpawnAudioSource;
+            AudioManager.Instance.PlaySFX(bossSpawnSfx);
+            Debug.Log("BossManager: Boss spawn SFX played.");
         }
-
-        if (runtimeSpawnAudioSource == null)
+        else
         {
-            runtimeSpawnAudioSource = gameObject.GetComponent<AudioSource>();
-            if (runtimeSpawnAudioSource == null)
-            {
-                runtimeSpawnAudioSource = gameObject.AddComponent<AudioSource>();
-            }
+            Debug.LogWarning("BossManager: AudioManager.Instance is null, boss spawn SFX could not be played.");
         }
-
-        runtimeSpawnAudioSource.playOnAwake = false;
-        runtimeSpawnAudioSource.loop = false;
-        runtimeSpawnAudioSource.spatialBlend = 0f;
-
-        return runtimeSpawnAudioSource;
     }
 
     private void StartBossSpawnBlink()
@@ -300,6 +346,7 @@ public class BossManager : MonoBehaviour
         }
 
         SpriteRenderer bossRenderer = boss.GetComponent<SpriteRenderer>();
+
         if (bossRenderer == null)
         {
             yield break;
@@ -313,6 +360,7 @@ public class BossManager : MonoBehaviour
         {
             visible = !visible;
             bossRenderer.enabled = visible;
+
             yield return wait;
         }
 
@@ -359,12 +407,6 @@ public class BossManager : MonoBehaviour
         bossDefeated = true;
         currentBoss = null;
         spawnedBossController = null;
-
-        GameObject bgMusic = GameObject.Find("Background Music Ingame");
-        if (bgMusic != null)
-        {
-            Destroy(bgMusic);
-        }
 
         Debug.Log("BossManager: Boss defeated.");
 
