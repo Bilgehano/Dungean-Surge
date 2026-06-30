@@ -12,9 +12,12 @@ public class LevelManager : MonoBehaviour
     public int currentXP = 0;
     public int xpToNextLevel = 10;
 
+    [Header("Level Music")]
+    [SerializeField] private AudioClip backgroundMusic;
+
     [Header("Events")]
     public UnityEvent<int> onLevelUp;
-    public System.Action<float> onXPChanged; // progress 0 to 1
+    public System.Action<float> onXPChanged;
 
     private PlayerResources playerResources;
 
@@ -38,6 +41,11 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        if (AudioManager.Instance != null && backgroundMusic != null)
+        {
+            AudioManager.Instance.PlayMusic(backgroundMusic, 0.25f);
+        }
+
         playerResources = GetComponent<PlayerResources>();
         if (playerResources != null)
         {
@@ -45,14 +53,12 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            // Try finding it in the scene if not on the same object
             playerResources = Object.FindAnyObjectByType<PlayerResources>();
             if (playerResources != null)
             {
                 playerResources.OnGoldAdded += HandleGoldAdded;
             }
         }
-        // Initial progress
         onXPChanged?.Invoke((float)currentXP / xpToNextLevel);
     }
 
@@ -82,13 +88,17 @@ public class LevelManager : MonoBehaviour
         currentLevel++;
         UpdateLevelThreshold();
         
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayLevelUpSFX();
+        }
+
         Debug.Log("upgrade cart system");
         onLevelUp?.Invoke(currentLevel);
     }
 
     private void UpdateLevelThreshold()
     {
-        // 10, 20, 30... 
-        xpToNextLevel = currentLevel * 10;
+        xpToNextLevel = currentLevel * 25;
     }
 }

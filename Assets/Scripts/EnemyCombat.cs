@@ -9,16 +9,6 @@ public class EnemyCombat : MonoBehaviour
     public float knockbackForce = 8f;
     public float stunTime = 0.35f;
     public AudioClip attackSound;
-    private AudioSource audioSource;
-
-    void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-    }
 
     // Call this from the attack animation event at the exact hit frame.
     public void DealDamageAtAttackFrame()
@@ -29,9 +19,9 @@ public class EnemyCombat : MonoBehaviour
             return;
         }
 
-        if (attackSound != null && audioSource != null)
+        if (attackSound != null && AudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(attackSound);
+            AudioManager.Instance.PlaySFX(attackSound);
         }
 
         Debug.Log("EnemyCombat: Attack frame event fired.", this);

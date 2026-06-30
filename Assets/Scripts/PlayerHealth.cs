@@ -6,28 +6,20 @@ public class PlayerHealth : MonoBehaviour
     public int maxHealth = 100;
     public int currentHealth;
 
-
     public TMP_Text healthText;
     public Animator HealthBarAnimator;
     [SerializeField] private PlayerStats playerStats;
     public AudioClip hurtSound;
-    private AudioSource audioSource;
 
+    [Header("Game Over Settings")]
+    [SerializeField] private GameObject gameOverPanel;
 
     private void Awake()
     {
         if (PlayerSessionData.HasData)
         {
-            maxHealth = Mathf.Max(
-                1,
-                PlayerSessionData.MaxHealth
-            );
-
-            currentHealth = Mathf.Clamp(
-                PlayerSessionData.CurrentHealth,
-                0,
-                maxHealth
-            );
+            maxHealth = Mathf.Max(1, PlayerSessionData.MaxHealth);
+            currentHealth = Mathf.Clamp(PlayerSessionData.CurrentHealth, 0, maxHealth);
         }
         else
         {
@@ -37,12 +29,6 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
         if (playerStats == null)
         {
             playerStats = GetComponent<PlayerStats>();
@@ -56,13 +42,9 @@ public class PlayerHealth : MonoBehaviour
         if (amount < 0 && playerStats != null)
         {
             int incomingDamage = Mathf.Abs(amount);
-
             float reductionMultiplier = 1f - (playerStats.DefensePercent / 100f);
             int reducedDamage = Mathf.CeilToInt(incomingDamage * reductionMultiplier);
-
-            // Every hit should still deal at least 1 damage.
             reducedDamage = Mathf.Max(1, reducedDamage);
-
             amount = -reducedDamage;
         }
 
@@ -71,17 +53,15 @@ public class PlayerHealth : MonoBehaviour
             HealthBarAnimator.Play("Type");
         }
     
-
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         RefreshHealthText();
 
-        if (amount < 0 && hurtSound != null && audioSource != null)
+        if (amount < 0 && hurtSound != null && AudioManager.Instance != null)
         {
-            audioSource.PlayOneShot(hurtSound);
+            AudioManager.Instance.PlaySFX(hurtSound);
         }
-    
 
         if (currentHealth <= 0)
         {
@@ -94,10 +74,7 @@ public class PlayerHealth : MonoBehaviour
         maxHealth += amount;
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-
         RefreshHealthText();
-
-        Debug.Log("Max health upgraded to " + maxHealth);
     }
 
     private void RefreshHealthText()
@@ -110,11 +87,20 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
-        // Handle player death (e.g., play animation, disable controls, etc.)
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlayGameOverSFX();
+        }
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+            gameOverPanel.transform.SetAsLastSibling();
+            Time.timeScale = 0f;
+        }
+
         Debug.Log("Player has died.");
         gameObject.SetActive(false);
     }
-
-
-
 }

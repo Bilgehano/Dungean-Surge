@@ -238,6 +238,59 @@ public class BossController : MonoBehaviour
         }
     }
 
+    // Rechteckiger Trefferbereich nur vor dem Boss.
+    public bool TryDamagePlayerInFront(
+        float range,
+        float width,
+        int damage)
+    {
+        if (player == null)
+        {
+            return false;
+        }
+
+        Vector2 toPlayer =
+            (Vector2)player.position - AttackOrigin;
+
+        // In eurem Setup: flipX = true bedeutet Blick nach rechts.
+        bool facesRight =
+            spriteRenderer != null &&
+            spriteRenderer.flipX;
+
+        float forwardDistance = facesRight
+            ? toPlayer.x
+            : -toPlayer.x;
+
+        // Player steht hinter dem Boss oder außerhalb der Reichweite.
+        if (forwardDistance < 0f ||
+            forwardDistance > range)
+        {
+            return false;
+        }
+
+        // Player steht zu weit oberhalb oder unterhalb des Angriffs.
+        if (Mathf.Abs(toPlayer.y) > width * 0.5f)
+        {
+            return false;
+        }
+
+        PlayerHealth playerHealth =
+            player.GetComponent<PlayerHealth>();
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning(
+                "BossController: PlayerHealth script not found on player."
+            );
+
+            return false;
+        }
+
+        playerHealth.ChangeHealth(damage);
+        return true;
+    }
+
+    // Alter Radius-Angriff: bleibt für Charge, Stomp usw. bestehen.
     public bool TryDamagePlayer(float range, int damage)
     {
         if (player == null)

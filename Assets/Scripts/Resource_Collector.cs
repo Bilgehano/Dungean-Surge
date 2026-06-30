@@ -67,7 +67,10 @@ public class Resource_Collector : MonoBehaviour
 
             if (collectSound != null)
             {
-                AudioSource.PlayClipAtPoint(collectSound, transform.position, collectVolume);
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySFX(collectSound, collectVolume);
+                }
             }
 
             Destroy(gameObject);

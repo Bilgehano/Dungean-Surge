@@ -84,6 +84,11 @@ public class UpgradeSelectionManager : MonoBehaviour
     {
         ApplyUpgrade(upgrade);
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayUpgradeChooseSFX();
+        }
+
         if (upgradePanel != null)
         {
             upgradePanel.SetActive(false);

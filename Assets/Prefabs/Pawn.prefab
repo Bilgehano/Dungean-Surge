@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 735bbbd97cfbc2b46a58080854a8c1bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damageAmount: -1
+  damageAmount: -6
   AttackPoint: {fileID: 4303987124924493759}
   attackRange: 0.7
   playerLayer:
@@ -142,7 +142,7 @@ MonoBehaviour:
     m_Bits: 64
   knockbackForce: 4
   stunTime: 0.35
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: 6a1d8db6dd731449d8f0a8651f25969c, type: 3}
 --- !u!50 &1629176028605013387
 Rigidbody2D:
   serializedVersion: 5
@@ -251,7 +251,7 @@ MonoBehaviour:
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.15
   stunDuration: 0.5
-  hurtSound: {fileID: 0}
+  hurtSound: {fileID: 8300000, guid: 0615d7b922c0047a8a7732a2f91ec920, type: 3}
 --- !u!114 &5975450022008173569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,9 +266,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyResources
   drops:
   - prefab: {fileID: 6615473871641258494, guid: 88deaf036fa7653418d66afbb9b4d954, type: 3}
-    minCount: 1
-    maxCount: 1
-    dropChance: 0.49
+    minCount: 5
+    maxCount: 5
+    dropChance: 1
   dropScatterRadius: 0.25
   logDrops: 1
 --- !u!114 &944144545804485808
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bd3e09b3b0e9184f953c95559068d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Health
-  maxHealth: 1
+  maxHealth: 20
   currentHealth: 1
   enemyResources: {fileID: 5975450022008173569}
   waveManager: {fileID: 0}

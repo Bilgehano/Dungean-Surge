@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 735bbbd97cfbc2b46a58080854a8c1bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damageAmount: -1
+  damageAmount: -10
   AttackPoint: {fileID: 1720763767654112829}
   attackRange: 1.4
   playerLayer:
@@ -206,7 +206,7 @@ MonoBehaviour:
     m_Bits: 64
   knockbackForce: 8
   stunTime: 0.35
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: f79ce22694b4d477f8afbd48e2076561, type: 3}
 --- !u!114 &1921101213405698221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,8 +221,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyResources
   drops:
   - prefab: {fileID: 6615473871641258494, guid: 88deaf036fa7653418d66afbb9b4d954, type: 3}
-    minCount: 1
-    maxCount: 3
+    minCount: 10
+    maxCount: 10
     dropChance: 1
   dropScatterRadius: 0.25
   logDrops: 1
@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bd3e09b3b0e9184f953c95559068d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Health
-  maxHealth: 3
+  maxHealth: 35
   currentHealth: 3
   enemyResources: {fileID: 1921101213405698221}
   waveManager: {fileID: 0}
@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d472ce61795996d40be601cce68c4ff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Movement
-  moveSpeed: 3
+  moveSpeed: 4
   attackCooldown: 0.25
   idleStateName: TorchGoblinIdle
   obstacleMask:
@@ -286,7 +286,7 @@ MonoBehaviour:
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.15
   stunDuration: 0.5
-  hurtSound: {fileID: 0}
+  hurtSound: {fileID: 8300000, guid: ab25ce5192f3142b8b9e7e3623e13c2d, type: 3}
 --- !u!1 &9150474302615911997
 GameObject:
   m_ObjectHideFlags: 0
