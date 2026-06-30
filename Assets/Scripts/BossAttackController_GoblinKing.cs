@@ -10,12 +10,16 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private GameObject throwProjectilePrefab;
 
-    [Header("Attack Ranges")]
-    [SerializeField] private float normalAttackRange = 1.5f;
-    [SerializeField] private float normalAttackWidth = 1.2f;
+    [Header("Attack Boxes")]
+    [SerializeField] private float normalAttackWidth = 1.5f;
+    [SerializeField] private float normalAttackHeight = 1.2f;
+
+    [SerializeField] private float heavyAttackWidth = 2f;
+    [SerializeField] private float heavyAttackHeight = 2.2f;
+
+    [Header("Throw Attack")]
     [SerializeField] private float throwMinRange = 2f;
     [SerializeField] private float throwMaxRange = 7f;
-    [SerializeField] private float heavyAttackRange = 2f;
 
     [Header("Charge Attack")]
     [SerializeField] private float chargeStartMaxRange = 8f;
@@ -35,7 +39,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [Header("Attack Lock Times")]
     [SerializeField] private float normalAttackLockTime = 0.6f;
     [SerializeField] private float throwAttackLockTime = 0.8f;
-    [SerializeField] private float heavyAttackLockTime = 1.0f;
+    [SerializeField] private float heavyAttackLockTime = 1f;
 
     [Header("Throw Projectile")]
     [SerializeField] private float throwTravelTime = 0.8f;
@@ -129,7 +133,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         if (phase >= 3 &&
             Time.time >= nextHeavyAttackTime &&
-            distanceToPlayer <= heavyAttackRange)
+            distanceToPlayer <= heavyAttackWidth)
         {
             StartBossAttack("HeavyAttack", heavyAttackLockTime);
             nextHeavyAttackTime = Time.time + heavyAttackCooldown;
@@ -137,7 +141,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         }
 
         if (Time.time >= nextNormalAttackTime &&
-            distanceToPlayer <= normalAttackRange)
+            distanceToPlayer <= normalAttackWidth)
         {
             StartBossAttack("NormalAttack", normalAttackLockTime);
             nextNormalAttackTime = Time.time + normalAttackCooldown;
@@ -156,9 +160,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         if (bossController.HasPlayer)
         {
-            bossController.FacePosition(
-                bossController.Player.position
-            );
+            bossController.FacePosition(bossController.Player.position);
         }
 
         if (animator != null)
@@ -256,8 +258,8 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         if (bossController != null)
         {
             bossController.TryDamagePlayerInFront(
-                normalAttackRange,
                 normalAttackWidth,
+                normalAttackHeight,
                 normalDamage
             );
         }
@@ -272,8 +274,9 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(
-                heavyAttackRange,
+            bossController.TryDamagePlayerInFront(
+                heavyAttackWidth,
+                heavyAttackHeight,
                 heavyDamage
             );
         }
@@ -355,13 +358,41 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             return;
         }
 
+        SpriteRenderer bossSpriteRenderer =
+            GetComponent<SpriteRenderer>();
+
+        bool facesRight = bossSpriteRenderer != null &&
+                          bossSpriteRenderer.flipX;
+
+        float direction = facesRight ? 1f : -1f;
+
         Vector3 origin = controller.AttackOrigin;
 
+        Vector3 normalAttackBoxCenter = origin +
+            Vector3.right * direction * (normalAttackWidth * 0.5f);
+
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(origin, normalAttackRange);
+        Gizmos.DrawWireCube(
+            normalAttackBoxCenter,
+            new Vector3(
+                normalAttackWidth,
+                normalAttackHeight,
+                0.1f
+            )
+        );
+
+        Vector3 heavyAttackBoxCenter = origin +
+            Vector3.right * direction * (heavyAttackWidth * 0.5f);
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(origin, heavyAttackRange);
+        Gizmos.DrawWireCube(
+            heavyAttackBoxCenter,
+            new Vector3(
+                heavyAttackWidth,
+                heavyAttackHeight,
+                0.1f
+            )
+        );
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(origin, throwMaxRange);

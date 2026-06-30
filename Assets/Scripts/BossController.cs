@@ -240,10 +240,9 @@ public class BossController : MonoBehaviour
         }
     }
 
-    // Rechteckiger Trefferbereich nur vor dem Boss.
     public bool TryDamagePlayerInFront(
-        float range,
         float width,
+        float height,
         int damage)
     {
         if (player == null)
@@ -263,12 +262,12 @@ public class BossController : MonoBehaviour
             : -toPlayer.x;
 
         if (forwardDistance < 0f ||
-            forwardDistance > range)
+            forwardDistance > width)
         {
             return false;
         }
 
-        if (Mathf.Abs(toPlayer.y) > width * 0.5f)
+        if (Mathf.Abs(toPlayer.y) > height * 0.5f)
         {
             return false;
         }
@@ -285,7 +284,6 @@ public class BossController : MonoBehaviour
         return true;
     }
 
-    // Kreisförmiger Angriff für Charge, Stomp usw.
     public bool TryDamagePlayer(float range, int damage)
     {
         if (player == null)

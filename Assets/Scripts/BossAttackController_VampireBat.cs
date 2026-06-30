@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BossAttackController_VampireBat : MonoBehaviour
 {
@@ -8,9 +9,18 @@ public class BossAttackController_VampireBat : MonoBehaviour
     [SerializeField] private BossHealth bossHealth;
     [SerializeField] private Animator animator;
 
-    [Header("Attack Ranges")]
-    [SerializeField] private float normalAttackRange = 1.4f;
-    [SerializeField] private float heavyAttackRange = 1.8f;
+    [Header("Attack Boxes")]
+    [FormerlySerializedAs("normalAttackRange")]
+    [SerializeField] private float normalAttackWidth = 1.4f;
+
+    [SerializeField] private float normalAttackHeight = 1.2f;
+
+    [FormerlySerializedAs("heavyAttackRange")]
+    [SerializeField] private float heavyAttackWidth = 1.8f;
+
+    [SerializeField] private float heavyAttackHeight = 2f;
+
+    [Header("Stomp Attack")]
     [SerializeField] private float stompAttackRange = 2.2f;
 
     [Header("Future Cast Attack")]
@@ -62,7 +72,9 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
     private void Update()
     {
-        if (bossController == null || !bossController.IsActive || !bossController.HasPlayer)
+        if (bossController == null ||
+            !bossController.IsActive ||
+            !bossController.HasPlayer)
         {
             return;
         }
@@ -84,7 +96,9 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
     private bool TryStartAttack(float distanceToPlayer)
     {
-        int phase = bossHealth != null ? bossHealth.CurrentPhase : 1;
+        int phase = bossHealth != null
+            ? bossHealth.CurrentPhase
+            : 1;
 
         if (enableCastAttack &&
             phase >= 4 &&
@@ -107,7 +121,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         if (phase >= 2 &&
             Time.time >= nextHeavyAttackTime &&
-            distanceToPlayer <= heavyAttackRange)
+            distanceToPlayer <= heavyAttackWidth)
         {
             StartBossAttack("HeavyAttack", heavyAttackLockTime);
             nextHeavyAttackTime = Time.time + heavyAttackCooldown;
@@ -115,7 +129,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
         }
 
         if (Time.time >= nextNormalAttackTime &&
-            distanceToPlayer <= normalAttackRange)
+            distanceToPlayer <= normalAttackWidth)
         {
             StartBossAttack("NormalAttack", normalAttackLockTime);
             nextNormalAttackTime = Time.time + normalAttackCooldown;
@@ -131,6 +145,11 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         bossController.SetMovementEnabled(false);
         bossController.StopMoving();
+
+        if (bossController.HasPlayer)
+        {
+            bossController.FacePosition(bossController.Player.position);
+        }
 
         if (animator != null)
         {
@@ -156,7 +175,11 @@ public class BossAttackController_VampireBat : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(normalAttackRange, normalDamage);
+            bossController.TryDamagePlayerInFront(
+                normalAttackWidth,
+                normalAttackHeight,
+                normalDamage
+            );
         }
     }
 
@@ -164,7 +187,11 @@ public class BossAttackController_VampireBat : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(heavyAttackRange, heavyDamage);
+            bossController.TryDamagePlayerInFront(
+                heavyAttackWidth,
+                heavyAttackHeight,
+                heavyDamage
+            );
         }
     }
 
@@ -172,7 +199,10 @@ public class BossAttackController_VampireBat : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(stompAttackRange, stompDamage);
+            bossController.TryDamagePlayer(
+                stompAttackRange,
+                stompDamage
+            );
         }
     }
 
@@ -185,26 +215,59 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(castAttackRange, castDamage);
+            bossController.TryDamagePlayer(
+                castAttackRange,
+                castDamage
+            );
         }
     }
 
     private void OnDrawGizmosSelected()
     {
-        BossController controller = bossController != null ? bossController : GetComponent<BossController>();
+        BossController controller = bossController != null
+            ? bossController
+            : GetComponent<BossController>();
 
         if (controller == null)
         {
             return;
         }
 
+        SpriteRenderer bossSpriteRenderer =
+            GetComponent<SpriteRenderer>();
+
+        bool facesRight = bossSpriteRenderer != null &&
+                          bossSpriteRenderer.flipX;
+
+        float direction = facesRight ? 1f : -1f;
+
         Vector3 origin = controller.AttackOrigin;
 
+        Vector3 normalAttackBoxCenter = origin +
+            Vector3.right * direction * (normalAttackWidth * 0.5f);
+
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(origin, normalAttackRange);
+        Gizmos.DrawWireCube(
+            normalAttackBoxCenter,
+            new Vector3(
+                normalAttackWidth,
+                normalAttackHeight,
+                0.1f
+            )
+        );
+
+        Vector3 heavyAttackBoxCenter = origin +
+            Vector3.right * direction * (heavyAttackWidth * 0.5f);
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(origin, heavyAttackRange);
+        Gizmos.DrawWireCube(
+            heavyAttackBoxCenter,
+            new Vector3(
+                heavyAttackWidth,
+                heavyAttackHeight,
+                0.1f
+            )
+        );
 
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(origin, stompAttackRange);
