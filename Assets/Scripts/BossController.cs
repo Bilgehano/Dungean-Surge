@@ -28,12 +28,9 @@ public class BossController : MonoBehaviour
     {
         get
         {
-            if (attackCenter != null)
-            {
-                return attackCenter.position;
-            }
-
-            return transform.position;
+            return attackCenter != null
+                ? attackCenter.position
+                : transform.position;
         }
     }
 
@@ -55,22 +52,23 @@ public class BossController : MonoBehaviour
         }
 
         navigation = GetComponent<BossNavigation>();
-
         currentMoveSpeed = moveSpeed;
     }
 
     private void Start()
     {
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        GameObject playerObject =
+            GameObject.FindGameObjectWithTag("Player");
 
         if (playerObject != null)
         {
             player = playerObject.transform;
-            Debug.Log("BossController: Player found: " + player.name);
         }
         else
         {
-            Debug.LogWarning("BossController: No object with tag 'Player' found.");
+            Debug.LogWarning(
+                "BossController: No object with tag 'Player' found."
+            );
         }
 
         if (navigation != null)
@@ -87,7 +85,6 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        // Bei Angriffen und Charges steuert der Attack-Controller die Bewegung.
         if (!movementEnabled)
         {
             return;
@@ -98,7 +95,8 @@ public class BossController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rb == null || movementDirection.sqrMagnitude < 0.0001f)
+        if (rb == null ||
+            movementDirection.sqrMagnitude < 0.0001f)
         {
             return;
         }
@@ -119,7 +117,10 @@ public class BossController : MonoBehaviour
             return float.MaxValue;
         }
 
-        return Vector2.Distance(AttackOrigin, player.position);
+        return Vector2.Distance(
+            AttackOrigin,
+            player.position
+        );
     }
 
     public void SetMovementEnabled(bool enabled)
@@ -152,14 +153,19 @@ public class BossController : MonoBehaviour
 
         if (navigation != null)
         {
-            bool foundDirection = navigation.TryGetMoveDirection(
-                player.position,
-                out Vector2 navigationDirection
-            );
+            bool foundDirection =
+                navigation.TryGetMoveDirection(
+                    player.position,
+                    out Vector2 navigationDirection
+                );
 
             if (foundDirection)
             {
-                SetMovement(navigationDirection, moveSpeed, true);
+                SetMovement(
+                    navigationDirection,
+                    moveSpeed,
+                    true
+                );
             }
             else
             {
@@ -169,16 +175,12 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        // Falls BossNavigation fehlt:
-        // altes direktes Laufverhalten verwenden.
         Vector2 directDirection =
             (player.position - transform.position).normalized;
 
         SetMovement(directDirection, moveSpeed, true);
     }
 
-    // Wird z. B. vom Charge-Angriff verwendet.
-    // Diese Bewegung nutzt absichtlich kein Pathfinding.
     public void SetMovement(
         Vector2 direction,
         float speed,
@@ -252,7 +254,6 @@ public class BossController : MonoBehaviour
         Vector2 toPlayer =
             (Vector2)player.position - AttackOrigin;
 
-        // In eurem Setup: flipX = true bedeutet Blick nach rechts.
         bool facesRight =
             spriteRenderer != null &&
             spriteRenderer.flipX;
@@ -261,14 +262,12 @@ public class BossController : MonoBehaviour
             ? toPlayer.x
             : -toPlayer.x;
 
-        // Player steht hinter dem Boss oder außerhalb der Reichweite.
         if (forwardDistance < 0f ||
             forwardDistance > range)
         {
             return false;
         }
 
-        // Player steht zu weit oberhalb oder unterhalb des Angriffs.
         if (Mathf.Abs(toPlayer.y) > width * 0.5f)
         {
             return false;
@@ -279,10 +278,6 @@ public class BossController : MonoBehaviour
 
         if (playerHealth == null)
         {
-            Debug.LogWarning(
-                "BossController: PlayerHealth script not found on player."
-            );
-
             return false;
         }
 
@@ -290,7 +285,7 @@ public class BossController : MonoBehaviour
         return true;
     }
 
-    // Alter Radius-Angriff: bleibt für Charge, Stomp usw. bestehen.
+    // Kreisförmiger Angriff für Charge, Stomp usw.
     public bool TryDamagePlayer(float range, int damage)
     {
         if (player == null)
@@ -311,17 +306,13 @@ public class BossController : MonoBehaviour
         PlayerHealth playerHealth =
             player.GetComponent<PlayerHealth>();
 
-        if (playerHealth != null)
+        if (playerHealth == null)
         {
-            playerHealth.ChangeHealth(damage);
-            return true;
+            return false;
         }
 
-        Debug.LogWarning(
-            "BossController: PlayerHealth script not found on player."
-        );
-
-        return false;
+        playerHealth.ChangeHealth(damage);
+        return true;
     }
 
     public void ActivateBoss()

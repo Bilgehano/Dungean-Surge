@@ -12,6 +12,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
     [Header("Attack Ranges")]
     [SerializeField] private float normalAttackRange = 1.5f;
+    [SerializeField] private float normalAttackWidth = 1.2f;
     [SerializeField] private float throwMinRange = 2f;
     [SerializeField] private float throwMaxRange = 7f;
     [SerializeField] private float heavyAttackRange = 2f;
@@ -79,7 +80,9 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
     private void Update()
     {
-        if (bossController == null || !bossController.IsActive || !bossController.HasPlayer)
+        if (bossController == null ||
+            !bossController.IsActive ||
+            !bossController.HasPlayer)
         {
             return;
         }
@@ -101,7 +104,9 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
     private bool TryStartAttack(float distanceToPlayer)
     {
-        int phase = bossHealth != null ? bossHealth.CurrentPhase : 1;
+        int phase = bossHealth != null
+            ? bossHealth.CurrentPhase
+            : 1;
 
         if (phase >= 4 &&
             Time.time >= nextChargeAttackTime &&
@@ -149,6 +154,13 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         bossController.SetMovementEnabled(false);
         bossController.StopMoving();
 
+        if (bossController.HasPlayer)
+        {
+            bossController.FacePosition(
+                bossController.Player.position
+            );
+        }
+
         if (animator != null)
         {
             animator.SetTrigger(triggerName);
@@ -194,18 +206,26 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         while (chargeTimer < chargeMaxDuration)
         {
-            Vector2 direction = chargeTargetPosition - bossController.AttackOrigin;
+            Vector2 direction =
+                chargeTargetPosition - bossController.AttackOrigin;
 
             if (direction.magnitude <= chargeStopDistance)
             {
                 break;
             }
 
-            bossController.SetMovement(direction.normalized, chargeSpeed, true);
+            bossController.SetMovement(
+                direction.normalized,
+                chargeSpeed,
+                true
+            );
 
             if (!chargeAlreadyHitPlayer)
             {
-                bool didHit = bossController.TryDamagePlayer(chargeDamageRadius, chargeDamage);
+                bool didHit = bossController.TryDamagePlayer(
+                    chargeDamageRadius,
+                    chargeDamage
+                );
 
                 if (didHit)
                 {
@@ -235,7 +255,11 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(normalAttackRange, normalDamage);
+            bossController.TryDamagePlayerInFront(
+                normalAttackRange,
+                normalAttackWidth,
+                normalDamage
+            );
         }
     }
 
@@ -248,15 +272,24 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(heavyAttackRange, heavyDamage);
+            bossController.TryDamagePlayer(
+                heavyAttackRange,
+                heavyDamage
+            );
         }
     }
 
     private void ThrowProjectile()
     {
-        if (throwProjectilePrefab == null || bossController == null || !bossController.HasPlayer)
+        if (throwProjectilePrefab == null ||
+            bossController == null ||
+            !bossController.HasPlayer)
         {
-            Debug.LogWarning("BossAttackController_GoblinKing: Throw projectile prefab or player is missing.");
+            Debug.LogWarning(
+                "BossAttackController_GoblinKing: " +
+                "Throw projectile prefab or player is missing."
+            );
+
             return;
         }
 
@@ -264,13 +297,15 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             ? projectileSpawnPoint.position
             : transform.position;
 
-
         Vector2 targetPosition = bossController.Player.position;
 
-        Rigidbody2D playerRb = bossController.Player.GetComponent<Rigidbody2D>();
+        Rigidbody2D playerRb =
+            bossController.Player.GetComponent<Rigidbody2D>();
+
         if (playerRb != null)
         {
-            targetPosition += playerRb.linearVelocity * throwAimLeadTime;
+            targetPosition +=
+                playerRb.linearVelocity * throwAimLeadTime;
         }
 
         bossController.FacePosition(targetPosition);
@@ -281,11 +316,14 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             Quaternion.identity
         );
 
-        BossProjectile projectile = projectileObject.GetComponent<BossProjectile>();
+        BossProjectile projectile =
+            projectileObject.GetComponent<BossProjectile>();
 
         if (projectile != null)
         {
-            float arcHeight = throwInStraightLine ? 0f : throwArcHeight;
+            float arcHeight = throwInStraightLine
+                ? 0f
+                : throwArcHeight;
 
             projectile.Initialize(
                 spawnPosition,
@@ -299,13 +337,18 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("BossAttackController_GoblinKing: Projectile prefab has no BossProjectile script.");
+            Debug.LogWarning(
+                "BossAttackController_GoblinKing: " +
+                "Projectile prefab has no BossProjectile script."
+            );
         }
     }
 
     private void OnDrawGizmosSelected()
     {
-        BossController controller = bossController != null ? bossController : GetComponent<BossController>();
+        BossController controller = bossController != null
+            ? bossController
+            : GetComponent<BossController>();
 
         if (controller == null)
         {
