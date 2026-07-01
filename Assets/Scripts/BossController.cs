@@ -313,6 +313,52 @@ public class BossController : MonoBehaviour
         return true;
     }
 
+    public bool TryDamagePlayerInEllipse(
+        float width,
+        float height,
+        int damage)
+    {
+        if (player == null)
+        {
+            return false;
+        }
+
+        float horizontalRadius = Mathf.Max(
+            width * 0.5f,
+            0.01f
+        );
+
+        float verticalRadius = Mathf.Max(
+            height * 0.5f,
+            0.01f
+        );
+
+        Vector2 offset =
+            (Vector2)player.position - AttackOrigin;
+
+        float ellipseValue =
+            (offset.x * offset.x) /
+            (horizontalRadius * horizontalRadius) +
+            (offset.y * offset.y) /
+            (verticalRadius * verticalRadius);
+
+        if (ellipseValue > 1f)
+        {
+            return false;
+        }
+
+        PlayerHealth playerHealth =
+            player.GetComponent<PlayerHealth>();
+
+        if (playerHealth == null)
+        {
+            return false;
+        }
+
+        playerHealth.ChangeHealth(damage);
+        return true;
+    }
+
     public void ActivateBoss()
     {
         isActive = true;

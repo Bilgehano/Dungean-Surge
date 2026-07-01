@@ -7,52 +7,47 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [SerializeField] private BossController bossController;
     [SerializeField] private BossHealth bossHealth;
     [SerializeField] private Animator animator;
-    [SerializeField] private Transform projectileSpawnPoint;
-    [SerializeField] private GameObject throwProjectilePrefab;
 
-    [Header("Attack Boxes")]
+    [Header("Normal Attack")]
+    [SerializeField] private int normalDamage = -3;
     [SerializeField] private float normalAttackWidth = 1.5f;
     [SerializeField] private float normalAttackHeight = 1.2f;
+    [SerializeField] private float normalAttackCooldown = 1.5f;
+    [SerializeField] private float normalAttackLockTime = 0.6f;
 
+    [Header("Heavy Attack")]
+    [SerializeField] private int heavyDamage = -10;
     [SerializeField] private float heavyAttackWidth = 2f;
     [SerializeField] private float heavyAttackHeight = 2.2f;
-
-    [Header("Throw Attack")]
-    [SerializeField] private float throwMinRange = 2f;
-    [SerializeField] private float throwMaxRange = 7f;
-
-    [Header("Charge Attack")]
-    [SerializeField] private float chargeStartMaxRange = 8f;
-    [SerializeField] private float chargeDamageRadius = 1.4f;
-    [SerializeField] private float chargeSpeed = 9f;
-    [SerializeField] private float chargeStopDistance = 0.15f;
-    [SerializeField] private float chargeWindupTime = 0.8f;
-    [SerializeField] private float chargeMaxDuration = 1.5f;
-    [SerializeField] private float chargeEndLag = 0.4f;
-    [SerializeField] private float chargeCooldown = 8f;
-
-    [Header("Attack Cooldowns")]
-    [SerializeField] private float normalAttackCooldown = 1.5f;
-    [SerializeField] private float throwAttackCooldown = 4f;
     [SerializeField] private float heavyAttackCooldown = 7f;
-
-    [Header("Attack Lock Times")]
-    [SerializeField] private float normalAttackLockTime = 0.6f;
-    [SerializeField] private float throwAttackLockTime = 0.8f;
     [SerializeField] private float heavyAttackLockTime = 1f;
 
-    [Header("Throw Projectile")]
+    [Header("Throw Attack")]
+    [SerializeField] private int throwDamage = -2;
+    [SerializeField] private float throwMinRange = 2f;
+    [SerializeField] private float throwMaxRange = 7f;
+    [SerializeField] private float throwAttackCooldown = 4f;
+    [SerializeField] private float throwAttackLockTime = 0.8f;
+
+    [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private GameObject throwProjectilePrefab;
     [SerializeField] private float throwTravelTime = 0.8f;
     [SerializeField] private float throwArcHeight = 1.2f;
     [SerializeField] private float throwImpactRadius = 0.8f;
     [SerializeField] private float throwAimLeadTime = 0.25f;
     [SerializeField] private bool throwInStraightLine = true;
 
-    [Header("Damage")]
-    [SerializeField] private int normalDamage = -3;
-    [SerializeField] private int throwDamage = -2;
-    [SerializeField] private int heavyDamage = -10;
+    [Header("Charge Attack")]
     [SerializeField] private int chargeDamage = -8;
+    [SerializeField] private float chargeDamageRadius = 1.4f;
+    [SerializeField] private float chargeCooldown = 8f;
+
+    [SerializeField] private float chargeStartMaxRange = 8f;
+    [SerializeField] private float chargeSpeed = 9f;
+    [SerializeField] private float chargeStopDistance = 0.15f;
+    [SerializeField] private float chargeWindupTime = 0.8f;
+    [SerializeField] private float chargeMaxDuration = 1.5f;
+    [SerializeField] private float chargeEndLag = 0.4f;
 
     private bool isAttacking;
     private bool isCharging;

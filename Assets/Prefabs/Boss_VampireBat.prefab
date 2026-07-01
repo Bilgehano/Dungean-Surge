@@ -129,23 +129,28 @@ MonoBehaviour:
   bossController: {fileID: 0}
   bossHealth: {fileID: 0}
   animator: {fileID: 0}
-  normalAttackRange: 2.14
-  heavyAttackRange: 2.6
-  stompAttackRange: 5.57
-  enableCastAttack: 0
-  castAttackRange: 6.92
-  normalAttackCooldown: 1.5
-  heavyAttackCooldown: 4
-  stompAttackCooldown: 6
-  castAttackCooldown: 8
-  normalAttackLockTime: 0.6
-  heavyAttackLockTime: 0.9
-  stompAttackLockTime: 1.2
-  castAttackLockTime: 1.4
   normalDamage: -15
+  normalAttackWidth: 2.14
+  normalAttackHeight: 1.2
+  normalAttackCooldown: 1.5
+  normalAttackLockTime: 0.6
   heavyDamage: -30
+  heavyAttackWidth: 2.6
+  heavyAttackHeight: 2
+  heavyAttackCooldown: 4
+  heavyAttackLockTime: 0.9
   stompDamage: -35
+  stompAttackWidth: 12
+  stompAttackHeight: 8
+  stompAttackCooldown: 6
+  stompAttackLockTime: 1.2
   castDamage: -20
+  castAttackRange: 6.92
+  castAttackCooldown: 8
+  castAttackLockTime: 1.4
+  enableCastAttack: 0
+  stompAttackRange: 5.57
+  hasMigratedStompArea: 1
 --- !u!114 &-8276215433920364697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +188,8 @@ MonoBehaviour:
   isDead: 0
   nextHurtThreshold: 0
   currentPhase: 1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  damageFlashDuration: 0.1
 --- !u!95 &730382684615429511
 Animator:
   serializedVersion: 7

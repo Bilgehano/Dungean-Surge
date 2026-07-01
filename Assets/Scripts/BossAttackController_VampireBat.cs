@@ -9,41 +9,45 @@ public class BossAttackController_VampireBat : MonoBehaviour
     [SerializeField] private BossHealth bossHealth;
     [SerializeField] private Animator animator;
 
-    [Header("Attack Boxes")]
+    [Header("Normal Attack")]
+    [SerializeField] private int normalDamage = -2;
+
     [FormerlySerializedAs("normalAttackRange")]
     [SerializeField] private float normalAttackWidth = 1.4f;
 
     [SerializeField] private float normalAttackHeight = 1.2f;
+    [SerializeField] private float normalAttackCooldown = 1.5f;
+    [SerializeField] private float normalAttackLockTime = 0.6f;
+
+    [Header("Heavy Attack")]
+    [SerializeField] private int heavyDamage = -5;
 
     [FormerlySerializedAs("heavyAttackRange")]
     [SerializeField] private float heavyAttackWidth = 1.8f;
 
     [SerializeField] private float heavyAttackHeight = 2f;
+    [SerializeField] private float heavyAttackCooldown = 4f;
+    [SerializeField] private float heavyAttackLockTime = 0.9f;
 
     [Header("Stomp Attack")]
-    [SerializeField] private float stompAttackRange = 2.2f;
+    [SerializeField] private int stompDamage = -6;
+    [SerializeField] private float stompAttackWidth = 4.4f;
+    [SerializeField] private float stompAttackHeight = 4.4f;
+    [SerializeField] private float stompAttackCooldown = 6f;
+    [SerializeField] private float stompAttackLockTime = 1.2f;
 
     [Header("Future Cast Attack")]
-    [SerializeField] private bool enableCastAttack = false;
-    [SerializeField] private float castAttackRange = 5f;
-
-    [Header("Attack Cooldowns")]
-    [SerializeField] private float normalAttackCooldown = 1.5f;
-    [SerializeField] private float heavyAttackCooldown = 4f;
-    [SerializeField] private float stompAttackCooldown = 6f;
-    [SerializeField] private float castAttackCooldown = 8f;
-
-    [Header("Attack Lock Times")]
-    [SerializeField] private float normalAttackLockTime = 0.6f;
-    [SerializeField] private float heavyAttackLockTime = 0.9f;
-    [SerializeField] private float stompAttackLockTime = 1.2f;
-    [SerializeField] private float castAttackLockTime = 1.4f;
-
-    [Header("Damage")]
-    [SerializeField] private int normalDamage = -2;
-    [SerializeField] private int heavyDamage = -5;
-    [SerializeField] private int stompDamage = -6;
     [SerializeField] private int castDamage = -4;
+    [SerializeField] private float castAttackRange = 5f;
+    [SerializeField] private float castAttackCooldown = 8f;
+    [SerializeField] private float castAttackLockTime = 1.4f;
+    [SerializeField] private bool enableCastAttack = false;
+
+    [SerializeField, HideInInspector]
+    private float stompAttackRange = 2.2f;
+
+    [SerializeField, HideInInspector]
+    private bool hasMigratedStompArea;
 
     private bool isAttacking;
 
@@ -54,6 +58,8 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
     private void Awake()
     {
+        MigrateLegacyStompAreaIfNeeded();
+
         if (bossController == null)
         {
             bossController = GetComponent<BossController>();
@@ -68,6 +74,11 @@ public class BossAttackController_VampireBat : MonoBehaviour
         {
             animator = GetComponent<Animator>();
         }
+    }
+
+    private void OnValidate()
+    {
+        MigrateLegacyStompAreaIfNeeded();
     }
 
     private void Update()
@@ -112,7 +123,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         if (phase >= 3 &&
             Time.time >= nextStompAttackTime &&
-            distanceToPlayer <= stompAttackRange)
+            IsPlayerInsideStompArea())
         {
             StartBossAttack("StompAttack", stompAttackLockTime);
             nextStompAttackTime = Time.time + stompAttackCooldown;
@@ -199,8 +210,9 @@ public class BossAttackController_VampireBat : MonoBehaviour
     {
         if (bossController != null)
         {
-            bossController.TryDamagePlayer(
-                stompAttackRange,
+            bossController.TryDamagePlayerInEllipse(
+                stompAttackWidth,
+                stompAttackHeight,
                 stompDamage
             );
         }
@@ -220,6 +232,53 @@ public class BossAttackController_VampireBat : MonoBehaviour
                 castDamage
             );
         }
+    }
+
+    private bool IsPlayerInsideStompArea()
+    {
+        if (bossController == null ||
+            !bossController.HasPlayer)
+        {
+            return false;
+        }
+
+        float horizontalRadius = Mathf.Max(
+            stompAttackWidth * 0.5f,
+            0.01f
+        );
+
+        float verticalRadius = Mathf.Max(
+            stompAttackHeight * 0.5f,
+            0.01f
+        );
+
+        Vector2 offset =
+            (Vector2)bossController.Player.position -
+            bossController.AttackOrigin;
+
+        float ellipseValue =
+            (offset.x * offset.x) /
+            (horizontalRadius * horizontalRadius) +
+            (offset.y * offset.y) /
+            (verticalRadius * verticalRadius);
+
+        return ellipseValue <= 1f;
+    }
+
+    private void MigrateLegacyStompAreaIfNeeded()
+    {
+        if (hasMigratedStompArea)
+        {
+            return;
+        }
+
+        float oldRadius = Mathf.Max(stompAttackRange, 0.01f);
+        float diameter = oldRadius * 2f;
+
+        stompAttackWidth = diameter;
+        stompAttackHeight = diameter;
+
+        hasMigratedStompArea = true;
     }
 
     private void OnDrawGizmosSelected()
@@ -269,8 +328,21 @@ public class BossAttackController_VampireBat : MonoBehaviour
             )
         );
 
+        Matrix4x4 previousMatrix = Gizmos.matrix;
+
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(origin, stompAttackRange);
+        Gizmos.matrix = Matrix4x4.TRS(
+            origin,
+            Quaternion.identity,
+            new Vector3(
+                stompAttackWidth,
+                stompAttackHeight,
+                0.1f
+            )
+        );
+
+        Gizmos.DrawWireSphere(Vector3.zero, 0.5f);
+        Gizmos.matrix = previousMatrix;
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(origin, castAttackRange);
