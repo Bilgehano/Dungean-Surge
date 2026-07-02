@@ -39,7 +39,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8991458504845995166}
-  - {fileID: 8690881554406998458}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2364037977920636888
@@ -118,7 +117,9 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   attackCenter: {fileID: 8991458504845995166}
-  moveSpeed: 3
+  moveSpeed: 4
+  followStopDistance: 1.2
+  followResumeDistance: 1.5
 --- !u!114 &5097437447453705956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +139,8 @@ MonoBehaviour:
   isDead: 0
   nextHurtThreshold: 0
   currentPhase: 1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  damageFlashDuration: 0.1
 --- !u!61 &2258557027041497001
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -248,33 +251,44 @@ MonoBehaviour:
   bossController: {fileID: 0}
   bossHealth: {fileID: 0}
   animator: {fileID: 0}
+  normalAttackCenter: {fileID: 3367188216748675254}
+  heavyAttackCenter: {fileID: 5249161979832668615}
+  throwAttackCenter: {fileID: 6332124867395500697}
+  chargeAttackCenter: {fileID: 5254376378639183457}
+  normalDamage: -12
+  normalAttackWidth: 2.6
+  normalAttackHeight: 1.2
+  normalAttackCooldown: 1.5
+  normalAttackLockTime: 0.6
+  heavyDamage: -25
+  heavyAttackWidth: 1.9
+  heavyAttackHeight: 2.4
+  heavyAttackCooldown: 7
+  heavyAttackLockTime: 1
+  throwDamage: -10
+  throwMinRange: 2
+  throwMaxRange: 8
+  throwAttackCooldown: 4
+  throwAttackLockTime: 0.8
   projectileSpawnPoint: {fileID: 8690881554406998458}
   throwProjectilePrefab: {fileID: 434365836799160231, guid: 4718b11ca17f3094585a53a47b1ee02f, type: 3}
-  normalAttackRange: 1.8
-  throwMinRange: 2
-  throwMaxRange: 7
-  heavyAttackRange: 2
-  chargeStartMaxRange: 8
-  chargeDamageRadius: 1.75
-  chargeSpeed: 9
-  chargeStopDistance: 0.15
-  chargeWindupTime: 0.8
-  chargeMaxDuration: 1.5
-  chargeEndLag: 0.4
-  chargeCooldown: 8
-  normalAttackCooldown: 1.5
-  throwAttackCooldown: 4
-  heavyAttackCooldown: 7
-  normalAttackLockTime: 0.6
-  throwAttackLockTime: 0.8
-  heavyAttackLockTime: 1
   throwTravelTime: 0.8
   throwArcHeight: 1.2
   throwImpactRadius: 0.8
-  normalDamage: -12
-  throwDamage: -10
-  heavyDamage: -25
+  throwAimLeadTime: 0.25
+  throwInStraightLine: 1
   chargeDamage: -20
+  chargeDamageRadius: 1.8
+  chargeCooldown: 8
+  minimumChargeCount: 2
+  additionalChargeChance: 0.6
+  chargeComboPause: 0
+  chargeStartMaxRange: 10
+  chargeSpeed: 11
+  chargeMinDistance: 5
+  chargeMaxDistance: 16
+  chargeWindupTime: 0.8
+  chargeEndLag: 0.4
 --- !u!114 &5411810159495536869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,12 +302,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
   contactDamage: -5
+  contactWidth: 3.5
+  contactHeight: 2.5
   damageCooldown: 0.8
-  contactRadius: 1.7
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
   damageCenter: {fileID: 8991458504845995166}
+  contactRadius: 1.5
+  hasMigratedContactArea: 1
 --- !u!114 &1270270850127387470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,7 +329,12 @@ MonoBehaviour:
   nodeSize: 0.25
   gridHalfExtent: 16
   bossCollider: {fileID: 2258557027041497001}
-  collisionPadding: 0.4
+  topPadding: 0.4
+  bottomPadding: 0.05
+  leftPadding: 0.05
+  rightPadding: 0.05
+  collisionPadding: 0.2
+  hasMigratedCollisionPadding: 1
   repathInterval: 0.4
   playerMoveRepathThreshold: 0.75
   directPathCheckInterval: 0.15
@@ -321,6 +343,68 @@ MonoBehaviour:
   stuckRepathDelay: 0.35
   drawPathGizmos: 0
   smoothCalculatedPath: 1
+--- !u!1 &124518059058107383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3367188216748675254}
+  m_Layer: 11
+  m_Name: NormalAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3367188216748675254
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 124518059058107383}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.21500002, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8991458504845995166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &988138172078961579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5254376378639183457}
+  m_Layer: 11
+  m_Name: ChargeAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5254376378639183457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988138172078961579}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.06833333, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8991458504845995166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1832777123312940945
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,12 +429,43 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1832777123312940945}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.235, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1413149734218856543}
+  m_Father: {fileID: 8991458504845995166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5762380738036630915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5249161979832668615}
+  m_Layer: 11
+  m_Name: HeavyAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5249161979832668615
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5762380738036630915}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.083333336, y: 0.09499997, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8991458504845995166}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6855545637085729549
 GameObject:
@@ -377,9 +492,45 @@ Transform:
   m_GameObject: {fileID: 6855545637085729549}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.13, z: 0}
+  m_LocalPosition: {x: 0, y: -0.235, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8690881554406998458}
+  - {fileID: 3367188216748675254}
+  - {fileID: 5249161979832668615}
+  - {fileID: 5254376378639183457}
+  - {fileID: 6332124867395500697}
+  m_Father: {fileID: 1413149734218856543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7777901979018073874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6332124867395500697}
+  m_Layer: 11
+  m_Name: ThrowAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6332124867395500697
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7777901979018073874}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.31833333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1413149734218856543}
+  m_Father: {fileID: 8991458504845995166}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

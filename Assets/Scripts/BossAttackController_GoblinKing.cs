@@ -8,6 +8,12 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [SerializeField] private BossHealth bossHealth;
     [SerializeField] private Animator animator;
 
+    [Header("Attack Centers")]
+    [SerializeField] private Transform normalAttackCenter;
+    [SerializeField] private Transform heavyAttackCenter;
+    [SerializeField] private Transform throwAttackCenter;
+    [SerializeField] private Transform chargeAttackCenter;
+
     [Header("Normal Attack")]
     [SerializeField] private int normalDamage = -3;
     [SerializeField] private float normalAttackWidth = 1.5f;
@@ -42,17 +48,22 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [SerializeField] private float chargeDamageRadius = 1.4f;
     [SerializeField] private float chargeCooldown = 8f;
 
+    [Min(2)]
+    [SerializeField] private int minimumChargeCount = 2;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float additionalChargeChance = 0.4f;
+
+    [SerializeField] private float chargeComboPause = 0.2f;
     [SerializeField] private float chargeStartMaxRange = 8f;
     [SerializeField] private float chargeSpeed = 9f;
-    [SerializeField] private float chargeStopDistance = 0.15f;
+    [SerializeField] private float chargeMinDistance = 5f;
+    [SerializeField] private float chargeMaxDistance = 10f;
     [SerializeField] private float chargeWindupTime = 0.8f;
-    [SerializeField] private float chargeMaxDuration = 1.5f;
     [SerializeField] private float chargeEndLag = 0.4f;
 
     private bool isAttacking;
     private bool isCharging;
-
-    private Vector2 chargeTargetPosition;
 
     private float nextNormalAttackTime;
     private float nextThrowAttackTime;
@@ -91,9 +102,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             return;
         }
 
-        float distanceToPlayer = bossController.GetDistanceToPlayer();
-
-        if (TryStartAttack(distanceToPlayer))
+        if (TryStartAttack())
         {
             return;
         }
@@ -101,25 +110,48 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         bossController.SetMovementEnabled(true);
     }
 
-    private bool TryStartAttack(float distanceToPlayer)
+    private bool TryStartAttack()
     {
         int phase = bossHealth != null
             ? bossHealth.CurrentPhase
             : 1;
 
+        Vector2 normalOrigin =
+            bossController.GetAttackOrigin(normalAttackCenter);
+
+        Vector2 heavyOrigin =
+            bossController.GetAttackOrigin(heavyAttackCenter);
+
+        Vector2 throwOrigin =
+            bossController.GetAttackOrigin(throwAttackCenter);
+
+        Vector2 chargeOrigin =
+            bossController.GetAttackOrigin(chargeAttackCenter);
+
+        float normalDistance =
+            bossController.GetDistanceToPlayer(normalOrigin);
+
+        float heavyDistance =
+            bossController.GetDistanceToPlayer(heavyOrigin);
+
+        float throwDistance =
+            bossController.GetDistanceToPlayer(throwOrigin);
+
+        float chargeDistance =
+            bossController.GetDistanceToPlayer(chargeOrigin);
+
         if (phase >= 4 &&
             Time.time >= nextChargeAttackTime &&
-            distanceToPlayer <= chargeStartMaxRange)
+            chargeDistance <= chargeStartMaxRange)
         {
             StartCoroutine(ChargeAttackRoutine());
-            nextChargeAttackTime = Time.time + chargeCooldown;
             return true;
         }
 
         if (phase >= 2 &&
             Time.time >= nextThrowAttackTime &&
-            distanceToPlayer >= throwMinRange &&
-            distanceToPlayer <= throwMaxRange)
+            throwDistance >= throwMinRange &&
+            throwDistance <= throwMaxRange)
         {
             StartBossAttack("ThrowAttack", throwAttackLockTime);
             nextThrowAttackTime = Time.time + throwAttackCooldown;
@@ -128,7 +160,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         if (phase >= 3 &&
             Time.time >= nextHeavyAttackTime &&
-            distanceToPlayer <= heavyAttackWidth)
+            heavyDistance <= heavyAttackWidth)
         {
             StartBossAttack("HeavyAttack", heavyAttackLockTime);
             nextHeavyAttackTime = Time.time + heavyAttackCooldown;
@@ -136,7 +168,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         }
 
         if (Time.time >= nextNormalAttackTime &&
-            distanceToPlayer <= normalAttackWidth)
+            normalDistance <= normalAttackWidth)
         {
             StartBossAttack("NormalAttack", normalAttackLockTime);
             nextNormalAttackTime = Time.time + normalAttackCooldown;
@@ -155,7 +187,9 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         if (bossController.HasPlayer)
         {
-            bossController.FacePosition(bossController.Player.position);
+            bossController.FacePosition(
+                bossController.Player.position
+            );
         }
 
         if (animator != null)
@@ -185,7 +219,120 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         bossController.SetMovementEnabled(false);
         bossController.StopMoving();
 
-        chargeTargetPosition = bossController.Player.position;
+        int completedChargeCount = 0;
+        int guaranteedChargeCount = Mathf.Max(
+            2,
+            minimumChargeCount
+        );
+
+        bool continueCharging = true;
+
+        while (continueCharging &&
+               bossController != null &&
+               bossController.IsActive &&
+               bossController.HasPlayer)
+        {
+            yield return StartCoroutine(
+                PerformSingleChargeRoutine()
+            );
+
+            completedChargeCount++;
+
+            if (completedChargeCount < guaranteedChargeCount)
+            {
+                yield return new WaitForSeconds(
+                    chargeComboPause
+                );
+
+                continue;
+            }
+
+            continueCharging =
+                Random.value < additionalChargeChance;
+
+            if (continueCharging)
+            {
+                yield return new WaitForSeconds(
+                    chargeComboPause
+                );
+            }
+        }
+
+        isCharging = false;
+        bossController.StopMoving();
+
+        yield return new WaitForSeconds(chargeEndLag);
+
+        nextChargeAttackTime = Time.time + chargeCooldown;
+        isAttacking = false;
+
+        if (bossController != null && bossController.IsActive)
+        {
+            bossController.SetMovementEnabled(true);
+        }
+    }
+
+    private IEnumerator PerformSingleChargeRoutine()
+    {
+        if (bossController == null ||
+            !bossController.HasPlayer)
+        {
+            yield break;
+        }
+
+        Vector2 chargeOrigin =
+            bossController.GetAttackOrigin(chargeAttackCenter);
+
+        Vector2 chargeTargetPosition =
+            bossController.Player.position;
+
+        Vector2 chargeDirection =
+            chargeTargetPosition - chargeOrigin;
+
+        if (chargeDirection.sqrMagnitude <= 0.0001f)
+        {
+            chargeDirection =
+                chargeTargetPosition -
+                (Vector2)transform.position;
+        }
+
+        if (chargeDirection.sqrMagnitude <= 0.0001f)
+        {
+            yield break;
+        }
+
+        chargeDirection.Normalize();
+
+        float minimumDistance = Mathf.Max(
+            0.1f,
+            Mathf.Min(
+                chargeMinDistance,
+                chargeMaxDistance
+            )
+        );
+
+        float maximumDistance = Mathf.Max(
+            minimumDistance,
+            Mathf.Max(
+                chargeMinDistance,
+                chargeMaxDistance
+            )
+        );
+
+        float selectedChargeDistance = Random.Range(
+            minimumDistance,
+            maximumDistance
+        );
+
+        Vector2 chargeStartPosition = transform.position;
+
+        float safetyDuration =
+            selectedChargeDistance /
+            Mathf.Max(chargeSpeed, 0.01f) +
+            0.5f;
+
+        float safetyTimer = 0f;
+        bool chargeAlreadyHitPlayer = false;
 
         bossController.FacePosition(chargeTargetPosition);
 
@@ -198,21 +345,22 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         isCharging = true;
 
-        float chargeTimer = 0f;
-        bool chargeAlreadyHitPlayer = false;
-
-        while (chargeTimer < chargeMaxDuration)
+        while (Vector2.Distance(
+                   chargeStartPosition,
+                   transform.position
+               ) < selectedChargeDistance &&
+               safetyTimer < safetyDuration &&
+               bossController != null &&
+               bossController.IsActive &&
+               bossController.HasPlayer)
         {
-            Vector2 direction =
-                chargeTargetPosition - bossController.AttackOrigin;
-
-            if (direction.magnitude <= chargeStopDistance)
-            {
-                break;
-            }
+            Vector2 currentChargeOrigin =
+                bossController.GetAttackOrigin(
+                    chargeAttackCenter
+                );
 
             bossController.SetMovement(
-                direction.normalized,
+                chargeDirection,
                 chargeSpeed,
                 true
             );
@@ -220,6 +368,7 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             if (!chargeAlreadyHitPlayer)
             {
                 bool didHit = bossController.TryDamagePlayer(
+                    currentChargeOrigin,
                     chargeDamageRadius,
                     chargeDamage
                 );
@@ -230,29 +379,23 @@ public class BossAttackController_GoblinKing : MonoBehaviour
                 }
             }
 
-            chargeTimer += Time.deltaTime;
+            safetyTimer += Time.deltaTime;
             yield return null;
         }
 
         isCharging = false;
-
         bossController.StopMoving();
-
-        yield return new WaitForSeconds(chargeEndLag);
-
-        isAttacking = false;
-
-        if (bossController != null && bossController.IsActive)
-        {
-            bossController.SetMovementEnabled(true);
-        }
     }
 
     public void DealNormalDamage()
     {
         if (bossController != null)
         {
+            Vector2 normalOrigin =
+                bossController.GetAttackOrigin(normalAttackCenter);
+
             bossController.TryDamagePlayerInFront(
+                normalOrigin,
                 normalAttackWidth,
                 normalAttackHeight,
                 normalDamage
@@ -269,7 +412,11 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     {
         if (bossController != null)
         {
+            Vector2 heavyOrigin =
+                bossController.GetAttackOrigin(heavyAttackCenter);
+
             bossController.TryDamagePlayerInFront(
+                heavyOrigin,
                 heavyAttackWidth,
                 heavyAttackHeight,
                 heavyDamage
@@ -291,9 +438,12 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             return;
         }
 
+        Vector2 fallbackThrowOrigin =
+            bossController.GetAttackOrigin(throwAttackCenter);
+
         Vector2 spawnPosition = projectileSpawnPoint != null
-            ? projectileSpawnPoint.position
-            : transform.position;
+            ? bossController.GetAttackOrigin(projectileSpawnPoint)
+            : fallbackThrowOrigin;
 
         Vector2 targetPosition = bossController.Player.position;
 
@@ -361,10 +511,21 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         float direction = facesRight ? 1f : -1f;
 
-        Vector3 origin = controller.AttackOrigin;
+        Vector3 normalOrigin =
+            controller.GetAttackOrigin(normalAttackCenter);
 
-        Vector3 normalAttackBoxCenter = origin +
-            Vector3.right * direction * (normalAttackWidth * 0.5f);
+        Vector3 heavyOrigin =
+            controller.GetAttackOrigin(heavyAttackCenter);
+
+        Vector3 throwOrigin =
+            controller.GetAttackOrigin(throwAttackCenter);
+
+        Vector3 chargeOrigin =
+            controller.GetAttackOrigin(chargeAttackCenter);
+
+        Vector3 normalAttackBoxCenter = normalOrigin +
+            Vector3.right * direction *
+            (normalAttackWidth * 0.5f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(
@@ -376,8 +537,9 @@ public class BossAttackController_GoblinKing : MonoBehaviour
             )
         );
 
-        Vector3 heavyAttackBoxCenter = origin +
-            Vector3.right * direction * (heavyAttackWidth * 0.5f);
+        Vector3 heavyAttackBoxCenter = heavyOrigin +
+            Vector3.right * direction *
+            (heavyAttackWidth * 0.5f);
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(
@@ -390,9 +552,15 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         );
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(origin, throwMaxRange);
+        Gizmos.DrawWireSphere(
+            throwOrigin,
+            throwMaxRange
+        );
 
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(origin, chargeDamageRadius);
+        Gizmos.DrawWireSphere(
+            chargeOrigin,
+            chargeDamageRadius
+        );
     }
 }

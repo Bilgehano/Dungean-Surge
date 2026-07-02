@@ -5,7 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BossNavigation : MonoBehaviour
 {
-
     [Header("Pathfinding")]
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float nodeSize = 0.5f;
@@ -13,7 +12,18 @@ public class BossNavigation : MonoBehaviour
 
     [Header("Boss Collision")]
     [SerializeField] private BoxCollider2D bossCollider;
-    [SerializeField] private float collisionPadding = 0.05f;
+
+    [Header("Navigation Padding (World Directions)")]
+    [SerializeField] private float topPadding = 0.05f;
+    [SerializeField] private float bottomPadding = 0.05f;
+    [SerializeField] private float leftPadding = 0.05f;
+    [SerializeField] private float rightPadding = 0.05f;
+
+    [SerializeField, HideInInspector]
+    private float collisionPadding = 0.05f;
+
+    [SerializeField, HideInInspector]
+    private bool hasMigratedCollisionPadding;
 
     [Header("Repathing")]
     [SerializeField] private float repathInterval = 0.4f;
@@ -65,6 +75,7 @@ public class BossNavigation : MonoBehaviour
             return;
         }
 
+        MigrateLegacyCollisionPaddingIfNeeded();
         ValidateSettings();
         RefreshCachedValues();
         ResetNavigation();
@@ -77,6 +88,7 @@ public class BossNavigation : MonoBehaviour
             bossCollider = GetComponent<BoxCollider2D>();
         }
 
+        MigrateLegacyCollisionPaddingIfNeeded();
         ValidateSettings();
         RefreshCachedValues();
     }
@@ -93,16 +105,16 @@ public class BossNavigation : MonoBehaviour
         }
 
         Vector2 currentPosition = rb.position;
-        Vector2 directDifference = targetPosition - currentPosition;
+        Vector2 directDifference =
+            targetPosition - currentPosition;
 
-        if (directDifference.sqrMagnitude <= waypointReachDistanceSqr)
+        if (directDifference.sqrMagnitude <=
+            waypointReachDistanceSqr)
         {
             ClearCurrentPath();
             return false;
         }
 
-        // Falls keine Hindernis-Layer gesetzt sind:
-        // Boss läuft einfach direkt zum Ziel.
         if (obstacleMask.value == 0)
         {
             ClearCurrentPath();
@@ -110,7 +122,14 @@ public class BossNavigation : MonoBehaviour
             return true;
         }
 
-        if (Time.time >= nextDirectPathCheckTime)
+        bool targetIsWalkable =
+            IsWalkable(targetPosition);
+
+        if (!targetIsWalkable)
+        {
+            hasDirectPath = false;
+        }
+        else if (Time.time >= nextDirectPathCheckTime)
         {
             hasDirectPath = HasDirectPath(
                 currentPosition,
@@ -121,7 +140,6 @@ public class BossNavigation : MonoBehaviour
                 Time.time + directPathCheckInterval;
         }
 
-        // Direkter Weg ist frei.
         if (hasDirectPath)
         {
             ClearCurrentPath();
@@ -137,7 +155,9 @@ public class BossNavigation : MonoBehaviour
             currentPath.Count == 0 ||
             currentWaypointIndex >= currentPath.Count;
 
-        bool periodicRepath = Time.time >= nextRepathTime;
+        bool periodicRepath =
+            Time.time >= nextRepathTime;
+
         bool shouldForceStuckRepath = false;
 
         if (!hasNoPath)
@@ -169,10 +189,13 @@ public class BossNavigation : MonoBehaviour
             }
         }
 
-        if (periodicRepath ||
+        bool shouldRepath =
             targetMovedEnough ||
             hasNoPath ||
-            shouldForceStuckRepath)
+            shouldForceStuckRepath ||
+            (periodicRepath && targetIsWalkable);
+
+        if (shouldRepath)
         {
             List<Vector2> newlyCalculatedPath = FindPathAStar(
                 currentPosition,
@@ -184,10 +207,9 @@ public class BossNavigation : MonoBehaviour
                 currentPath = newlyCalculatedPath;
                 currentWaypointIndex = 0;
             }
-            else if (hasNoPath)
+            else
             {
-                currentPath.Clear();
-                currentWaypointIndex = 0;
+                ClearCurrentPath();
             }
 
             nextRepathTime = Time.time + repathInterval;
@@ -236,6 +258,11 @@ public class BossNavigation : MonoBehaviour
 
     private bool HasDirectPath(Vector2 from, Vector2 to)
     {
+        if (!IsWalkable(to))
+        {
+            return false;
+        }
+
         Vector2 direction = to - from;
         float distance = direction.magnitude;
 
@@ -265,7 +292,8 @@ public class BossNavigation : MonoBehaviour
                 continue;
             }
 
-            if (bossCollider != null && hitCollider == bossCollider)
+            if (bossCollider != null &&
+                hitCollider == bossCollider)
             {
                 continue;
             }
@@ -293,12 +321,14 @@ public class BossNavigation : MonoBehaviour
                 continue;
             }
 
-            if (bossCollider != null && hit == bossCollider)
+            if (bossCollider != null &&
+                hit == bossCollider)
             {
                 continue;
             }
 
-            if (((1 << hit.gameObject.layer) & obstacleMask.value) == 0)
+            if (((1 << hit.gameObject.layer) &
+                 obstacleMask.value) == 0)
             {
                 continue;
             }
@@ -316,7 +346,17 @@ public class BossNavigation : MonoBehaviour
             return Vector2.zero;
         }
 
-        return (Vector2)bossCollider.bounds.center - rb.position;
+        Vector2 colliderOffset =
+            (Vector2)bossCollider.bounds.center - rb.position;
+
+        float horizontalOffset =
+            (rightPadding - leftPadding) * 0.5f;
+
+        float verticalOffset =
+            (topPadding - bottomPadding) * 0.5f;
+
+        return colliderOffset +
+            new Vector2(horizontalOffset, verticalOffset);
     }
 
     private Vector2 GetNavigationBoxSize()
@@ -328,7 +368,10 @@ public class BossNavigation : MonoBehaviour
 
         Vector2 colliderSize = bossCollider.bounds.size;
 
-        return colliderSize + Vector2.one * collisionPadding * 2f;
+        return colliderSize + new Vector2(
+            leftPadding + rightPadding,
+            topPadding + bottomPadding
+        );
     }
 
     private List<Vector2> FindPathAStar(
@@ -338,6 +381,7 @@ public class BossNavigation : MonoBehaviour
         List<Vector2> result = new List<Vector2>();
 
         int size = gridHalfExtent * 2 + 1;
+
         Vector2 gridCenter =
             (startPosition + targetPosition) * 0.5f;
 
@@ -374,13 +418,50 @@ public class BossNavigation : MonoBehaviour
         }
 
         grid[startIndex.x, startIndex.y].walkable = true;
-        grid[targetIndex.x, targetIndex.y].walkable = true;
+
+        if (grid[targetIndex.x, targetIndex.y].walkable)
+        {
+            result = FindPathToTarget(
+                grid,
+                startIndex,
+                targetIndex,
+                startPosition
+            );
+
+            if (result.Count > 0)
+            {
+                return result;
+            }
+        }
+
+        return FindPathToClosestReachableTarget(
+            grid,
+            startIndex,
+            targetPosition,
+            startPosition
+        );
+    }
+
+    private List<Vector2> FindPathToTarget(
+        PathNode[,] grid,
+        Vector2Int startIndex,
+        Vector2Int targetIndex,
+        Vector2 startPosition)
+    {
+        int size = grid.GetLength(0);
+
+        ResetPathData(grid, size);
 
         PathNode startNode =
             grid[startIndex.x, startIndex.y];
 
         PathNode targetNode =
             grid[targetIndex.x, targetIndex.y];
+
+        if (startNode == targetNode)
+        {
+            return new List<Vector2>();
+        }
 
         List<PathNode> openSet =
             new List<PathNode> { startNode };
@@ -417,7 +498,10 @@ public class BossNavigation : MonoBehaviour
 
                 if (smoothCalculatedPath && path.Count > 1)
                 {
-                    path = SmoothPath(path, startPosition);
+                    path = SmoothPath(
+                        path,
+                        startPosition
+                    );
                 }
 
                 return path;
@@ -426,72 +510,187 @@ public class BossNavigation : MonoBehaviour
             openSet.Remove(current);
             closedSet.Add(current);
 
-            for (int dx = -1; dx <= 1; dx++)
+            AddValidNeighbours(
+                grid,
+                current,
+                targetNode,
+                openSet,
+                closedSet
+            );
+        }
+
+        return new List<Vector2>();
+    }
+
+    private List<Vector2> FindPathToClosestReachableTarget(
+        PathNode[,] grid,
+        Vector2Int startIndex,
+        Vector2 desiredTargetPosition,
+        Vector2 startPosition)
+    {
+        int size = grid.GetLength(0);
+
+        ResetPathData(grid, size);
+
+        PathNode startNode =
+            grid[startIndex.x, startIndex.y];
+
+        List<PathNode> openSet =
+            new List<PathNode> { startNode };
+
+        HashSet<PathNode> closedSet =
+            new HashSet<PathNode>();
+
+        startNode.gCost = 0;
+
+        PathNode closestReachableNode = startNode;
+
+        float closestDistanceSqr =
+            (startNode.world -
+             desiredTargetPosition).sqrMagnitude;
+
+        while (openSet.Count > 0)
+        {
+            PathNode current = openSet[0];
+
+            for (int i = 1; i < openSet.Count; i++)
             {
-                for (int dy = -1; dy <= 1; dy++)
+                if (openSet[i].gCost < current.gCost)
                 {
-                    if (dx == 0 && dy == 0)
+                    current = openSet[i];
+                }
+            }
+
+            openSet.Remove(current);
+            closedSet.Add(current);
+
+            float distanceToDesiredSqr =
+                (current.world -
+                 desiredTargetPosition).sqrMagnitude;
+
+            if (distanceToDesiredSqr < closestDistanceSqr)
+            {
+                closestDistanceSqr = distanceToDesiredSqr;
+                closestReachableNode = current;
+            }
+
+            AddValidNeighbours(
+                grid,
+                current,
+                null,
+                openSet,
+                closedSet
+            );
+        }
+
+        if (closestReachableNode == startNode)
+        {
+            return new List<Vector2>();
+        }
+
+        List<Vector2> path = ReconstructPath(
+            startNode,
+            closestReachableNode
+        );
+
+        if (smoothCalculatedPath && path.Count > 1)
+        {
+            path = SmoothPath(path, startPosition);
+        }
+
+        return path;
+    }
+
+    private void AddValidNeighbours(
+        PathNode[,] grid,
+        PathNode current,
+        PathNode targetNode,
+        List<PathNode> openSet,
+        HashSet<PathNode> closedSet)
+    {
+        int size = grid.GetLength(0);
+
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0)
+                {
+                    continue;
+                }
+
+                int nextX = current.x + dx;
+                int nextY = current.y + dy;
+
+                if (nextX < 0 || nextX >= size ||
+                    nextY < 0 || nextY >= size)
+                {
+                    continue;
+                }
+
+                if (dx != 0 && dy != 0)
+                {
+                    PathNode sideA =
+                        grid[current.x + dx, current.y];
+
+                    PathNode sideB =
+                        grid[current.x, current.y + dy];
+
+                    if (!sideA.walkable ||
+                        !sideB.walkable)
                     {
                         continue;
                     }
+                }
 
-                    int nextX = current.x + dx;
-                    int nextY = current.y + dy;
+                PathNode neighbour =
+                    grid[nextX, nextY];
 
-                    if (nextX < 0 || nextX >= size ||
-                        nextY < 0 || nextY >= size)
-                    {
-                        continue;
-                    }
+                if (!neighbour.walkable ||
+                    closedSet.Contains(neighbour))
+                {
+                    continue;
+                }
 
-                    // Kein diagonales Schneiden durch Ecken.
-                    if (dx != 0 && dy != 0)
-                    {
-                        PathNode sideA =
-                            grid[current.x + dx, current.y];
+                int tentativeG =
+                    current.gCost +
+                    GetMoveCost(current, neighbour);
 
-                        PathNode sideB =
-                            grid[current.x, current.y + dy];
+                if (tentativeG >= neighbour.gCost)
+                {
+                    continue;
+                }
 
-                        if (!sideA.walkable || !sideB.walkable)
-                        {
-                            continue;
-                        }
-                    }
+                neighbour.parent = current;
+                neighbour.gCost = tentativeG;
 
-                    PathNode neighbour =
-                        grid[nextX, nextY];
+                neighbour.hCost = targetNode != null
+                    ? GetHeuristic(neighbour, targetNode)
+                    : 0;
 
-                    if (!neighbour.walkable ||
-                        closedSet.Contains(neighbour))
-                    {
-                        continue;
-                    }
-
-                    int tentativeG =
-                        current.gCost +
-                        GetMoveCost(current, neighbour);
-
-                    if (tentativeG < neighbour.gCost)
-                    {
-                        neighbour.parent = current;
-                        neighbour.gCost = tentativeG;
-                        neighbour.hCost =
-                            GetHeuristic(
-                                neighbour,
-                                targetNode
-                            );
-
-                        if (!openSet.Contains(neighbour))
-                        {
-                            openSet.Add(neighbour);
-                        }
-                    }
+                if (!openSet.Contains(neighbour))
+                {
+                    openSet.Add(neighbour);
                 }
             }
         }
+    }
 
-        return result;
+    private void ResetPathData(
+        PathNode[,] grid,
+        int size)
+    {
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                PathNode node = grid[x, y];
+
+                node.gCost = int.MaxValue;
+                node.hCost = 0;
+                node.parent = null;
+            }
+        }
     }
 
     private List<Vector2> ReconstructPath(
@@ -533,9 +732,13 @@ public class BossNavigation : MonoBehaviour
         {
             int furthestVisible = index;
 
-            for (int candidate = rawPath.Count - 1; candidate >= index; candidate--)
+            for (int candidate = rawPath.Count - 1;
+                 candidate >= index;
+                 candidate--)
             {
-                if (HasDirectPath(anchor, rawPath[candidate]))
+                if (HasDirectPath(
+                        anchor,
+                        rawPath[candidate]))
                 {
                     furthestVisible = candidate;
                     break;
@@ -583,7 +786,9 @@ public class BossNavigation : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
-    private bool IsInBounds(Vector2Int point, int size)
+    private bool IsInBounds(
+        Vector2Int point,
+        int size)
     {
         return point.x >= 0 &&
                point.x < size &&
@@ -591,7 +796,9 @@ public class BossNavigation : MonoBehaviour
                point.y < size;
     }
 
-    private int GetMoveCost(PathNode from, PathNode to)
+    private int GetMoveCost(
+        PathNode from,
+        PathNode to)
     {
         int xDistance = Mathf.Abs(from.x - to.x);
         int yDistance = Mathf.Abs(from.y - to.y);
@@ -624,12 +831,40 @@ public class BossNavigation : MonoBehaviour
         stuckStartTime = -1f;
     }
 
+    private void MigrateLegacyCollisionPaddingIfNeeded()
+    {
+        if (hasMigratedCollisionPadding)
+        {
+            return;
+        }
+
+        float legacyPadding = Mathf.Max(
+            0f,
+            collisionPadding
+        );
+
+        topPadding = legacyPadding;
+        bottomPadding = legacyPadding;
+        leftPadding = legacyPadding;
+        rightPadding = legacyPadding;
+
+        hasMigratedCollisionPadding = true;
+    }
+
     private void ValidateSettings()
     {
         nodeSize = Mathf.Max(0.1f, nodeSize);
         gridHalfExtent = Mathf.Max(2, gridHalfExtent);
 
-        collisionPadding = Mathf.Max(0f, collisionPadding);
+        collisionPadding = Mathf.Max(
+            0f,
+            collisionPadding
+        );
+
+        topPadding = Mathf.Max(0f, topPadding);
+        bottomPadding = Mathf.Max(0f, bottomPadding);
+        leftPadding = Mathf.Max(0f, leftPadding);
+        rightPadding = Mathf.Max(0f, rightPadding);
 
         repathInterval = Mathf.Max(0.05f, repathInterval);
 

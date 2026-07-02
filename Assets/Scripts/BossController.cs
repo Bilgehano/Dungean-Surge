@@ -12,10 +12,22 @@ public class BossController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
 
+    [Min(0f)]
+    [SerializeField] private float followStopDistance = 1.2f;
+
+    [Min(0f)]
+    [SerializeField] private float followResumeDistance = 1.5f;
+
+    [Header("Long Distance Chase")]
+    [Min(0.1f)]
+    [SerializeField] private float globalChaseStepDistance = 6f;
+
     private BossNavigation navigation;
 
     private bool isActive = true;
     private bool movementEnabled = true;
+    private bool isHoldingCombatPosition;
+
     private Vector2 movementDirection;
     private float currentMoveSpeed;
 
@@ -52,7 +64,43 @@ public class BossController : MonoBehaviour
         }
 
         navigation = GetComponent<BossNavigation>();
+
+        followStopDistance = Mathf.Max(
+            0f,
+            followStopDistance
+        );
+
+        followResumeDistance = Mathf.Max(
+            followStopDistance,
+            followResumeDistance
+        );
+
+        globalChaseStepDistance = Mathf.Max(
+            0.1f,
+            globalChaseStepDistance
+        );
+
         currentMoveSpeed = moveSpeed;
+
+        UpdateAttackCenterFlip();
+    }
+
+    private void OnValidate()
+    {
+        followStopDistance = Mathf.Max(
+            0f,
+            followStopDistance
+        );
+
+        followResumeDistance = Mathf.Max(
+            followStopDistance,
+            followResumeDistance
+        );
+
+        globalChaseStepDistance = Mathf.Max(
+            0.1f,
+            globalChaseStepDistance
+        );
     }
 
     private void Start()
@@ -110,7 +158,20 @@ public class BossController : MonoBehaviour
         rb.MovePosition(newPosition);
     }
 
+    public Vector2 GetAttackOrigin(
+        Transform customAttackCenter)
+    {
+        return customAttackCenter != null
+            ? customAttackCenter.position
+            : AttackOrigin;
+    }
+
     public float GetDistanceToPlayer()
+    {
+        return GetDistanceToPlayer(AttackOrigin);
+    }
+
+    public float GetDistanceToPlayer(Vector2 attackOrigin)
     {
         if (player == null)
         {
@@ -118,7 +179,7 @@ public class BossController : MonoBehaviour
         }
 
         return Vector2.Distance(
-            AttackOrigin,
+            attackOrigin,
             player.position
         );
     }
@@ -151,11 +212,86 @@ public class BossController : MonoBehaviour
             return;
         }
 
+        Vector2 bossPosition = rb != null
+            ? rb.position
+            : transform.position;
+
+        Vector2 playerPosition = player.position;
+
+        Vector2 toPlayer =
+            playerPosition - bossPosition;
+
+        float stopDistance = Mathf.Max(
+            0f,
+            followStopDistance
+        );
+
+        float resumeDistance = Mathf.Max(
+            stopDistance,
+            followResumeDistance
+        );
+
+        if (isHoldingCombatPosition)
+        {
+            FacePosition(playerPosition);
+
+            if (toPlayer.sqrMagnitude <=
+                resumeDistance * resumeDistance)
+            {
+                StopMoving();
+                return;
+            }
+
+            isHoldingCombatPosition = false;
+
+            if (navigation != null)
+            {
+                navigation.ResetNavigation();
+            }
+        }
+
+        if (toPlayer.sqrMagnitude <=
+            stopDistance * stopDistance)
+        {
+            isHoldingCombatPosition = true;
+
+            StopMoving();
+            FacePosition(playerPosition);
+            return;
+        }
+
+        Vector2 desiredCombatPosition =
+            playerPosition -
+            toPlayer.normalized * stopDistance;
+
+        Vector2 toDesiredCombatPosition =
+            desiredCombatPosition - bossPosition;
+
+        float chaseStepDistance = Mathf.Max(
+            0.1f,
+            globalChaseStepDistance
+        );
+
+        Vector2 movementTarget;
+
+        if (toDesiredCombatPosition.sqrMagnitude >
+            chaseStepDistance * chaseStepDistance)
+        {
+            movementTarget =
+                bossPosition +
+                toDesiredCombatPosition.normalized *
+                chaseStepDistance;
+        }
+        else
+        {
+            movementTarget = desiredCombatPosition;
+        }
+
         if (navigation != null)
         {
             bool foundDirection =
                 navigation.TryGetMoveDirection(
-                    player.position,
+                    movementTarget,
                     out Vector2 navigationDirection
                 );
 
@@ -170,15 +306,20 @@ public class BossController : MonoBehaviour
             else
             {
                 StopMoving();
+                FacePosition(playerPosition);
             }
 
             return;
         }
 
         Vector2 directDirection =
-            (player.position - transform.position).normalized;
+            (movementTarget - bossPosition).normalized;
 
-        SetMovement(directDirection, moveSpeed, true);
+        SetMovement(
+            directDirection,
+            moveSpeed,
+            true
+        );
     }
 
     public void SetMovement(
@@ -238,9 +379,47 @@ public class BossController : MonoBehaviour
         {
             spriteRenderer.flipX = true;
         }
+
+        UpdateAttackCenterFlip();
+    }
+
+    private void UpdateAttackCenterFlip()
+    {
+        if (attackCenter == null ||
+            spriteRenderer == null)
+        {
+            return;
+        }
+
+        Vector3 scale = attackCenter.localScale;
+
+        float scaleX = Mathf.Max(
+            Mathf.Abs(scale.x),
+            0.0001f
+        );
+
+        scale.x = spriteRenderer.flipX
+            ? -scaleX
+            : scaleX;
+
+        attackCenter.localScale = scale;
     }
 
     public bool TryDamagePlayerInFront(
+        float width,
+        float height,
+        int damage)
+    {
+        return TryDamagePlayerInFront(
+            AttackOrigin,
+            width,
+            height,
+            damage
+        );
+    }
+
+    public bool TryDamagePlayerInFront(
+        Vector2 attackOrigin,
         float width,
         float height,
         int damage)
@@ -251,7 +430,7 @@ public class BossController : MonoBehaviour
         }
 
         Vector2 toPlayer =
-            (Vector2)player.position - AttackOrigin;
+            (Vector2)player.position - attackOrigin;
 
         bool facesRight =
             spriteRenderer != null &&
@@ -286,13 +465,25 @@ public class BossController : MonoBehaviour
 
     public bool TryDamagePlayer(float range, int damage)
     {
+        return TryDamagePlayer(
+            AttackOrigin,
+            range,
+            damage
+        );
+    }
+
+    public bool TryDamagePlayer(
+        Vector2 attackOrigin,
+        float range,
+        int damage)
+    {
         if (player == null)
         {
             return false;
         }
 
         float distance = Vector2.Distance(
-            AttackOrigin,
+            attackOrigin,
             player.position
         );
 
@@ -318,6 +509,20 @@ public class BossController : MonoBehaviour
         float height,
         int damage)
     {
+        return TryDamagePlayerInEllipse(
+            AttackOrigin,
+            width,
+            height,
+            damage
+        );
+    }
+
+    public bool TryDamagePlayerInEllipse(
+        Vector2 attackOrigin,
+        float width,
+        float height,
+        int damage)
+    {
         if (player == null)
         {
             return false;
@@ -334,7 +539,7 @@ public class BossController : MonoBehaviour
         );
 
         Vector2 offset =
-            (Vector2)player.position - AttackOrigin;
+            (Vector2)player.position - attackOrigin;
 
         float ellipseValue =
             (offset.x * offset.x) /
@@ -363,6 +568,7 @@ public class BossController : MonoBehaviour
     {
         isActive = true;
         movementEnabled = true;
+        isHoldingCombatPosition = false;
 
         if (navigation != null)
         {
@@ -374,6 +580,7 @@ public class BossController : MonoBehaviour
     {
         isActive = false;
         movementEnabled = false;
+        isHoldingCombatPosition = false;
 
         if (navigation != null)
         {
