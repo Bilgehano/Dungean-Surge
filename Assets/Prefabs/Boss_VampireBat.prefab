@@ -184,6 +184,7 @@ MonoBehaviour:
   maxHealth: 800
   healthSegments: 4
   deathAnimationDuration: 1.2
+  deathSoundType: 2
   currentHealth: 0
   isDead: 0
   nextHurtThreshold: 0

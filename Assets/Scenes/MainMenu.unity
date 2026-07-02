@@ -4259,7 +4259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &2101487459
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4369,7 +4369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1c3474d631b4e5c82e33fea671462e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  backgroundMusic: {fileID: 8300000, guid: b4e59572cd8fb45cea35854abb0b526e, type: 3}
+  backgroundMusic: {fileID: 0}
   bossMusic: {fileID: 8300000, guid: 7a93f7fe4f78239409cc98882b5614b1, type: 3}
   playBackgroundMusicOnStart: 1
   backgroundMusicVolume: 0.5

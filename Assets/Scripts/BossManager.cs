@@ -14,6 +14,8 @@ public class BossManager : MonoBehaviour
     [SerializeField] private float cameraTravelTime = 1.5f;
     [SerializeField] private float bossIntroTime = 2f;
     [SerializeField] private Color blinkColor = new Color(0, 0, 0, 0.8f);
+    [SerializeField] private float bossDefeatScreenTime = 2f;
+    [SerializeField] private Color bossDefeatOverlayColor = new Color(0.35f, 0f, 0f, 0.8f);
 
     [Header("Boss Spawn Effects")]
     [SerializeField] private AudioClip bossSpawnSfx;
@@ -43,6 +45,7 @@ public class BossManager : MonoBehaviour
     private BossController spawnedBossController;
     private Coroutine bossSpawnBlinkRoutine;
     private bool bossIntroInProgress;
+    private bool bossDefeatSequenceInProgress;
 
     private void Awake()
     {
@@ -395,21 +398,93 @@ public class BossManager : MonoBehaviour
         }
     }
 
-    public void OnBossDied()
+    public void OnBossDied(GameObject defeatedBoss = null)
     {
-        if (bossDefeated)
+        if (bossDefeated || bossDefeatSequenceInProgress)
         {
             return;
         }
 
+        StartCoroutine(BossDefeatCutscene(defeatedBoss));
+    }
+
+    private IEnumerator BossDefeatCutscene(GameObject defeatedBoss)
+    {
         bossFightActive = false;
         bossIntroInProgress = false;
         bossDefeated = true;
+        bossDefeatSequenceInProgress = true;
+
+        GameObject bossObject = defeatedBoss != null
+            ? defeatedBoss
+            : currentBoss;
+
+        Transform originalTarget = null;
+
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = false;
+        }
+
+        if (playerCombat != null)
+        {
+            playerCombat.enabled = false;
+        }
+
+        if (playerRb != null)
+        {
+            playerRb.linearVelocity = Vector2.zero;
+        }
+
+        if (cameraFollow != null)
+        {
+            originalTarget = cameraFollow.target;
+
+            if (bossObject != null)
+            {
+                cameraFollow.target = bossObject.transform;
+            }
+        }
+
+        float cameraFocusTime = Mathf.Max(0f, cameraTravelTime);
+        if (cameraFocusTime > 0f)
+        {
+            yield return new WaitForSeconds(cameraFocusTime);
+        }
+
+        if (cutsceneOverlay != null)
+        {
+            cutsceneOverlay.gameObject.SetActive(true);
+            cutsceneOverlay.color = bossDefeatOverlayColor;
+        }
+
+        float deathScreenTime = Mathf.Max(0f, bossDefeatScreenTime);
+        if (deathScreenTime > 0f)
+        {
+            yield return new WaitForSeconds(deathScreenTime);
+        }
+
+        if (cutsceneOverlay != null)
+        {
+            cutsceneOverlay.gameObject.SetActive(false);
+        }
+
         currentBoss = null;
         spawnedBossController = null;
+        bossDefeatSequenceInProgress = false;
 
         Debug.Log("BossManager: Boss defeated.");
 
         onBossDefeated?.Invoke();
+
+        if (cameraFollow != null && cameraFollow.target == null)
+        {
+            cameraFollow.target = originalTarget;
+        }
+
+        if (bossObject != null)
+        {
+            Destroy(bossObject);
+        }
     }
 }

@@ -21,6 +21,11 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip upgradeChooseSfx;
     [SerializeField] private AudioClip victorySfx;
     [SerializeField] private AudioClip gameOverSfx;
+    [SerializeField] private AudioClip goblinDeathSfx;
+    [SerializeField] private AudioClip vampireBatDeathSfx;
+
+    private bool goblinDeathSfxPlayedThisScene;
+    private bool vampireBatDeathSfxPlayedThisScene;
 
     private void Awake()
     {
@@ -59,6 +64,7 @@ public class AudioManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        ResetBossDeathSfxState();
         CheckGlobalAudioSettings();
 
         if (playBackgroundMusicOnStart && !IsMusicPlaying())
@@ -96,6 +102,8 @@ public class AudioManager : MonoBehaviour
         if (upgradeChooseSfx == null) upgradeChooseSfx = other.upgradeChooseSfx;
         if (victorySfx == null) victorySfx = other.victorySfx;
         if (gameOverSfx == null) gameOverSfx = other.gameOverSfx;
+        if (goblinDeathSfx == null) goblinDeathSfx = other.goblinDeathSfx;
+        if (vampireBatDeathSfx == null) vampireBatDeathSfx = other.vampireBatDeathSfx;
     }
 
     private void CheckGlobalAudioSettings()
@@ -114,6 +122,12 @@ public class AudioManager : MonoBehaviour
     private bool IsMusicPlaying()
     {
         return musicSource != null && musicSource.isPlaying;
+    }
+
+    private void ResetBossDeathSfxState()
+    {
+        goblinDeathSfxPlayedThisScene = false;
+        vampireBatDeathSfxPlayedThisScene = false;
     }
 
     public void PlayMusic(AudioClip musicClip, float volume = 0.5f)
@@ -208,6 +222,8 @@ public class AudioManager : MonoBehaviour
         PlaySFX(levelUpSfx, 1f);
     }
 
+    
+
     public void PlayUpgradeChooseSFX()
     {
         PlaySFX(upgradeChooseSfx, 1f);
@@ -216,6 +232,28 @@ public class AudioManager : MonoBehaviour
     public void PlayGameOverSFX()
     {
         PlaySFX(gameOverSfx, 1f);
+    }
+
+    public void PlayGoblinDeathSFX()
+    {
+        if (goblinDeathSfxPlayedThisScene)
+        {
+            return;
+        }
+
+        goblinDeathSfxPlayedThisScene = true;
+        PlaySFX(goblinDeathSfx, 1f);
+    }
+
+    public void PlayVampireBatDeathSFX()
+    {
+        if (vampireBatDeathSfxPlayedThisScene)
+        {
+            return;
+        }
+
+        vampireBatDeathSfxPlayedThisScene = true;
+        PlaySFX(vampireBatDeathSfx, 1f);
     }
 
     public void StopAllAudio()

@@ -3,10 +3,20 @@ using UnityEngine;
 
 public class BossHealth : MonoBehaviour
 {
+    private enum BossDeathSoundType
+    {
+        None,
+        GoblinKing,
+        VampireBat,
+    }
+
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int healthSegments = 4;
     [SerializeField] private float deathAnimationDuration = 1.2f;
+
+    [Header("Audio")]
+    [SerializeField] private BossDeathSoundType deathSoundType;
 
     [Header("State (Read Only)")]
     [SerializeField] private int currentHealth;
@@ -159,6 +169,13 @@ public class BossHealth : MonoBehaviour
 
         isDead = true;
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+        }
+
+        PlayDeathSfx();
+
         if (bossController != null)
         {
             bossController.DeactivateBoss();
@@ -180,10 +197,30 @@ public class BossHealth : MonoBehaviour
 
         if (bossManager != null)
         {
-            bossManager.OnBossDied();
+            bossManager.OnBossDied(gameObject);
+            yield break;
         }
 
         Destroy(gameObject);
+    }
+
+    private void PlayDeathSfx()
+    {
+        if (AudioManager.Instance == null)
+        {
+            return;
+        }
+
+        switch (deathSoundType)
+        {
+            case BossDeathSoundType.GoblinKing:
+                AudioManager.Instance.PlayGoblinDeathSFX();
+                break;
+
+            case BossDeathSoundType.VampireBat:
+                AudioManager.Instance.PlayVampireBatDeathSFX();
+                break;
+        }
     }
 
     private void TriggerDamageFlash()
