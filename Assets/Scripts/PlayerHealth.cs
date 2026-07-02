@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
@@ -11,8 +12,16 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private PlayerStats playerStats;
     public AudioClip hurtSound;
 
+    [Header("Damage Feedback")]
+    [SerializeField] private Color damageFlashColor = new Color(1f, 0.25f, 0.25f, 0.6f);
+    [SerializeField] private float damageFlashDuration = 0.15f;
+
     [Header("Game Over Settings")]
     [SerializeField] private GameObject gameOverPanel;
+
+    private SpriteRenderer[] spriteRenderers;
+    private Color[] defaultColors;
+    private Coroutine damageFlashRoutine;
 
     private void Awake()
     {
@@ -24,6 +33,16 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             currentHealth = maxHealth;
+        }
+
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        defaultColors = new Color[spriteRenderers.Length];
+
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            defaultColors[i] = spriteRenderers[i] != null
+                ? spriteRenderers[i].color
+                : Color.white;
         }
     }
 
@@ -63,6 +82,11 @@ public class PlayerHealth : MonoBehaviour
             AudioManager.Instance.PlaySFX(hurtSound);
         }
 
+        if (amount < 0)
+        {
+            TriggerDamageFlash();
+        }
+
         if (currentHealth <= 0)
         {
             Die();
@@ -83,7 +107,47 @@ public class PlayerHealth : MonoBehaviour
         {
             healthText.text = "HP: " + currentHealth + "/" + maxHealth;
         }
-    }  
+    }
+
+    private void TriggerDamageFlash()
+    {
+        if (spriteRenderers == null || spriteRenderers.Length == 0)
+        {
+            return;
+        }
+
+        if (damageFlashRoutine != null)
+        {
+            StopCoroutine(damageFlashRoutine);
+        }
+
+        damageFlashRoutine = StartCoroutine(DamageFlashRoutine());
+    }
+
+    private IEnumerator DamageFlashRoutine()
+    {
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            if (spriteRenderers[i] != null)
+            {
+                Color flashColor = damageFlashColor;
+                flashColor.a = defaultColors[i].a * damageFlashColor.a;
+                spriteRenderers[i].color = flashColor;
+            }
+        }
+
+        yield return new WaitForSeconds(Mathf.Max(0.02f, damageFlashDuration));
+
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            if (spriteRenderers[i] != null)
+            {
+                spriteRenderers[i].color = defaultColors[i];
+            }
+        }
+
+        damageFlashRoutine = null;
+    }
 
     public void Die()
     {

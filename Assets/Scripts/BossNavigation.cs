@@ -193,7 +193,7 @@ public class BossNavigation : MonoBehaviour
             targetMovedEnough ||
             hasNoPath ||
             shouldForceStuckRepath ||
-            (periodicRepath && targetIsWalkable);
+            periodicRepath;
 
         if (shouldRepath)
         {
@@ -254,6 +254,69 @@ public class BossNavigation : MonoBehaviour
         lastRepathTargetPosition = rb != null
             ? rb.position
             : transform.position;
+    }
+
+    public bool TrySnapToNearestWalkablePosition()
+    {
+        if (rb == null)
+        {
+            return false;
+        }
+
+        Vector2 currentPosition = rb.position;
+
+        if (IsWalkable(currentPosition))
+        {
+            return true;
+        }
+
+        float stepDistance = Mathf.Max(nodeSize, 0.1f);
+        float colliderDiameter = GetNavigationBoxSize().magnitude;
+
+        int maxRingCount = Mathf.Max(
+            4,
+            Mathf.CeilToInt(colliderDiameter / stepDistance) + 4
+        );
+
+        for (int ring = 1; ring <= maxRingCount; ring++)
+        {
+            float radius = ring * stepDistance;
+            int sampleCount = Mathf.Max(8, ring * 8);
+
+            for (int sampleIndex = 0;
+                 sampleIndex < sampleCount;
+                 sampleIndex++)
+            {
+                float angle =
+                    sampleIndex /
+                    (float)sampleCount *
+                    Mathf.PI * 2f;
+
+                Vector2 candidatePosition =
+                    currentPosition +
+                    new Vector2(
+                        Mathf.Cos(angle),
+                        Mathf.Sin(angle)
+                    ) * radius;
+
+                if (!IsWalkable(candidatePosition))
+                {
+                    continue;
+                }
+
+                rb.position = candidatePosition;
+
+                Vector3 worldPosition = transform.position;
+                worldPosition.x = candidatePosition.x;
+                worldPosition.y = candidatePosition.y;
+                transform.position = worldPosition;
+
+                ResetNavigation();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool HasDirectPath(Vector2 from, Vector2 to)

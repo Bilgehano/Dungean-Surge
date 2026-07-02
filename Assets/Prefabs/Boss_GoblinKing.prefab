@@ -139,8 +139,8 @@ MonoBehaviour:
   isDead: 0
   nextHurtThreshold: 0
   currentPhase: 1
-  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
-  damageFlashDuration: 0.1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 0.6}
+  damageFlashDuration: 0.15
 --- !u!61 &2258557027041497001
 BoxCollider2D:
   m_ObjectHideFlags: 0

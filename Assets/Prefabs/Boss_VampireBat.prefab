@@ -188,8 +188,8 @@ MonoBehaviour:
   isDead: 0
   nextHurtThreshold: 0
   currentPhase: 1
-  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 1}
-  damageFlashDuration: 0.1
+  damageFlashColor: {r: 1, g: 0.25, b: 0.25, a: 0.6}
+  damageFlashDuration: 0.15
 --- !u!95 &730382684615429511
 Animator:
   serializedVersion: 7
@@ -305,7 +305,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
-  nodeSize: 0.1
+  nodeSize: 0.25
   gridHalfExtent: 16
   bossCollider: {fileID: 1331316571379896187}
   collisionPadding: 0.4

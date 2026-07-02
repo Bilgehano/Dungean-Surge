@@ -48013,7 +48013,7 @@ MonoBehaviour:
     m_Bits: 128
   bossLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   damageAmount: -10
   timeBetweenAttacks: 1
   hitEffectPrefab: {fileID: 7266168937141934758, guid: 0800184d7c1423348bdb32a7be10efbe, type: 3}

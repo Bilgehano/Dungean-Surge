@@ -391,6 +391,15 @@ public class BossController : MonoBehaviour
             return;
         }
 
+        Vector3 localPosition = attackCenter.localPosition;
+        float offsetX = Mathf.Abs(localPosition.x);
+
+        localPosition.x = spriteRenderer.flipX
+            ? offsetX
+            : -offsetX;
+
+        attackCenter.localPosition = localPosition;
+
         Vector3 scale = attackCenter.localScale;
 
         float scaleX = Mathf.Max(
@@ -572,6 +581,7 @@ public class BossController : MonoBehaviour
 
         if (navigation != null)
         {
+            navigation.TrySnapToNearestWalkablePosition();
             navigation.ResetNavigation();
         }
     }

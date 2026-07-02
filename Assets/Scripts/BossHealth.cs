@@ -15,8 +15,8 @@ public class BossHealth : MonoBehaviour
     [SerializeField] private int currentPhase = 1;
 
     [Header("Damage Feedback")]
-    [SerializeField] private Color damageFlashColor = new Color(1f, 0.25f, 0.25f, 1f);
-    [SerializeField] private float damageFlashDuration = 0.1f;
+    [SerializeField] private Color damageFlashColor = new Color(1f, 0.25f, 0.25f, 0.6f);
+    [SerializeField] private float damageFlashDuration = 0.15f;
 
     private BossManager bossManager;
     private BossHealthBar bossHealthBar;
@@ -207,7 +207,9 @@ public class BossHealth : MonoBehaviour
         {
             if (spriteRenderers[i] != null)
             {
-                spriteRenderers[i].color = damageFlashColor;
+                Color flashColor = damageFlashColor;
+                flashColor.a = defaultColors[i].a * damageFlashColor.a;
+                spriteRenderers[i].color = flashColor;
             }
         }
 
