@@ -120,6 +120,7 @@ MonoBehaviour:
   moveSpeed: 4
   followStopDistance: 1.2
   followResumeDistance: 1.5
+  globalChaseStepDistance: 6
 --- !u!114 &5097437447453705956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,13 +268,14 @@ MonoBehaviour:
   heavyAttackCooldown: 7
   heavyAttackLockTime: 1
   throwDamage: -10
-  throwMinRange: 2
-  throwMaxRange: 8
+  throwMinRange: 1
+  throwMaxRange: 16
   throwAttackCooldown: 4
   throwAttackLockTime: 0.8
   projectileSpawnPoint: {fileID: 8690881554406998458}
   throwProjectilePrefab: {fileID: 434365836799160231, guid: 4718b11ca17f3094585a53a47b1ee02f, type: 3}
-  throwTravelTime: 0.8
+  throwMinimumFlightDistance: 12
+  throwProjectileSpeed: 10
   throwArcHeight: 1.2
   throwImpactRadius: 0.8
   throwAimLeadTime: 0.25
@@ -309,7 +311,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
-  damageCenter: {fileID: 8991458504845995166}
+  damageCenter: {fileID: 410191855257789433}
   contactRadius: 1.5
   hasMigratedContactArea: 1
 --- !u!114 &1270270850127387470
@@ -437,6 +439,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8991458504845995166}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2869539312747194995
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 410191855257789433}
+  m_Layer: 11
+  m_Name: BossDamageCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &410191855257789433
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2869539312747194995}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8991458504845995166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5762380738036630915
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,6 +535,7 @@ Transform:
   - {fileID: 5249161979832668615}
   - {fileID: 5254376378639183457}
   - {fileID: 6332124867395500697}
+  - {fileID: 410191855257789433}
   m_Father: {fileID: 1413149734218856543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7777901979018073874

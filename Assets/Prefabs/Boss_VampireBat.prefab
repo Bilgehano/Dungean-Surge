@@ -1,5 +1,98 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &728183585335676976
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2322565982185087621}
+  m_Layer: 11
+  m_Name: HeavyAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2322565982185087621
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728183585335676976}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.013, y: 0.135, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521503679892611056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3068113059872921597
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 869216135474183430}
+  m_Layer: 11
+  m_Name: NormalAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &869216135474183430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3068113059872921597}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.017, y: 0.17, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521503679892611056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3247044115044508125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3236292372113898885}
+  m_Layer: 11
+  m_Name: CastProjectileSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3236292372113898885
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3247044115044508125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.076, y: 0.019, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521503679892611056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6361848014763510369
 GameObject:
   m_ObjectHideFlags: 0
@@ -34,7 +127,7 @@ Transform:
   m_GameObject: {fileID: 6361848014763510369}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.12516451, y: -0.04637623, z: 0}
+  m_LocalPosition: {x: -0.045, y: 0.036, z: 0}
   m_LocalScale: {x: 3.5, y: 3.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -129,8 +222,13 @@ MonoBehaviour:
   bossController: {fileID: 0}
   bossHealth: {fileID: 0}
   animator: {fileID: 0}
+  normalAttackCenter: {fileID: 869216135474183430}
+  heavyAttackCenter: {fileID: 2322565982185087621}
+  stompAttackCenter: {fileID: 6115282911984127901}
+  castAttackCenter: {fileID: 6382189114244804649}
+  castProjectileSpawnPoint: {fileID: 3236292372113898885}
   normalDamage: -15
-  normalAttackWidth: 2.14
+  normalAttackWidth: 2.6
   normalAttackHeight: 1.2
   normalAttackCooldown: 1.5
   normalAttackLockTime: 0.6
@@ -141,11 +239,16 @@ MonoBehaviour:
   heavyAttackLockTime: 0.9
   stompDamage: -35
   stompAttackWidth: 12
-  stompAttackHeight: 8
+  stompAttackHeight: 9.01
   stompAttackCooldown: 6
   stompAttackLockTime: 1.2
+  stompWarningColor: {r: 0.72, g: 0.22, b: 0.95, a: 0.34}
+  stompWarningAfterHitDuration: 0.2
+  stompWarningSortingOrderOffset: -1
+  stompWarningObjectName: StompWarningVisual
   castDamage: -20
-  castAttackRange: 6.92
+  castMinRange: 3
+  castMaxRange: 20
   castAttackCooldown: 8
   castAttackLockTime: 1.4
   enableCastAttack: 0
@@ -169,6 +272,9 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   attackCenter: {fileID: 7521503679892611056}
   moveSpeed: 2.5
+  followStopDistance: 1.2
+  followResumeDistance: 1.5
+  globalChaseStepDistance: 6
 --- !u!114 &-8929247699001213879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,12 +391,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
   contactDamage: -10
+  contactWidth: 3.3
+  contactHeight: 3.6
   damageCooldown: 0.8
-  contactRadius: 1.8
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
-  damageCenter: {fileID: 7521503679892611056}
+  damageCenter: {fileID: 8493195139387430076}
+  contactRadius: 1.8
+  hasMigratedContactArea: 1
 --- !u!114 &2261189723554363274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,7 +418,12 @@ MonoBehaviour:
   nodeSize: 0.25
   gridHalfExtent: 16
   bossCollider: {fileID: 1331316571379896187}
+  topPadding: 0.4
+  bottomPadding: 0.4
+  leftPadding: 0.4
+  rightPadding: 0.4
   collisionPadding: 0.4
+  hasMigratedCollisionPadding: 1
   repathInterval: 0.4
   playerMoveRepathThreshold: 0.75
   directPathCheckInterval: 0.15
@@ -318,6 +432,99 @@ MonoBehaviour:
   stuckRepathDelay: 0.35
   drawPathGizmos: 0
   smoothCalculatedPath: 1
+--- !u!1 &6585508615460987624
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6115282911984127901}
+  m_Layer: 11
+  m_Name: StompAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6115282911984127901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6585508615460987624}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.008, y: -0.392, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521503679892611056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8693955195047868535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8493195139387430076}
+  m_Layer: 11
+  m_Name: BossDamageCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8493195139387430076
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8693955195047868535}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.148, y: -0.032, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521503679892611056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9186928943588036478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6382189114244804649}
+  m_Layer: 11
+  m_Name: CastAttackCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6382189114244804649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186928943588036478}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7521503679892611056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9210805701737245114
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,9 +550,15 @@ Transform:
   m_GameObject: {fileID: 9210805701737245114}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.14285713, y: -0.14285713, z: 0}
+  m_LocalPosition: {x: 0, y: -0.131, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8493195139387430076}
+  - {fileID: 869216135474183430}
+  - {fileID: 2322565982185087621}
+  - {fileID: 6115282911984127901}
+  - {fileID: 6382189114244804649}
+  - {fileID: 3236292372113898885}
   m_Father: {fileID: 4554986785455665836}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -9,6 +9,13 @@ public class BossAttackController_VampireBat : MonoBehaviour
     [SerializeField] private BossHealth bossHealth;
     [SerializeField] private Animator animator;
 
+    [Header("Attack Centers")]
+    [SerializeField] private Transform normalAttackCenter;
+    [SerializeField] private Transform heavyAttackCenter;
+    [SerializeField] private Transform stompAttackCenter;
+    [SerializeField] private Transform castAttackCenter;
+    [SerializeField] private Transform castProjectileSpawnPoint;
+
     [Header("Normal Attack")]
     [SerializeField] private int normalDamage = -2;
 
@@ -36,9 +43,27 @@ public class BossAttackController_VampireBat : MonoBehaviour
     [SerializeField] private float stompAttackCooldown = 6f;
     [SerializeField] private float stompAttackLockTime = 1.2f;
 
+    [Header("Stomp Warning Visual")]
+    [SerializeField]
+    private Color stompWarningColor =
+        new Color(0.72f, 0.22f, 0.95f, 0.34f);
+
+    [SerializeField, Min(0f)]
+    private float stompWarningAfterHitDuration = 0.2f;
+
+    [SerializeField]
+    private int stompWarningSortingOrderOffset = -1;
+
+    [SerializeField]
+    private string stompWarningObjectName = "StompWarningVisual";
+
     [Header("Future Cast Attack")]
     [SerializeField] private int castDamage = -4;
-    [SerializeField] private float castAttackRange = 5f;
+    [SerializeField] private float castMinRange = 2.5f;
+
+    [FormerlySerializedAs("castAttackRange")]
+    [SerializeField] private float castMaxRange = 5f;
+
     [SerializeField] private float castAttackCooldown = 8f;
     [SerializeField] private float castAttackLockTime = 1.4f;
     [SerializeField] private bool enableCastAttack = false;
@@ -50,11 +75,19 @@ public class BossAttackController_VampireBat : MonoBehaviour
     private bool hasMigratedStompArea;
 
     private bool isAttacking;
+    private bool stompAttackInProgress;
+    private bool stompDamageWasDealt;
 
     private float nextNormalAttackTime;
     private float nextHeavyAttackTime;
     private float nextStompAttackTime;
     private float nextCastAttackTime;
+
+    private GameObject stompWarningObject;
+    private SpriteRenderer stompWarningRenderer;
+    private Coroutine hideStompWarningCoroutine;
+
+    private static Sprite cachedStompWarningSprite;
 
     private void Awake()
     {
@@ -74,11 +107,21 @@ public class BossAttackController_VampireBat : MonoBehaviour
         {
             animator = GetComponent<Animator>();
         }
+
+        ValidateSettings();
+        EnsureStompWarningVisual();
+        HideStompWarningImmediately();
     }
 
     private void OnValidate()
     {
         MigrateLegacyStompAreaIfNeeded();
+        ValidateSettings();
+    }
+
+    private void OnDisable()
+    {
+        HideStompWarningImmediately();
     }
 
     private void Update()
@@ -95,9 +138,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
             return;
         }
 
-        float distanceToPlayer = bossController.GetDistanceToPlayer();
-
-        if (TryStartAttack(distanceToPlayer))
+        if (TryStartAttack())
         {
             return;
         }
@@ -105,61 +146,116 @@ public class BossAttackController_VampireBat : MonoBehaviour
         bossController.SetMovementEnabled(true);
     }
 
-    private bool TryStartAttack(float distanceToPlayer)
+    private bool TryStartAttack()
     {
         int phase = bossHealth != null
             ? bossHealth.CurrentPhase
             : 1;
 
+        Vector2 normalOrigin =
+            bossController.GetAttackOrigin(normalAttackCenter);
+
+        Vector2 heavyOrigin =
+            bossController.GetAttackOrigin(heavyAttackCenter);
+
+        Vector2 stompOrigin =
+            bossController.GetAttackOrigin(stompAttackCenter);
+
+        Vector2 castOrigin =
+            bossController.GetAttackOrigin(castAttackCenter);
+
+        float normalDistance =
+            bossController.GetDistanceToPlayer(normalOrigin);
+
+        float heavyDistance =
+            bossController.GetDistanceToPlayer(heavyOrigin);
+
+        float castDistance =
+            bossController.GetDistanceToPlayer(castOrigin);
+
         if (enableCastAttack &&
             phase >= 4 &&
             Time.time >= nextCastAttackTime &&
-            distanceToPlayer <= castAttackRange)
+            castDistance >= castMinRange &&
+            castDistance <= castMaxRange)
         {
             StartBossAttack("Sneer", castAttackLockTime);
-            nextCastAttackTime = Time.time + castAttackCooldown;
+
+            nextCastAttackTime =
+                Time.time + castAttackCooldown;
+
             return true;
         }
 
         if (phase >= 3 &&
             Time.time >= nextStompAttackTime &&
-            IsPlayerInsideStompArea())
+            IsPlayerInsideStompArea(stompOrigin))
         {
-            StartBossAttack("StompAttack", stompAttackLockTime);
-            nextStompAttackTime = Time.time + stompAttackCooldown;
+            StartBossAttack(
+                "StompAttack",
+                stompAttackLockTime
+            );
+
+            nextStompAttackTime =
+                Time.time + stompAttackCooldown;
+
             return true;
         }
 
         if (phase >= 2 &&
             Time.time >= nextHeavyAttackTime &&
-            distanceToPlayer <= heavyAttackWidth)
+            heavyDistance <= heavyAttackWidth)
         {
-            StartBossAttack("HeavyAttack", heavyAttackLockTime);
-            nextHeavyAttackTime = Time.time + heavyAttackCooldown;
+            StartBossAttack(
+                "HeavyAttack",
+                heavyAttackLockTime
+            );
+
+            nextHeavyAttackTime =
+                Time.time + heavyAttackCooldown;
+
             return true;
         }
 
         if (Time.time >= nextNormalAttackTime &&
-            distanceToPlayer <= normalAttackWidth)
+            normalDistance <= normalAttackWidth)
         {
-            StartBossAttack("NormalAttack", normalAttackLockTime);
-            nextNormalAttackTime = Time.time + normalAttackCooldown;
+            StartBossAttack(
+                "NormalAttack",
+                normalAttackLockTime
+            );
+
+            nextNormalAttackTime =
+                Time.time + normalAttackCooldown;
+
             return true;
         }
 
         return false;
     }
 
-    private void StartBossAttack(string triggerName, float lockTime)
+    private void StartBossAttack(
+        string triggerName,
+        float lockTime)
     {
         isAttacking = true;
+
+        bool isStompAttack = triggerName == "StompAttack";
+
+        if (isStompAttack)
+        {
+            stompAttackInProgress = true;
+            stompDamageWasDealt = false;
+        }
 
         bossController.SetMovementEnabled(false);
         bossController.StopMoving();
 
         if (bossController.HasPlayer)
         {
-            bossController.FacePosition(bossController.Player.position);
+            bossController.FacePosition(
+                bossController.Player.position
+            );
         }
 
         if (animator != null)
@@ -167,16 +263,31 @@ public class BossAttackController_VampireBat : MonoBehaviour
             animator.SetTrigger(triggerName);
         }
 
-        StartCoroutine(AttackLockRoutine(lockTime));
+        StartCoroutine(
+            AttackLockRoutine(lockTime, isStompAttack)
+        );
     }
 
-    private IEnumerator AttackLockRoutine(float lockTime)
+    private IEnumerator AttackLockRoutine(
+        float lockTime,
+        bool wasStompAttack)
     {
         yield return new WaitForSeconds(lockTime);
 
+        if (wasStompAttack)
+        {
+            stompAttackInProgress = false;
+
+            if (!stompDamageWasDealt)
+            {
+                HideStompWarningImmediately();
+            }
+        }
+
         isAttacking = false;
 
-        if (bossController != null && bossController.IsActive)
+        if (bossController != null &&
+            bossController.IsActive)
         {
             bossController.SetMovementEnabled(true);
         }
@@ -184,57 +295,174 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
     public void DealNormalDamage()
     {
-        if (bossController != null)
+        if (bossController == null)
         {
-            bossController.TryDamagePlayerInFront(
-                normalAttackWidth,
-                normalAttackHeight,
-                normalDamage
-            );
+            return;
         }
+
+        Vector2 normalOrigin =
+            bossController.GetAttackOrigin(
+                normalAttackCenter
+            );
+
+        bossController.TryDamagePlayerInFront(
+            normalOrigin,
+            normalAttackWidth,
+            normalAttackHeight,
+            normalDamage
+        );
     }
 
     public void DealHeavyDamage()
     {
-        if (bossController != null)
+        if (bossController == null)
         {
-            bossController.TryDamagePlayerInFront(
-                heavyAttackWidth,
-                heavyAttackHeight,
-                heavyDamage
-            );
+            return;
         }
+
+        Vector2 heavyOrigin =
+            bossController.GetAttackOrigin(
+                heavyAttackCenter
+            );
+
+        bossController.TryDamagePlayerInFront(
+            heavyOrigin,
+            heavyAttackWidth,
+            heavyAttackHeight,
+            heavyDamage
+        );
+    }
+
+    public void ShowStompWarning()
+    {
+        if (!stompAttackInProgress ||
+            bossController == null)
+        {
+            return;
+        }
+
+        EnsureStompWarningVisual();
+        CancelScheduledStompWarningHide();
+
+        if (stompWarningObject == null ||
+            stompWarningRenderer == null)
+        {
+            return;
+        }
+
+        Vector2 stompOrigin =
+            bossController.GetAttackOrigin(
+                stompAttackCenter
+            );
+
+        stompWarningObject.transform.position =
+            new Vector3(
+                stompOrigin.x,
+                stompOrigin.y,
+                transform.position.z
+            );
+
+        stompWarningObject.transform.localScale =
+            new Vector3(
+                stompAttackWidth,
+                stompAttackHeight,
+                1f
+            );
+
+        stompWarningRenderer.color = stompWarningColor;
+        UpdateStompWarningSorting();
+
+        stompWarningObject.SetActive(true);
     }
 
     public void DealStompDamage()
     {
+        stompDamageWasDealt = true;
+
         if (bossController != null)
         {
+            Vector2 stompOrigin =
+                bossController.GetAttackOrigin(
+                    stompAttackCenter
+                );
+
             bossController.TryDamagePlayerInEllipse(
+                stompOrigin,
                 stompAttackWidth,
                 stompAttackHeight,
                 stompDamage
             );
         }
+
+        StartStompWarningHideAfterHit();
     }
 
     public void DealCastDamage()
     {
-        if (!enableCastAttack)
+        if (!enableCastAttack ||
+            bossController == null)
         {
             return;
         }
 
-        if (bossController != null)
-        {
-            bossController.TryDamagePlayer(
-                castAttackRange,
-                castDamage
+        Vector2 castOrigin =
+            bossController.GetAttackOrigin(
+                castAttackCenter
             );
+
+        bossController.TryDamagePlayer(
+            castOrigin,
+            castMaxRange,
+            castDamage
+        );
+    }
+
+    private void StartStompWarningHideAfterHit()
+    {
+        CancelScheduledStompWarningHide();
+
+        hideStompWarningCoroutine = StartCoroutine(
+            HideStompWarningAfterHitRoutine()
+        );
+    }
+
+    private IEnumerator HideStompWarningAfterHitRoutine()
+    {
+        yield return new WaitForSeconds(
+            stompWarningAfterHitDuration
+        );
+
+        if (stompWarningObject != null)
+        {
+            stompWarningObject.SetActive(false);
+        }
+
+        hideStompWarningCoroutine = null;
+    }
+
+    private void CancelScheduledStompWarningHide()
+    {
+        if (hideStompWarningCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(hideStompWarningCoroutine);
+        hideStompWarningCoroutine = null;
+    }
+
+    private void HideStompWarningImmediately()
+    {
+        CancelScheduledStompWarningHide();
+
+        if (stompWarningObject != null)
+        {
+            stompWarningObject.SetActive(false);
         }
     }
 
-    private bool IsPlayerInsideStompArea()
+    private bool IsPlayerInsideStompArea(
+        Vector2 stompOrigin)
     {
         if (bossController == null ||
             !bossController.HasPlayer)
@@ -254,7 +482,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         Vector2 offset =
             (Vector2)bossController.Player.position -
-            bossController.AttackOrigin;
+            stompOrigin;
 
         float ellipseValue =
             (offset.x * offset.x) /
@@ -265,6 +493,149 @@ public class BossAttackController_VampireBat : MonoBehaviour
         return ellipseValue <= 1f;
     }
 
+    private void EnsureStompWarningVisual()
+    {
+        if (stompWarningObject != null &&
+            stompWarningRenderer != null)
+        {
+            return;
+        }
+
+        Transform existingChild =
+            transform.Find(stompWarningObjectName);
+
+        if (existingChild != null)
+        {
+            stompWarningObject = existingChild.gameObject;
+            stompWarningRenderer =
+                stompWarningObject.GetComponent<SpriteRenderer>();
+        }
+
+        if (stompWarningObject == null)
+        {
+            stompWarningObject = new GameObject(
+                stompWarningObjectName
+            );
+
+            stompWarningObject.transform.SetParent(
+                transform,
+                false
+            );
+
+            stompWarningRenderer =
+                stompWarningObject.AddComponent<SpriteRenderer>();
+        }
+
+        if (stompWarningRenderer == null)
+        {
+            stompWarningRenderer =
+                stompWarningObject.GetComponent<SpriteRenderer>();
+
+            if (stompWarningRenderer == null)
+            {
+                stompWarningRenderer =
+                    stompWarningObject.AddComponent<SpriteRenderer>();
+            }
+        }
+
+        stompWarningRenderer.sprite =
+            GetOrCreateStompWarningSprite();
+
+        stompWarningRenderer.color = stompWarningColor;
+
+        UpdateStompWarningSorting();
+    }
+
+    private void UpdateStompWarningSorting()
+    {
+        if (stompWarningRenderer == null)
+        {
+            return;
+        }
+
+        SpriteRenderer bossSpriteRenderer =
+            GetComponent<SpriteRenderer>();
+
+        if (bossSpriteRenderer == null)
+        {
+            return;
+        }
+
+        stompWarningRenderer.sortingLayerID =
+            bossSpriteRenderer.sortingLayerID;
+
+        stompWarningRenderer.sortingOrder =
+            bossSpriteRenderer.sortingOrder +
+            stompWarningSortingOrderOffset;
+    }
+
+    private static Sprite GetOrCreateStompWarningSprite()
+    {
+        if (cachedStompWarningSprite != null)
+        {
+            return cachedStompWarningSprite;
+        }
+
+        const int size = 128;
+
+        Texture2D texture = new Texture2D(
+            size,
+            size,
+            TextureFormat.RGBA32,
+            false
+        );
+
+        texture.name = "RuntimeStompWarningTexture";
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Vector2 center = new Vector2(
+            (size - 1) * 0.5f,
+            (size - 1) * 0.5f
+        );
+
+        float radius = (size - 1) * 0.5f;
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                Vector2 pixelPosition =
+                    new Vector2(x, y);
+
+                float normalizedDistance =
+                    Vector2.Distance(
+                        pixelPosition,
+                        center
+                    ) / radius;
+
+                float alpha = normalizedDistance <= 1f
+                    ? 1f
+                    : 0f;
+
+                texture.SetPixel(
+                    x,
+                    y,
+                    new Color(1f, 1f, 1f, alpha)
+                );
+            }
+        }
+
+        texture.Apply();
+
+        cachedStompWarningSprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, size, size),
+            new Vector2(0.5f, 0.5f),
+            size
+        );
+
+        cachedStompWarningSprite.name =
+            "RuntimeStompWarningSprite";
+
+        return cachedStompWarningSprite;
+    }
+
     private void MigrateLegacyStompAreaIfNeeded()
     {
         if (hasMigratedStompArea)
@@ -272,13 +643,65 @@ public class BossAttackController_VampireBat : MonoBehaviour
             return;
         }
 
-        float oldRadius = Mathf.Max(stompAttackRange, 0.01f);
+        float oldRadius = Mathf.Max(
+            stompAttackRange,
+            0.01f
+        );
+
         float diameter = oldRadius * 2f;
 
         stompAttackWidth = diameter;
         stompAttackHeight = diameter;
 
         hasMigratedStompArea = true;
+    }
+
+    private void ValidateSettings()
+    {
+        normalAttackWidth = Mathf.Max(
+            0.01f,
+            normalAttackWidth
+        );
+
+        normalAttackHeight = Mathf.Max(
+            0.01f,
+            normalAttackHeight
+        );
+
+        heavyAttackWidth = Mathf.Max(
+            0.01f,
+            heavyAttackWidth
+        );
+
+        heavyAttackHeight = Mathf.Max(
+            0.01f,
+            heavyAttackHeight
+        );
+
+        stompAttackWidth = Mathf.Max(
+            0.01f,
+            stompAttackWidth
+        );
+
+        stompAttackHeight = Mathf.Max(
+            0.01f,
+            stompAttackHeight
+        );
+
+        stompWarningAfterHitDuration = Mathf.Max(
+            0f,
+            stompWarningAfterHitDuration
+        );
+
+        castMinRange = Mathf.Max(
+            0f,
+            castMinRange
+        );
+
+        castMaxRange = Mathf.Max(
+            castMinRange,
+            castMaxRange
+        );
     }
 
     private void OnDrawGizmosSelected()
@@ -300,10 +723,35 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         float direction = facesRight ? 1f : -1f;
 
-        Vector3 origin = controller.AttackOrigin;
+        Vector3 normalOrigin =
+            controller.GetAttackOrigin(
+                normalAttackCenter
+            );
 
-        Vector3 normalAttackBoxCenter = origin +
-            Vector3.right * direction * (normalAttackWidth * 0.5f);
+        Vector3 heavyOrigin =
+            controller.GetAttackOrigin(
+                heavyAttackCenter
+            );
+
+        Vector3 stompOrigin =
+            controller.GetAttackOrigin(
+                stompAttackCenter
+            );
+
+        Vector3 castOrigin =
+            controller.GetAttackOrigin(
+                castAttackCenter
+            );
+
+        Vector3 castSpawnOrigin =
+            controller.GetAttackOrigin(
+                castProjectileSpawnPoint
+            );
+
+        Vector3 normalAttackBoxCenter =
+            normalOrigin +
+            Vector3.right * direction *
+            (normalAttackWidth * 0.5f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(
@@ -315,8 +763,10 @@ public class BossAttackController_VampireBat : MonoBehaviour
             )
         );
 
-        Vector3 heavyAttackBoxCenter = origin +
-            Vector3.right * direction * (heavyAttackWidth * 0.5f);
+        Vector3 heavyAttackBoxCenter =
+            heavyOrigin +
+            Vector3.right * direction *
+            (heavyAttackWidth * 0.5f);
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(
@@ -332,7 +782,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         Gizmos.color = Color.magenta;
         Gizmos.matrix = Matrix4x4.TRS(
-            origin,
+            stompOrigin,
             Quaternion.identity,
             new Vector3(
                 stompAttackWidth,
@@ -345,6 +795,19 @@ public class BossAttackController_VampireBat : MonoBehaviour
         Gizmos.matrix = previousMatrix;
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(origin, castAttackRange);
+        Gizmos.DrawWireSphere(
+            castOrigin,
+            castMaxRange
+        );
+
+        Gizmos.DrawWireSphere(
+            castOrigin,
+            castMinRange
+        );
+
+        Gizmos.DrawWireSphere(
+            castSpawnOrigin,
+            0.08f
+        );
     }
 }

@@ -170,3 +170,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossProjectile
   rotationSpeed: 360
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 8
