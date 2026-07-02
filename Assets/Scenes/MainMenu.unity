@@ -4369,12 +4369,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1c3474d631b4e5c82e33fea671462e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  sfxSource: {fileID: 2101487459}
-  gameStartSound: {fileID: 8300000, guid: e1713a7636a0b4c7ba6e17c26176c9a1, type: 3}
-  levelUpSound: {fileID: 8300000, guid: d8fd696e069394f9ab569cedf5a994f5, type: 3}
-  upgradeChooseSound: {fileID: 8300000, guid: 7f169020e38484f459ae01a0bf23f4f0, type: 3}
-  victorySound: {fileID: 8300000, guid: c96fc40688d4d4b7a9f62735efdd4a76, type: 3}
-  endingSound: {fileID: 8300000, guid: b1960a61629f647218da353890f7f4fe, type: 3}
+  backgroundMusic: {fileID: 8300000, guid: b4e59572cd8fb45cea35854abb0b526e, type: 3}
+  bossMusic: {fileID: 8300000, guid: 7a93f7fe4f78239409cc98882b5614b1, type: 3}
+  playBackgroundMusicOnStart: 1
+  backgroundMusicVolume: 0.5
+  bossMusicVolume: 0.7
+  gameStartSfx: {fileID: 8300000, guid: e1713a7636a0b4c7ba6e17c26176c9a1, type: 3}
+  levelUpSfx: {fileID: 8300000, guid: d8fd696e069394f9ab569cedf5a994f5, type: 3}
+  upgradeChooseSfx: {fileID: 8300000, guid: 7f169020e38484f459ae01a0bf23f4f0, type: 3}
+  victorySfx: {fileID: 8300000, guid: c96fc40688d4d4b7a9f62735efdd4a76, type: 3}
+  gameOverSfx: {fileID: 8300000, guid: d9e0773db7225374ba7f86cedb94a068, type: 3}
 --- !u!4 &2101487461
 Transform:
   m_ObjectHideFlags: 0
