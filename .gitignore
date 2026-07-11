@@ -2,6 +2,24 @@
 #  Unity .gitignore
 # =============== #
 
+# Unity project root also exists under /src
+/src/[Ll]ibrary/
+/src/[Tt]emp/
+/src/[Oo]bj/
+/src/[Bb]uild/
+/src/[Bb]uilds/
+/src/[Ll]ogs/
+/src/[Uu]serSettings/
+/src/[Mm]emoryCaptures/
+/src/[Rr]ecordings/
+!/src/[Aa]ssets/**/*.meta
+/src/[Aa]ssets/TextMesh Pro/
+/src/[Aa]ssets/AddressableAssetsData/*/*.bin*
+/src/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/src/[Aa]ssets/[Ss]treamingAssets/aa/*
+/src/[Aa]ssets/[Ss]treamingAssets/UnityServicesProjectConfiguration.json
+/src/[Aa]ssets/[Ss]treamingAssets/UnityServicesProjectConfiguration.json.meta
+
 # Library — regenerated locally from Assets & Packages
 /[Ll]ibrary/
 /[Tt]emp/
