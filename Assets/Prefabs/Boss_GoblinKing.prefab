@@ -320,8 +320,8 @@ MonoBehaviour:
     m_Bits: 8
   chargeObstaclePadding: 0.5
   chargeBoxCastScale: 1.5
-  showNormalMovesetGizmos: 0
-  showEnhancedMovesetGizmos: 0
+  showNormalMovesetGizmos: 1
+  showEnhancedMovesetGizmos: 1
 --- !u!114 &5411810159495536869
 MonoBehaviour:
   m_ObjectHideFlags: 0
