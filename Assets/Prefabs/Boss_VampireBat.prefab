@@ -168,7 +168,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.14285713, y: -0.37}
+  m_Offset: {x: 0.14285713, y: -0.21}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -178,7 +178,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.5, y: 0.4}
+  m_Size: {x: 0.5, y: 0.7}
   m_EdgeRadius: 0
 --- !u!50 &-8081581806685275376
 Rigidbody2D:
@@ -242,7 +242,8 @@ MonoBehaviour:
   stompAttackHeight: 9.01
   stompAttackCooldown: 6
   stompAttackLockTime: 1.2
-  stompWarningColor: {r: 0.72, g: 0.22, b: 0.95, a: 0.34}
+  stompWarningPreHitColor: {r: 1, g: 0.35, b: 0.75, a: 0.28}
+  stompWarningImpactColor: {r: 0.65, g: 0.15, b: 1, a: 0.38}
   stompWarningAfterHitDuration: 0.2
   stompWarningSortingOrderOffset: -1
   stompWarningObjectName: StompWarningVisual
@@ -271,6 +272,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   attackCenter: {fileID: 7521503679892611056}
+  attackCenterVisualPivotX: 0.074
   moveSpeed: 2.5
   followStopDistance: 1.2
   followResumeDistance: 1.5

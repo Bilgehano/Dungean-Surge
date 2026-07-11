@@ -45,8 +45,12 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
     [Header("Stomp Warning Visual")]
     [SerializeField]
-    private Color stompWarningColor =
-        new Color(0.72f, 0.22f, 0.95f, 0.34f);
+    private Color stompWarningPreHitColor =
+        new Color(1f, 0.35f, 0.75f, 0.28f);
+
+    [SerializeField]
+    private Color stompWarningImpactColor =
+        new Color(0.65f, 0.15f, 1f, 0.38f);
 
     [SerializeField, Min(0f)]
     private float stompWarningAfterHitDuration = 0.2f;
@@ -75,7 +79,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
     private bool hasMigratedStompArea;
 
     private bool isAttacking;
-    private bool stompAttackInProgress;
+    private bool currentAttackIsStomp;
     private bool stompDamageWasDealt;
 
     private float nextNormalAttackTime;
@@ -240,11 +244,12 @@ public class BossAttackController_VampireBat : MonoBehaviour
     {
         isAttacking = true;
 
-        bool isStompAttack = triggerName == "StompAttack";
+        bool isStompAttack =
+            triggerName == "StompAttack";
 
         if (isStompAttack)
         {
-            stompAttackInProgress = true;
+            currentAttackIsStomp = true;
             stompDamageWasDealt = false;
         }
 
@@ -256,6 +261,11 @@ public class BossAttackController_VampireBat : MonoBehaviour
             bossController.FacePosition(
                 bossController.Player.position
             );
+        }
+
+        if (isStompAttack)
+        {
+            ShowStompWarningPreHit();
         }
 
         if (animator != null)
@@ -276,7 +286,7 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         if (wasStompAttack)
         {
-            stompAttackInProgress = false;
+            currentAttackIsStomp = false;
 
             if (!stompDamageWasDealt)
             {
@@ -335,8 +345,31 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
     public void ShowStompWarning()
     {
-        if (!stompAttackInProgress ||
-            bossController == null)
+        if (stompDamageWasDealt)
+        {
+            return;
+        }
+
+        ShowStompWarningPreHit();
+    }
+
+    private void ShowStompWarningPreHit()
+    {
+        ShowStompWarningWithColor(
+            stompWarningPreHitColor
+        );
+    }
+
+    private void ShowStompWarningImpact()
+    {
+        ShowStompWarningWithColor(
+            stompWarningImpactColor
+        );
+    }
+
+    private void ShowStompWarningWithColor(Color color)
+    {
+        if (bossController == null)
         {
             return;
         }
@@ -362,22 +395,67 @@ public class BossAttackController_VampireBat : MonoBehaviour
                 transform.position.z
             );
 
-        stompWarningObject.transform.localScale =
-            new Vector3(
-                stompAttackWidth,
-                stompAttackHeight,
-                1f
-            );
+        ApplyStompWarningWorldSize();
 
-        stompWarningRenderer.color = stompWarningColor;
+        stompWarningRenderer.color = color;
         UpdateStompWarningSorting();
 
         stompWarningObject.SetActive(true);
     }
 
+    private void ApplyStompWarningWorldSize()
+    {
+        if (stompWarningObject == null ||
+            stompWarningRenderer == null ||
+            stompWarningRenderer.sprite == null)
+        {
+            return;
+        }
+
+        Vector2 spriteSize =
+            stompWarningRenderer.sprite.bounds.size;
+
+        float spriteWidth = Mathf.Max(
+            spriteSize.x,
+            0.0001f
+        );
+
+        float spriteHeight = Mathf.Max(
+            spriteSize.y,
+            0.0001f
+        );
+
+        Vector3 parentScale = Vector3.one;
+
+        if (stompWarningObject.transform.parent != null)
+        {
+            parentScale =
+                stompWarningObject.transform.parent.lossyScale;
+        }
+
+        float parentScaleX = Mathf.Max(
+            Mathf.Abs(parentScale.x),
+            0.0001f
+        );
+
+        float parentScaleY = Mathf.Max(
+            Mathf.Abs(parentScale.y),
+            0.0001f
+        );
+
+        stompWarningObject.transform.localScale =
+            new Vector3(
+                stompAttackWidth / (spriteWidth * parentScaleX),
+                stompAttackHeight / (spriteHeight * parentScaleY),
+                1f
+            );
+    }
+
     public void DealStompDamage()
     {
         stompDamageWasDealt = true;
+
+        ShowStompWarningImpact();
 
         if (bossController != null)
         {
@@ -506,16 +584,17 @@ public class BossAttackController_VampireBat : MonoBehaviour
 
         if (existingChild != null)
         {
-            stompWarningObject = existingChild.gameObject;
+            stompWarningObject =
+                existingChild.gameObject;
+
             stompWarningRenderer =
                 stompWarningObject.GetComponent<SpriteRenderer>();
         }
 
         if (stompWarningObject == null)
         {
-            stompWarningObject = new GameObject(
-                stompWarningObjectName
-            );
+            stompWarningObject =
+                new GameObject(stompWarningObjectName);
 
             stompWarningObject.transform.SetParent(
                 transform,
@@ -541,7 +620,8 @@ public class BossAttackController_VampireBat : MonoBehaviour
         stompWarningRenderer.sprite =
             GetOrCreateStompWarningSprite();
 
-        stompWarningRenderer.color = stompWarningColor;
+        stompWarningRenderer.color =
+            stompWarningPreHitColor;
 
         UpdateStompWarningSorting();
     }
@@ -609,9 +689,24 @@ public class BossAttackController_VampireBat : MonoBehaviour
                         center
                     ) / radius;
 
-                float alpha = normalizedDistance <= 1f
-                    ? 1f
-                    : 0f;
+                float alpha;
+
+                if (normalizedDistance <= 0.92f)
+                {
+                    alpha = 1f;
+                }
+                else if (normalizedDistance <= 1f)
+                {
+                    alpha = Mathf.InverseLerp(
+                        1f,
+                        0.92f,
+                        normalizedDistance
+                    );
+                }
+                else
+                {
+                    alpha = 0f;
+                }
 
                 texture.SetPixel(
                     x,
@@ -688,10 +783,8 @@ public class BossAttackController_VampireBat : MonoBehaviour
             stompAttackHeight
         );
 
-        stompWarningAfterHitDuration = Mathf.Max(
-            0f,
-            stompWarningAfterHitDuration
-        );
+        stompWarningAfterHitDuration =
+            Mathf.Max(0f, stompWarningAfterHitDuration);
 
         castMinRange = Mathf.Max(
             0f,

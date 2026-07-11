@@ -9,6 +9,10 @@ public class BossController : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Transform attackCenter;
 
+    [Header("Attack Center Flip Alignment")]
+    [Tooltip("Local X position of the visible body center used as mirror pivot for the AttackCenter.")]
+    [SerializeField] private float attackCenterVisualPivotX = 0f;
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
 
@@ -30,6 +34,9 @@ public class BossController : MonoBehaviour
 
     private Vector2 movementDirection;
     private float currentMoveSpeed;
+
+    private Vector3 attackCenterBaseLocalPosition;
+    private bool hasAttackCenterBaseLocalPosition;
 
     public Transform Player => player;
     public Animator Animator => animator;
@@ -64,6 +71,8 @@ public class BossController : MonoBehaviour
         }
 
         navigation = GetComponent<BossNavigation>();
+
+        CacheAttackCenterBaseLocalPosition();
 
         followStopDistance = Mathf.Max(
             0f,
@@ -212,14 +221,15 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        Vector2 bossPosition = rb != null
+        Vector2 bodyPosition = rb != null
             ? rb.position
             : transform.position;
 
+        Vector2 combatOrigin = AttackOrigin;
         Vector2 playerPosition = player.position;
 
-        Vector2 toPlayer =
-            playerPosition - bossPosition;
+        Vector2 toPlayerFromCombatOrigin =
+            playerPosition - combatOrigin;
 
         float stopDistance = Mathf.Max(
             0f,
@@ -235,7 +245,7 @@ public class BossController : MonoBehaviour
         {
             FacePosition(playerPosition);
 
-            if (toPlayer.sqrMagnitude <=
+            if (toPlayerFromCombatOrigin.sqrMagnitude <=
                 resumeDistance * resumeDistance)
             {
                 StopMoving();
@@ -250,7 +260,7 @@ public class BossController : MonoBehaviour
             }
         }
 
-        if (toPlayer.sqrMagnitude <=
+        if (toPlayerFromCombatOrigin.sqrMagnitude <=
             stopDistance * stopDistance)
         {
             isHoldingCombatPosition = true;
@@ -260,12 +270,18 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        Vector2 desiredCombatPosition =
+        Vector2 desiredCombatOrigin =
             playerPosition -
-            toPlayer.normalized * stopDistance;
+            toPlayerFromCombatOrigin.normalized * stopDistance;
 
-        Vector2 toDesiredCombatPosition =
-            desiredCombatPosition - bossPosition;
+        Vector2 combatOriginOffsetFromBody =
+            combatOrigin - bodyPosition;
+
+        Vector2 desiredBodyPosition =
+            desiredCombatOrigin - combatOriginOffsetFromBody;
+
+        Vector2 toDesiredBodyPosition =
+            desiredBodyPosition - bodyPosition;
 
         float chaseStepDistance = Mathf.Max(
             0.1f,
@@ -274,17 +290,17 @@ public class BossController : MonoBehaviour
 
         Vector2 movementTarget;
 
-        if (toDesiredCombatPosition.sqrMagnitude >
+        if (toDesiredBodyPosition.sqrMagnitude >
             chaseStepDistance * chaseStepDistance)
         {
             movementTarget =
-                bossPosition +
-                toDesiredCombatPosition.normalized *
+                bodyPosition +
+                toDesiredBodyPosition.normalized *
                 chaseStepDistance;
         }
         else
         {
-            movementTarget = desiredCombatPosition;
+            movementTarget = desiredBodyPosition;
         }
 
         if (navigation != null)
@@ -313,7 +329,7 @@ public class BossController : MonoBehaviour
         }
 
         Vector2 directDirection =
-            (movementTarget - bossPosition).normalized;
+            (movementTarget - bodyPosition).normalized;
 
         SetMovement(
             directDirection,
@@ -350,6 +366,11 @@ public class BossController : MonoBehaviour
     {
         movementDirection = Vector2.zero;
 
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
         if (animator != null)
         {
             animator.SetBool("IsMoving", false);
@@ -383,6 +404,20 @@ public class BossController : MonoBehaviour
         UpdateAttackCenterFlip();
     }
 
+    private void CacheAttackCenterBaseLocalPosition()
+    {
+        if (attackCenter == null)
+        {
+            hasAttackCenterBaseLocalPosition = false;
+            return;
+        }
+
+        attackCenterBaseLocalPosition =
+            attackCenter.localPosition;
+
+        hasAttackCenterBaseLocalPosition = true;
+    }
+
     private void UpdateAttackCenterFlip()
     {
         if (attackCenter == null ||
@@ -391,12 +426,25 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        Vector3 localPosition = attackCenter.localPosition;
-        float offsetX = Mathf.Abs(localPosition.x);
+        if (!hasAttackCenterBaseLocalPosition)
+        {
+            CacheAttackCenterBaseLocalPosition();
+        }
 
-        localPosition.x = spriteRenderer.flipX
-            ? offsetX
-            : -offsetX;
+        Vector3 localPosition =
+            attackCenterBaseLocalPosition;
+
+        if (spriteRenderer.flipX)
+        {
+            localPosition.x =
+                2f * attackCenterVisualPivotX -
+                attackCenterBaseLocalPosition.x;
+        }
+        else
+        {
+            localPosition.x =
+                attackCenterBaseLocalPosition.x;
+        }
 
         attackCenter.localPosition = localPosition;
 
