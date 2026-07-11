@@ -8,6 +8,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Transform attackCenter;
+    [SerializeField] private Transform movementCenter;
 
     [Header("Attack Center Flip Alignment")]
     [Tooltip("Local X position of the visible body center used as mirror pivot for the AttackCenter.")]
@@ -50,6 +51,24 @@ public class BossController : MonoBehaviour
             return attackCenter != null
                 ? attackCenter.position
                 : transform.position;
+        }
+    }
+
+    public Vector2 MovementOrigin
+    {
+        get
+        {
+            if (movementCenter != null)
+            {
+                return movementCenter.position;
+            }
+
+            if (attackCenter != null)
+            {
+                return attackCenter.position;
+            }
+
+            return transform.position;
         }
     }
 
@@ -225,11 +244,11 @@ public class BossController : MonoBehaviour
             ? rb.position
             : transform.position;
 
-        Vector2 combatOrigin = AttackOrigin;
+        Vector2 movementOrigin = MovementOrigin;
         Vector2 playerPosition = player.position;
 
-        Vector2 toPlayerFromCombatOrigin =
-            playerPosition - combatOrigin;
+        Vector2 toPlayerFromMovementOrigin =
+            playerPosition - movementOrigin;
 
         float stopDistance = Mathf.Max(
             0f,
@@ -245,7 +264,7 @@ public class BossController : MonoBehaviour
         {
             FacePosition(playerPosition);
 
-            if (toPlayerFromCombatOrigin.sqrMagnitude <=
+            if (toPlayerFromMovementOrigin.sqrMagnitude <=
                 resumeDistance * resumeDistance)
             {
                 StopMoving();
@@ -260,7 +279,7 @@ public class BossController : MonoBehaviour
             }
         }
 
-        if (toPlayerFromCombatOrigin.sqrMagnitude <=
+        if (toPlayerFromMovementOrigin.sqrMagnitude <=
             stopDistance * stopDistance)
         {
             isHoldingCombatPosition = true;
@@ -270,15 +289,17 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        Vector2 desiredCombatOrigin =
+        Vector2 desiredMovementOrigin =
             playerPosition -
-            toPlayerFromCombatOrigin.normalized * stopDistance;
+            toPlayerFromMovementOrigin.normalized *
+            stopDistance;
 
-        Vector2 combatOriginOffsetFromBody =
-            combatOrigin - bodyPosition;
+        Vector2 movementOriginOffsetFromBody =
+            movementOrigin - bodyPosition;
 
         Vector2 desiredBodyPosition =
-            desiredCombatOrigin - combatOriginOffsetFromBody;
+            desiredMovementOrigin -
+            movementOriginOffsetFromBody;
 
         Vector2 toDesiredBodyPosition =
             desiredBodyPosition - bodyPosition;

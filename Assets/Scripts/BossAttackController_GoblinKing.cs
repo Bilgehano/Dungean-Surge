@@ -63,6 +63,14 @@ public class BossAttackController_GoblinKing : MonoBehaviour
     [SerializeField] private float chargeWindupTime = 0.8f;
     [SerializeField] private float chargeEndLag = 0.4f;
 
+    [Header("Charge Obstacle Detection")]
+    [SerializeField] private BoxCollider2D chargeBodyCollider;
+    [SerializeField] private LayerMask chargeObstacleLayers;
+    [SerializeField] private float chargeObstaclePadding = 0.5f;
+
+    [Range(0.1f, 1f)]
+    [SerializeField] private float chargeBoxCastScale = 0.9f;
+
     private bool isAttacking;
     private bool isCharging;
 
@@ -87,6 +95,30 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         {
             animator = GetComponent<Animator>();
         }
+
+        if (chargeBodyCollider == null)
+        {
+            chargeBodyCollider = GetComponent<BoxCollider2D>();
+        }
+    }
+
+    private void OnValidate()
+    {
+        minimumChargeCount = Mathf.Max(
+            2,
+            minimumChargeCount
+        );
+
+        chargeObstaclePadding = Mathf.Max(
+            0f,
+            chargeObstaclePadding
+        );
+
+        chargeBoxCastScale = Mathf.Clamp(
+            chargeBoxCastScale,
+            0.1f,
+            1f
+        );
     }
 
     private void Update()
@@ -380,6 +412,19 @@ public class BossAttackController_GoblinKing : MonoBehaviour
                bossController.IsActive &&
                bossController.HasPlayer)
         {
+            float expectedStepDistance =
+                Mathf.Max(
+                    0.01f,
+                    chargeSpeed * Time.fixedDeltaTime
+                );
+
+            if (IsChargeBlockedByObstacle(
+                    chargeDirection,
+                    expectedStepDistance))
+            {
+                break;
+            }
+
             Vector2 currentChargeOrigin =
                 bossController.GetAttackOrigin(
                     chargeAttackCenter
@@ -411,6 +456,43 @@ public class BossAttackController_GoblinKing : MonoBehaviour
 
         isCharging = false;
         bossController.StopMoving();
+    }
+
+    private bool IsChargeBlockedByObstacle(
+        Vector2 chargeDirection,
+        float expectedStepDistance)
+    {
+        if (chargeBodyCollider == null ||
+            chargeObstacleLayers.value == 0 ||
+            chargeDirection.sqrMagnitude <= 0.0001f)
+        {
+            return false;
+        }
+
+        Vector2 castOrigin =
+            chargeBodyCollider.bounds.center;
+
+        Vector2 castSize = new Vector2(
+            chargeBodyCollider.bounds.size.x,
+            chargeBodyCollider.bounds.size.y
+        ) * chargeBoxCastScale;
+
+        float castDistance =
+            Mathf.Max(
+                0f,
+                expectedStepDistance + chargeObstaclePadding
+            );
+
+        RaycastHit2D hit = Physics2D.BoxCast(
+            castOrigin,
+            castSize,
+            transform.eulerAngles.z,
+            chargeDirection.normalized,
+            castDistance,
+            chargeObstacleLayers
+        );
+
+        return hit.collider != null;
     }
 
     public void DealNormalDamage()
@@ -676,6 +758,52 @@ public class BossAttackController_GoblinKing : MonoBehaviour
         Gizmos.DrawWireSphere(
             chargeOrigin,
             chargeDamageRadius
+        );
+
+        DrawChargeObstacleBoxCastGizmo();
+    }
+
+    private void DrawChargeObstacleBoxCastGizmo()
+    {
+        if (chargeBodyCollider == null ||
+            chargeObstacleLayers.value == 0)
+        {
+            return;
+        }
+
+        Vector2 castOrigin =
+            chargeBodyCollider.bounds.center;
+
+        Vector2 castSize = new Vector2(
+            chargeBodyCollider.bounds.size.x,
+            chargeBodyCollider.bounds.size.y
+        ) * chargeBoxCastScale;
+
+        SpriteRenderer bossSpriteRenderer =
+            GetComponent<SpriteRenderer>();
+
+        bool facesRight = bossSpriteRenderer != null &&
+                          bossSpriteRenderer.flipX;
+
+        Vector2 previewDirection = facesRight
+            ? Vector2.right
+            : Vector2.left;
+
+        float previewDistance =
+            chargeObstaclePadding;
+
+        Vector2 previewCenter =
+            castOrigin +
+            previewDirection * previewDistance;
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(
+            previewCenter,
+            new Vector3(
+                castSize.x,
+                castSize.y,
+                0.1f
+            )
         );
     }
 }

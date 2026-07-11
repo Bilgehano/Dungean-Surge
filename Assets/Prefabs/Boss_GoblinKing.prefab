@@ -38,6 +38,7 @@ Transform:
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5566943532460628980}
   - {fileID: 8991458504845995166}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -117,10 +118,11 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   attackCenter: {fileID: 8991458504845995166}
+  movementCenter: {fileID: 5566943532460628980}
   attackCenterVisualPivotX: 0
   moveSpeed: 4
-  followStopDistance: 1.2
-  followResumeDistance: 1.5
+  followStopDistance: 1.4
+  followResumeDistance: 1.7
   globalChaseStepDistance: 6
 --- !u!114 &5097437447453705956
 MonoBehaviour:
@@ -188,7 +190,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.5, y: 0.7}
+  m_Size: {x: 0.6, y: 0.7}
   m_EdgeRadius: 0
 --- !u!50 &9093170327061700792
 Rigidbody2D:
@@ -293,6 +295,12 @@ MonoBehaviour:
   chargeMaxDistance: 16
   chargeWindupTime: 0.8
   chargeEndLag: 0.4
+  chargeBodyCollider: {fileID: 2258557027041497001}
+  chargeObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  chargeObstaclePadding: 0.7
+  chargeBoxCastScale: 0.9
 --- !u!114 &5411810159495536869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,9 +342,9 @@ MonoBehaviour:
   gridHalfExtent: 16
   bossCollider: {fileID: 2258557027041497001}
   topPadding: 0.2
-  bottomPadding: 0.2
-  leftPadding: 0.4
-  rightPadding: 0.4
+  bottomPadding: 0.05
+  leftPadding: 0.2
+  rightPadding: 0.2
   collisionPadding: 0.2
   hasMigratedCollisionPadding: 1
   repathInterval: 0.4
@@ -408,6 +416,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8991458504845995166}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1326744124032880810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5566943532460628980}
+  m_Layer: 11
+  m_Name: BossMovementCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5566943532460628980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326744124032880810}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.05, y: -0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1413149734218856543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1832777123312940945
 GameObject:
