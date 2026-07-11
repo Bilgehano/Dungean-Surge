@@ -253,6 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7377435dbde4ac41bfcea5c20508872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossAttackController_GoblinKing
+  chargeAnimationStateName: Boss_GoblinKing_attack_2
   bossController: {fileID: 0}
   bossHealth: {fileID: 0}
   animator: {fileID: 0}
@@ -262,45 +263,65 @@ MonoBehaviour:
   chargeAttackCenter: {fileID: 5254376378639183457}
   normalDamage: -12
   normalAttackWidth: 2.6
-  normalAttackHeight: 1.2
+  normalAttackHeight: 1.3
   normalAttackCooldown: 1.5
   normalAttackLockTime: 0.6
+  enhancedNormalPhase: 3
+  enhancedNormalAttackWidth: 3
+  enhancedNormalAttackHeight: 1.8
+  enhancedNormalAttackCooldown: 1.5
+  enhancedNormalCritChance: 0.25
+  enhancedNormalCritMultiplier: 2
   heavyDamage: -25
-  heavyAttackWidth: 1.9
+  heavyAttackWidth: 2.2
   heavyAttackHeight: 2.4
   heavyAttackCooldown: 7
   heavyAttackLockTime: 1
+  enhancedHeavyPhase: 4
+  enhancedHeavyAttackWidth: 2.5
+  enhancedHeavyAttackHeight: 2.6
+  enhancedHeavyAttackCooldown: 7
   throwDamage: -10
   throwMinRange: 1
-  throwMaxRange: 16
+  throwMaxRange: 20
   throwAttackCooldown: 4
   throwAttackLockTime: 0.8
   projectileSpawnPoint: {fileID: 8690881554406998458}
   throwProjectilePrefab: {fileID: 434365836799160231, guid: 4718b11ca17f3094585a53a47b1ee02f, type: 3}
-  throwMinimumFlightDistance: 12
+  throwMinimumFlightDistance: 20
   throwProjectileSpeed: 10
   throwArcHeight: 1.2
   throwImpactRadius: 0.8
   throwAimLeadTime: 0.25
   throwInStraightLine: 1
+  enhancedThrowPhase: 3
+  enhancedThrowAttackCooldown: 3
+  enhancedThrowProjectileCount: 5
+  enhancedThrowSideAngle: 20
   chargeDamage: -20
-  chargeDamageRadius: 1.8
+  chargeDamageRadius: 2.3
+  chargePhase: 2
   chargeCooldown: 8
-  minimumChargeCount: 2
-  additionalChargeChance: 0.6
   chargeComboPause: 0
   chargeStartMaxRange: 10
   chargeSpeed: 11
   chargeMinDistance: 5
   chargeMaxDistance: 16
-  chargeWindupTime: 0.8
+  chargeWindupTime: 1
   chargeEndLag: 0.4
+  enhancedChargePhase: 4
+  enhancedChargeCooldown: 8
+  enhancedChargeSpeed: 11
+  enhancedMinimumChargeCount: 2
+  enhancedAdditionalChargeChance: 0.6
   chargeBodyCollider: {fileID: 2258557027041497001}
   chargeObstacleLayers:
     serializedVersion: 2
     m_Bits: 8
-  chargeObstaclePadding: 0.7
-  chargeBoxCastScale: 0.9
+  chargeObstaclePadding: 0.5
+  chargeBoxCastScale: 1.5
+  showNormalMovesetGizmos: 0
+  showEnhancedMovesetGizmos: 0
 --- !u!114 &5411810159495536869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,8 +335,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossContactDamage
   contactDamage: -5
-  contactWidth: 3.5
-  contactHeight: 2.5
+  contactWidth: 3.3
+  contactHeight: 3.5
   damageCooldown: 0.8
   playerLayer:
     serializedVersion: 2
@@ -504,7 +525,7 @@ Transform:
   m_GameObject: {fileID: 2869539312747194995}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.06, y: 0.14, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
