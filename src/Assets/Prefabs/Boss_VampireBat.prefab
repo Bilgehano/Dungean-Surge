@@ -228,31 +228,89 @@ MonoBehaviour:
   castAttackCenter: {fileID: 6382189114244804649}
   castProjectileSpawnPoint: {fileID: 3236292372113898885}
   normalDamage: -15
-  normalAttackWidth: 2.6
-  normalAttackHeight: 1.2
+  normalAttackWidth: 2.7
+  normalAttackHeight: 1.8
   normalAttackCooldown: 1.5
   normalAttackLockTime: 0.6
+  enhancedNormalPhase: 3
+  enhancedNormalAttackWidth: 3
+  enhancedNormalAttackHeight: 2.2
+  enhancedNormalAttackCooldown: 1.5
+  enhancedNormalCritChance: 0.25
+  enhancedNormalCritMultiplier: 2
   heavyDamage: -30
   heavyAttackWidth: 2.6
   heavyAttackHeight: 2
   heavyAttackCooldown: 4
   heavyAttackLockTime: 0.9
+  enhancedHeavyPhase: 3
+  enhancedHeavyAttackWidth: 3.2
+  enhancedHeavyAttackHeight: 3
+  enhancedHeavyAttackCooldown: 4
+  enableNormalToHeavyCombo: 1
+  normalToHeavyChance: 0.4
+  enableHeavyToNormalCombo: 1
+  heavyToNormalChance: 0.7
+  meleeComboPause: 0.15
+  meleeComboMaxFollowUps: 1
   stompDamage: -35
+  stompPhase: 2
   stompAttackWidth: 12
   stompAttackHeight: 9.01
   stompAttackCooldown: 6
   stompAttackLockTime: 1.2
-  stompWarningPreHitColor: {r: 1, g: 0.35, b: 0.75, a: 0.28}
-  stompWarningImpactColor: {r: 0.65, g: 0.15, b: 1, a: 0.38}
+  enhancedStompPhase: 4
+  enhancedStompAttackWidth: 12
+  enhancedStompAttackHeight: 9
+  enhancedStompAttackCooldown: 6
+  enableSecondStompEllipse: 1
+  secondStompDelay: 0.5
+  secondStompWarningDuration: 0.5
+  secondStompAttackWidth: 24
+  secondStompAttackHeight: 18
+  secondStompDamageMultiplier: 1
+  stompWarningPreHitColor: {r: 0.36078432, g: 0.078431375, b: 0.8000001, a: 0.28}
+  stompWarningImpactColor: {r: 0.8000001, g: 0.121568635, b: 0.7607844, a: 0.38}
+  secondStompWarningPreHitColor: {r: 0.36078432, g: 0.078431375, b: 0.8000001, a: 0.24}
+  secondStompWarningImpactColor: {r: 0.8000001, g: 0.121568635, b: 0.7607844, a: 0.36}
   stompWarningAfterHitDuration: 0.2
   stompWarningSortingOrderOffset: -1
   stompWarningObjectName: StompWarningVisual
-  castDamage: -20
-  castMinRange: 3
+  enableCastAttack: 1
+  castPhase: 2
+  castDamage: -5
+  castMinRange: 2
   castMaxRange: 20
   castAttackCooldown: 8
   castAttackLockTime: 1.4
-  enableCastAttack: 0
+  castEruptionCount: 6
+  castEruptionStartDistance: 3.3
+  castEruptionSpacing: 4
+  castEruptionWidth: 4.5
+  castEruptionHeight: 3
+  castEruptionWarningDuration: 0.35
+  castEruptionImpactDuration: 0.15
+  enableEnhancedCastAttack: 1
+  enhancedCastPhase: 4
+  enhancedCastDamage: -5
+  enhancedCastMinRange: 2
+  enhancedCastMaxRange: 20
+  enhancedCastAttackCooldown: 8
+  enhancedCastAttackLockTime: 1.4
+  enhancedCastLineCount: 5
+  enhancedCastSideAngle: 30
+  enhancedCastEruptionCount: 6
+  enhancedCastEruptionStartDistance: 3.3
+  enhancedCastEruptionSpacing: 4
+  enhancedCastEruptionWidth: 4.5
+  enhancedCastEruptionHeight: 3
+  enhancedCastEruptionWarningDuration: 0.32
+  enhancedCastEruptionImpactDuration: 0.15
+  castEruptionWarningColor: {r: 0.45, g: 0.1, b: 1, a: 0.28}
+  castEruptionImpactColor: {r: 1, g: 0.15, b: 0.95, a: 0.4}
+  castEruptionObjectNamePrefix: CastEruptionVisual
+  showNormalMovesetGizmos: 0
+  showEnhancedMovesetGizmos: 0
   stompAttackRange: 5.57
   hasMigratedStompArea: 1
 --- !u!114 &-8276215433920364697
