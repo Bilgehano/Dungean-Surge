@@ -63,6 +63,11 @@ public class VictoryManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+        }
+
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }

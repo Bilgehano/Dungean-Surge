@@ -26,6 +26,8 @@ public class WaveUI : MonoBehaviour
     {
         if (waveManager == null) return;
 
+        bool isPaused = Time.timeScale <= 0f;
+
         // Update Wave Info (Bottom Left)
         if (waveInfoText != null)
         {
@@ -40,7 +42,7 @@ public class WaveUI : MonoBehaviour
         }
 
         // Update Status/Announcements
-        bool isWaiting = waveManager.IsWaiting;
+    bool isWaiting = waveManager.IsWaiting && !isPaused;
         
         if (statusContainer != null) statusContainer.SetActive(isWaiting);
         if (announcementContainer != null) announcementContainer.SetActive(isWaiting);

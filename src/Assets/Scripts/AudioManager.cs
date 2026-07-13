@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
+    private const string MainMenuSceneName = "MainMenu";
+
     public static AudioManager Instance { get; private set; }
 
     private AudioSource sfxSource;
@@ -46,7 +48,7 @@ public class AudioManager : MonoBehaviour
     {
         CheckGlobalAudioSettings();
 
-        if (playBackgroundMusicOnStart)
+        if (playBackgroundMusicOnStart && !IsMainMenuScene(SceneManager.GetActiveScene()))
         {
             PlayBackgroundMusic();
         }
@@ -67,10 +69,21 @@ public class AudioManager : MonoBehaviour
         ResetBossDeathSfxState();
         CheckGlobalAudioSettings();
 
+        if (IsMainMenuScene(scene))
+        {
+            StopMusic();
+            return;
+        }
+
         if (playBackgroundMusicOnStart && !IsMusicPlaying())
         {
             PlayBackgroundMusic();
         }
+    }
+
+    private bool IsMainMenuScene(Scene scene)
+    {
+        return scene.name == MainMenuSceneName;
     }
 
     private void InitializeChannels()
